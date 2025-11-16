@@ -1,5 +1,6 @@
 'use server';
 
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 
 import { Product, Category } from '@prisma/client';
@@ -19,36 +20,67 @@ export type SerializedProductWithCategory = Omit<ProductWithCategory, 'price'> &
  */
 export async function getProducts({ categorySlug, page = 1, limit = 12 }: { categorySlug?: string; page?: number; limit?: number } = {}): Promise<{ products: SerializedProductWithCategory[]; total: number }> {
   try {
-    const where = categorySlug
-      ? {
-          category: {
-            slug: categorySlug,
-          },
-        }
-      : undefined;
-    const skip = (page - 1) * limit;
-    const [products, total] = await Promise.all([
-      db.product.findMany({
-        where,
-        include: {
-          category: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        skip,
-        take: limit,
-      }),
-      db.product.count({ where }),
-    ]);
-    // Serialize Decimal fields (e.g., price) to number
-    const serializedProducts = products.map((product) => ({
-      ...product,
-      price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
-        ? product.price.toNumber()
-        : product.price,
-    }));
-    return { products: serializedProducts, total };
+    const cacheKey = `products-${categorySlug || 'all'}-${page}-${limit}`;
+    
+    return await unstable_cache(
+      async () => {
+        const where = categorySlug
+          ? {
+              category: {
+                slug: categorySlug,
+              },
+            }
+          : undefined;
+        const skip = (page - 1) * limit;
+        const [products, total] = await Promise.all([
+          db.product.findMany({
+            where,
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              description: true,
+              price: true,
+              stock: true,
+              images: true,
+              featured: true,
+              categoryId: true,
+              createdAt: true,
+              updatedAt: true,
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  description: true,
+                  createdAt: true,
+                  updatedAt: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            skip,
+            take: limit,
+          }),
+          db.product.count({ where }),
+        ]);
+        // Serialize Decimal fields (e.g., price) to number
+        const serializedProducts = products.map((product) => ({
+          ...product,
+          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+            ? product.price.toNumber()
+            : product.price,
+        }));
+        return { products: serializedProducts, total };
+      },
+      [cacheKey],
+      {
+        revalidate: 30, // Cache for 30 seconds
+        tags: ['products', categorySlug ? `category-${categorySlug}` : 'all-products'],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching products:', error);
     return { products: [], total: 0 };
@@ -60,20 +92,29 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
  */
 export async function getFeaturedProducts(): Promise<ProductWithCategory[]> {
   try {
-    const products = await db.product.findMany({
-      where: {
-        featured: true,
-      },
-      include: {
-        category: true,
-      },
-      take: 6,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    return await unstable_cache(
+      async () => {
+        const products = await db.product.findMany({
+          where: {
+            featured: true,
+          },
+          include: {
+            category: true,
+          },
+          take: 6,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
 
-    return products;
+        return products;
+      },
+      ['featured-products'],
+      {
+        revalidate: 300, // Cache for 5 minutes
+        tags: ['products', 'featured'],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching featured products:', error);
     // Return empty array to allow homepage to render gracefully
@@ -96,7 +137,17 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
       },
     });
 
-    return product;
+    if (!product) {
+      return null;
+    }
+
+    // Serialize Decimal fields (e.g., price) to number
+    return {
+      ...product,
+      price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+        ? product.price.toNumber()
+        : product.price,
+    } as ProductWithCategory;
   } catch (error) {
     console.error('Error fetching product:', error);
     throw new Error('Failed to fetch product');
@@ -108,13 +159,22 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
  */
 export async function getCategories(): Promise<Category[]> {
   try {
-    const categories = await db.category.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    return await unstable_cache(
+      async () => {
+        const categories = await db.category.findMany({
+          orderBy: {
+            name: 'asc',
+          },
+        });
 
-    return categories;
+        return categories;
+      },
+      ['categories'],
+      {
+        revalidate: 3600, // Cache for 1 hour (static data)
+        tags: ['categories'],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching categories:', error);
     // Return empty array to allow navbar to render gracefully

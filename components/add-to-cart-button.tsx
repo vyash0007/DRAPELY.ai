@@ -26,6 +26,7 @@ export function AddToCartButton({
     try {
       setIsLoading(true);
       await addToCart(productId, quantity);
+      // Refresh in background (non-blocking)
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add to cart';

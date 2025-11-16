@@ -1,5 +1,6 @@
 'use server';
 
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { OrderStatus } from '@prisma/client';
@@ -25,69 +26,80 @@ export async function getAdminOrders(filters: OrderFilters = {}) {
   } = filters;
 
   try {
-    const skip = (page - 1) * limit;
+    const cacheKey = `admin-orders-${search}-${status || 'all'}-${page}-${limit}`;
+    
+    return await unstable_cache(
+      async () => {
+        const skip = (page - 1) * limit;
 
-    const where = {
-      ...(search && {
-        OR: [
-          { orderNumber: { contains: search, mode: 'insensitive' as const } },
-          { user: { email: { contains: search, mode: 'insensitive' as const } } },
-        ],
-      }),
-      ...(status && { status }),
-    };
+        const where = {
+          ...(search && {
+            OR: [
+              { orderNumber: { contains: search, mode: 'insensitive' as const } },
+              { user: { email: { contains: search, mode: 'insensitive' as const } } },
+            ],
+          }),
+          ...(status && { status }),
+        };
 
-    const [orders, total] = await Promise.all([
-      db.order.findMany({
-        where,
-        include: {
-          user: {
-            select: {
-              email: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-          items: {
+        const [orders, total] = await Promise.all([
+          db.order.findMany({
+            where,
             include: {
-              product: {
+              user: {
                 select: {
-                  title: true,
-                  images: true,
+                  email: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+              items: {
+                include: {
+                  product: {
+                    select: {
+                      title: true,
+                      images: true,
+                    },
+                  },
                 },
               },
             },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            skip,
+            take: limit,
+          }),
+          db.order.count({ where }),
+        ]);
+
+        // Convert Decimal fields (e.g., total, product.price) to plain numbers
+        const safeOrders = orders.map((o) => ({
+          ...o,
+          total: Number((o as any).total),
+          items: o.items.map((item) => ({
+            ...item,
+            price: Number((item as any).price),
+            product: item.product ? { ...item.product } : item.product,
+          })),
+        }));
+
+        return {
+          orders: safeOrders,
+          pagination: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
           },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        skip,
-        take: limit,
-      }),
-      db.order.count({ where }),
-    ]);
-
-    // Convert Decimal fields (e.g., total, product.price) to plain numbers
-    const safeOrders = orders.map((o) => ({
-      ...o,
-      total: Number((o as any).total),
-      items: o.items.map((item) => ({
-        ...item,
-        price: Number((item as any).price),
-        product: item.product ? { ...item.product } : item.product,
-      })),
-    }));
-
-    return {
-      orders: safeOrders,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        };
       },
-    };
+      [cacheKey],
+      {
+        revalidate: 15, // Cache for 15 seconds (admin data changes more frequently)
+        tags: ['admin-orders', status ? `admin-orders-${status}` : 'admin-orders-all'],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching admin orders:', error);
     return {
@@ -109,47 +121,58 @@ export async function getAdminOrderById(id: string) {
   await requireAdminAuth();
 
   try {
-    const order = await db.order.findUnique({
-      where: { id },
-      include: {
-        user: {
-          select: {
-            email: true,
-            firstName: true,
-            lastName: true,
-            clerkId: true,
-          },
-        },
-        items: {
+    const cacheKey = `admin-order-${id}`;
+    
+    return await unstable_cache(
+      async () => {
+        const order = await db.order.findUnique({
+          where: { id },
           include: {
-            product: {
+            user: {
               select: {
-                id: true,
-                title: true,
-                slug: true,
-                images: true,
-                price: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                clerkId: true,
+              },
+            },
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    images: true,
+                    price: true,
+                  },
+                },
               },
             },
           },
-        },
+        });
+
+        if (!order) return null;
+
+        // Convert Decimal fields to plain numbers for safe serialization
+        return {
+          ...order,
+          total: Number((order as any).total),
+          items: order.items.map((item) => ({
+            ...item,
+            price: Number((item as any).price),
+            product: item.product
+              ? { ...item.product, price: Number((item.product as any).price) }
+              : item.product,
+          })),
+        };
       },
-    });
-
-    if (!order) return null;
-
-    // Convert Decimal fields to plain numbers for safe serialization
-    return {
-      ...order,
-      total: Number((order as any).total),
-      items: order.items.map((item) => ({
-        ...item,
-        price: Number((item as any).price),
-        product: item.product
-          ? { ...item.product, price: Number((item.product as any).price) }
-          : item.product,
-      })),
-    };
+      [cacheKey],
+      {
+        revalidate: 15, // Cache for 15 seconds
+        tags: ['admin-orders', `admin-order-${id}`],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching admin order:', error);
     return null;

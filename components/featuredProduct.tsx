@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { getFeaturedProducts } from '@/actions/products';
+import { ProductWithCategory } from '@/actions/products';
 
-const FeaturedProduct = async () => {
-    const featuredProducts = await getFeaturedProducts();
-    const displayProducts = featuredProducts.slice(0, 3);
+interface FeaturedProductProps {
+    products: ProductWithCategory[];
+}
+
+const FeaturedProduct = ({ products }: FeaturedProductProps) => {
+    const displayProducts = products.slice(0, 3);
 
     return (
         <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
@@ -54,6 +57,8 @@ const FeaturedProduct = async () => {
                                                 fill
                                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                                                 sizes="(max-width: 768px) 100vw, 33vw"
+                                                quality={85}
+                                                loading="lazy"
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-gray-400">

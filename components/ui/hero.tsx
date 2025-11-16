@@ -9,7 +9,10 @@ const modelImages = [
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284235/fashion_xlkonj.jpg', // Model 1 - Shopping bags
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284236/image_29_nwr2th.jpg', // Model 2 - Fashion pose
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284236/image_30_an95n9.jpg', // Model 3 - Casual outfit
-  'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284237/image_31_phmsgx.jpg', // Model 4 - Elegant style
+  'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284237/image_31_phmsgx.jpg',
+  'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763306341/image_32_vhfkvu.jpg',
+  'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763306341/image_33_ktt11g.jpg',
+   // Model 4 - Elegant style
 ]
 
 const Hero = () => {

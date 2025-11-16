@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -35,51 +36,62 @@ export async function getCart(): Promise<CartData | null> {
       return null;
     }
 
-    const cart = await db.cart.findUnique({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        items: {
+    const cacheKey = `cart-${user.id}`;
+    
+    return await unstable_cache(
+      async () => {
+        const cart = await db.cart.findUnique({
+          where: {
+            userId: user.id,
+          },
           include: {
-            product: {
-              select: {
-                id: true,
-                title: true,
-                slug: true,
-                price: true,
-                images: true,
-                stock: true,
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    price: true,
+                    images: true,
+                    stock: true,
+                  },
+                },
               },
             },
           },
-        },
+        });
+
+        if (!cart) {
+          return null;
+        }
+
+        const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = cart.items.reduce(
+          (sum, item) => sum + Number(item.product.price) * item.quantity,
+          0
+        );
+
+        return {
+          id: cart.id,
+          items: cart.items.map((item) => ({
+            id: item.id,
+            quantity: item.quantity,
+            product: {
+              ...item.product,
+              price: Number(item.product.price),
+            },
+          })),
+          totalItems,
+          totalPrice,
+        };
       },
-    });
-
-    if (!cart) {
-      return null;
-    }
-
-    const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = cart.items.reduce(
-      (sum, item) => sum + Number(item.product.price) * item.quantity,
-      0
-    );
-
-    return {
-      id: cart.id,
-      items: cart.items.map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
-        product: {
-          ...item.product,
-          price: Number(item.product.price),
-        },
-      })),
-      totalItems,
-      totalPrice,
-    };
+      [cacheKey],
+      {
+        revalidate: 10, // Cache for 10 seconds (cart changes frequently)
+        tags: ['cart', `cart-${user.id}`],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching cart:', error);
     // Return null instead of throwing to allow UI to render gracefully
@@ -99,10 +111,23 @@ export async function addToCart(productId: string, quantity: number = 1) {
       throw new Error('You must be logged in to add items to cart');
     }
 
-    // Check if product exists and has sufficient stock
-    const product = await db.product.findUnique({
-      where: { id: productId },
-    });
+    // Optimize: Run product check and cart lookup in parallel
+    const [product, cart] = await Promise.all([
+      // Only fetch needed fields for stock check
+      db.product.findUnique({
+        where: { id: productId },
+        select: {
+          id: true,
+          stock: true,
+        },
+      }),
+      // Get or create cart in one operation
+      db.cart.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id },
+        update: {},
+      }),
+    ]);
 
     if (!product) {
       throw new Error('Product not found');
@@ -112,26 +137,17 @@ export async function addToCart(productId: string, quantity: number = 1) {
       throw new Error('Insufficient stock');
     }
 
-    // Get or create cart
-    let cart = await db.cart.findUnique({
-      where: { userId: user.id },
-    });
-
-    if (!cart) {
-      cart = await db.cart.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
-
-    // Check if product already in cart
+    // Check if product already in cart and update/create in one operation
     const existingCartItem = await db.cartItem.findUnique({
       where: {
         cartId_productId: {
           cartId: cart.id,
           productId,
         },
+      },
+      select: {
+        id: true,
+        quantity: true,
       },
     });
 
@@ -158,7 +174,9 @@ export async function addToCart(productId: string, quantity: number = 1) {
       });
     }
 
+    // Revalidate cart page and cache
     revalidatePath('/cart');
+    
     return { success: true, message: 'Added to cart' };
   } catch (error) {
     console.error('Error adding to cart:', error);

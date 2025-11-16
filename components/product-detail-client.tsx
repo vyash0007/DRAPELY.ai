@@ -71,6 +71,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   className="object-cover"
                   priority={index === 0}
                   sizes="(max-width: 1024px) 100vw, 45vw"
+                  quality={index === 0 ? 90 : 85}
+                  loading={index === 0 ? undefined : 'lazy'}
                 />
               </div>
             ))}

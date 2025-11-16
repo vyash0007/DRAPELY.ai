@@ -1,5 +1,6 @@
 'use server';
 
+import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { stripe } from '@/lib/stripe';
@@ -119,21 +120,58 @@ export async function getOrders(): Promise<OrderWithItems[]> {
       throw new Error('Unauthorized');
     }
 
-    const orders = await db.order.findMany({
-      where: { userId: user.id },
-      include: {
-        items: {
+    const cacheKey = `orders-${user.id}`;
+    
+    return await unstable_cache(
+      async () => {
+        const orders = await db.order.findMany({
+          where: { userId: user.id },
           include: {
-            product: true,
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    images: true,
+                    price: true,
+                  },
+                },
+              },
+            },
           },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
 
-    return orders;
+        // Serialize Decimal fields
+        return orders.map((order) => ({
+          ...order,
+          total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
+            ? order.total.toNumber()
+            : order.total,
+          items: order.items.map((item) => ({
+            ...item,
+            price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
+              ? item.price.toNumber()
+              : item.price,
+            product: {
+              ...item.product,
+              price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
+                ? item.product.price.toNumber()
+                : item.product.price,
+            },
+          })),
+        })) as OrderWithItems[];
+      },
+      [cacheKey],
+      {
+        revalidate: 30, // Cache for 30 seconds
+        tags: ['orders', `orders-${user.id}`],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching orders:', error);
     throw new Error('Failed to fetch orders');
@@ -151,21 +189,62 @@ export async function getOrderById(orderId: string): Promise<OrderWithItems | nu
       throw new Error('Unauthorized');
     }
 
-    const order = await db.order.findFirst({
-      where: {
-        id: orderId,
-        userId: user.id,
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
+    const cacheKey = `order-${orderId}-${user.id}`;
+    
+    return await unstable_cache(
+      async () => {
+        const order = await db.order.findFirst({
+          where: {
+            id: orderId,
+            userId: user.id,
           },
-        },
-      },
-    });
+          include: {
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    images: true,
+                    price: true,
+                  },
+                },
+              },
+            },
+          },
+        });
 
-    return order;
+        if (!order) {
+          return null;
+        }
+
+        // Serialize Decimal fields
+        return {
+          ...order,
+          total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
+            ? order.total.toNumber()
+            : order.total,
+          items: order.items.map((item) => ({
+            ...item,
+            price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
+              ? item.price.toNumber()
+              : item.price,
+            product: {
+              ...item.product,
+              price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
+                ? item.product.price.toNumber()
+                : item.product.price,
+            },
+          })),
+        } as OrderWithItems;
+      },
+      [cacheKey],
+      {
+        revalidate: 30, // Cache for 30 seconds
+        tags: ['orders', `order-${orderId}`, `orders-${user.id}`],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching order:', error);
     throw new Error('Failed to fetch order');
@@ -183,21 +262,62 @@ export async function getOrderBySessionId(sessionId: string): Promise<OrderWithI
       throw new Error('Unauthorized');
     }
 
-    const order = await db.order.findFirst({
-      where: {
-        stripeSessionId: sessionId,
-        userId: user.id,
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
+    const cacheKey = `order-session-${sessionId}-${user.id}`;
+    
+    return await unstable_cache(
+      async () => {
+        const order = await db.order.findFirst({
+          where: {
+            stripeSessionId: sessionId,
+            userId: user.id,
           },
-        },
-      },
-    });
+          include: {
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    images: true,
+                    price: true,
+                  },
+                },
+              },
+            },
+          },
+        });
 
-    return order;
+        if (!order) {
+          return null;
+        }
+
+        // Serialize Decimal fields
+        return {
+          ...order,
+          total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
+            ? order.total.toNumber()
+            : order.total,
+          items: order.items.map((item) => ({
+            ...item,
+            price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
+              ? item.price.toNumber()
+              : item.price,
+            product: {
+              ...item.product,
+              price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
+                ? item.product.price.toNumber()
+                : item.product.price,
+            },
+          })),
+        } as OrderWithItems;
+      },
+      [cacheKey],
+      {
+        revalidate: 30, // Cache for 30 seconds
+        tags: ['orders', `order-session-${sessionId}`, `orders-${user.id}`],
+      }
+    )();
   } catch (error) {
     console.error('Error fetching order by session:', error);
     throw new Error('Failed to fetch order');
