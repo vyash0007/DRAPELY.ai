@@ -15,7 +15,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-[#f5d7d7] text-gray-800">
+        <footer className="bg-[#FCF2F4] text-gray-800">
             {/* Main Footer Content */}
             <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
@@ -158,7 +158,7 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-[#f5a5a5] bg-[#f5c5c5]">
+            <div className="border-t border-[#f5a5a5] bg-[#f5d7d7]">
                 <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
                     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                         <p className="text-sm text-gray-700">
