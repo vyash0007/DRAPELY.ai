@@ -21,6 +21,7 @@ const Category = () => {
                   className="object-contain object-right-top transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                   style={{ objectPosition: 'top right' }}
                   priority
+                  quality={85}
                 />
               </div>
 
@@ -64,6 +65,8 @@ const Category = () => {
                     fill
                     className="object-contain object-right transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                     style={{ objectPosition: 'right center' }}
+                    quality={85}
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -91,6 +94,8 @@ const Category = () => {
                     fill
                     className="object-contain object-right transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                     style={{ objectPosition: 'right center' }}
+                    quality={85}
+                    loading="lazy"
                   />
                 </div>
               </div>

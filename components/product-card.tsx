@@ -44,7 +44,12 @@ export function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
 
   const imageUrl = product.images[0] || '/placeholder.png';
-  const hasDiscount = product.stock > 0 && Math.random() > 0.7;
+  
+  // Calculate discount deterministically based on product ID to avoid hydration mismatch
+  // This ensures the same product always has the same discount status on both server and client
+  const hash = product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hasDiscount = product.stock > 0 && (hash % 10) < 3; // ~30% chance based on ID
+  
   const originalPrice = hasDiscount ? Number(product.price) * 1.5 : Number(product.price);
   const salePrice = Number(product.price);
 
@@ -84,6 +89,8 @@ export function ProductCard({ product }: ProductCardProps) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            quality={85}
+            loading="lazy"
           />
 
           {/* Add to Cart Button - Shows on hover */}

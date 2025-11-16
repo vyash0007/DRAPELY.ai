@@ -19,7 +19,7 @@ export default async function HomePage() {
         {/* Hero Section */}
         <Hero />
         {/* Featured Products */}
-        <FeaturedProduct/>
+        <FeaturedProduct products={featuredProducts} />
 
         {/* Categories Section */}
         <Category />

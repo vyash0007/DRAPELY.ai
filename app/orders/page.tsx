@@ -111,6 +111,8 @@ export default async function OrdersPage() {
                               fill
                               className="object-cover"
                               sizes="112px"
+                              quality={85}
+                              loading="lazy"
                             />
                           </div>
                         </Link>
