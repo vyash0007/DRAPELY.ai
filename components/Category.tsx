@@ -4,6 +4,17 @@ import Image from 'next/image';
 const Category = () => {
   return (
     <section className="bg-white py-16">
+      <div className="text-center mb-12">
+        <h2 className="text-4xl md:text-5xl font-light tracking-wide text-gray-900 mb-4">
+          Our Categories
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapere voluptias ut
+          dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
+          voluptate, eum minima, in suscipit explicabo voluptatibus harum, quisquam
+          ex repellat enuqe!
+        </p>
+      </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto lg:h-[600px]">
           {/* Large Featured Category - Women's Fashion */}
