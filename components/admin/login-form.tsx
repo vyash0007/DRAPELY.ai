@@ -64,12 +64,16 @@ export function LoginForm() {
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-800">
           {error}
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button 
+        type="submit" 
+        className="w-full bg-[#f5a5a5] hover:bg-[#f5a5a5]/90 text-gray-900 font-semibold shadow-sm hover:shadow-md transition-all" 
+        disabled={loading}
+      >
         {loading ? 'Signing in...' : 'Sign In'}
       </Button>
     </form>

@@ -1,4 +1,5 @@
-import { Package, ShoppingCart, DollarSign, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { Boxes, ShoppingBag, DollarSign, Clock, Plus, Eye } from 'lucide-react';
 import { getOrderStatistics } from '@/actions/admin-orders';
 import { db } from '@/lib/db';
 
@@ -36,33 +37,41 @@ export default async function AdminDashboardPage() {
       title: 'Total Revenue',
       value: `$${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
-      bgColor: 'bg-green-500',
+      bgColor: 'bg-green-100',
+      iconColor: 'text-green-600',
+      textColor: 'text-green-600',
     },
     {
       title: 'Total Orders',
       value: stats.totalOrders.toString(),
-      icon: ShoppingCart,
-      bgColor: 'bg-blue-500',
+      icon: ShoppingBag,
+      bgColor: 'bg-[#f5d7d7]',
+      iconColor: 'text-[#f5a5a5]',
+      textColor: 'text-[#f5a5a5]',
     },
     {
       title: 'Total Products',
       value: stats.productCount.toString(),
-      icon: Package,
-      bgColor: 'bg-purple-500',
+      icon: Boxes,
+      bgColor: 'bg-purple-100',
+      iconColor: 'text-purple-600',
+      textColor: 'text-purple-600',
     },
     {
       title: 'Pending Orders',
       value: stats.pendingOrders.toString(),
-      icon: TrendingUp,
-      bgColor: 'bg-orange-500',
+      icon: Clock,
+      bgColor: 'bg-orange-100',
+      iconColor: 'text-orange-600',
+      textColor: 'text-orange-600',
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="mt-2 text-gray-600">Welcome to your admin dashboard</p>
+        <h1 className="text-4xl font-light tracking-wide text-gray-900">Dashboard Overview</h1>
+        <p className="mt-2 text-gray-600">Welcome back, here's what's happening with your store</p>
       </div>
 
       {/* Stats Grid */}
@@ -72,15 +81,15 @@ export default async function AdminDashboardPage() {
           return (
             <div
               key={stat.title}
-              className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg"
+              className="group rounded-xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:shadow-[#f5a5a5]/10 border border-gray-100"
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="mt-2 text-3xl font-bold text-gray-900">{stat.value}</p>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-600 mb-2">{stat.title}</p>
+                  <p className={`text-3xl font-light tracking-tight ${stat.textColor}`}>{stat.value}</p>
                 </div>
-                <div className={`rounded-full ${stat.bgColor} p-3`}>
-                  <Icon className="h-6 w-6 text-white" />
+                <div className={`rounded-xl ${stat.bgColor} p-3 group-hover:scale-105 transition-transform`}>
+                  <Icon className={`h-6 w-6 ${stat.iconColor}`} />
                 </div>
               </div>
             </div>
@@ -89,44 +98,48 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Order Status Summary */}
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h2 className="text-xl font-semibold text-gray-900">Order Status</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="rounded-lg border border-gray-200 p-4">
-            <p className="text-sm text-gray-600">Pending</p>
-            <p className="mt-1 text-2xl font-bold text-orange-600">{stats.pendingOrders}</p>
+      <div className="rounded-xl bg-white p-8 shadow-sm border border-gray-100">
+        <h2 className="text-2xl font-light tracking-wide text-gray-900 mb-6">Order Status</h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="rounded-lg border border-gray-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6">
+            <p className="text-sm font-medium text-gray-600 mb-2">Pending</p>
+            <p className="text-3xl font-light text-orange-600">{stats.pendingOrders}</p>
           </div>
-          <div className="rounded-lg border border-gray-200 p-4">
-            <p className="text-sm text-gray-600">Processing</p>
-            <p className="mt-1 text-2xl font-bold text-blue-600">{stats.processingOrders}</p>
+          <div className="rounded-lg border border-gray-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+            <p className="text-sm font-medium text-gray-600 mb-2">Processing</p>
+            <p className="text-3xl font-light text-blue-600">{stats.processingOrders}</p>
           </div>
-          <div className="rounded-lg border border-gray-200 p-4">
-            <p className="text-sm text-gray-600">Delivered</p>
-            <p className="mt-1 text-2xl font-bold text-green-600">{stats.deliveredOrders}</p>
+          <div className="rounded-lg border border-gray-200 bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+            <p className="text-sm font-medium text-gray-600 mb-2">Delivered</p>
+            <p className="text-3xl font-light text-green-600">{stats.deliveredOrders}</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <a
+      <div className="rounded-xl bg-white p-8 shadow-sm border border-gray-100">
+        <h2 className="text-2xl font-light tracking-wide text-gray-900 mb-6">Quick Actions</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Link
             href="/admin/products/new"
-            className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-50"
+            className="group rounded-xl border-2 border-dashed border-gray-300 bg-gradient-to-br from-white to-gray-50 p-8 text-center transition-all duration-200 hover:border-[#f5a5a5] hover:bg-gradient-to-br hover:from-[#fce8e8] hover:to-[#f5d7d7] hover:shadow-md"
           >
-            <Package className="mx-auto h-8 w-8 text-gray-400" />
-            <p className="mt-2 font-medium text-gray-900">Add New Product</p>
-            <p className="text-sm text-gray-500">Create a new product listing</p>
-          </a>
-          <a
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#f5d7d7] to-[#f5a5a5] group-hover:scale-110 transition-transform">
+              <Plus className="h-7 w-7 text-gray-900" />
+            </div>
+            <p className="mt-2 text-lg font-semibold text-gray-900">Add New Product</p>
+            <p className="mt-1 text-sm text-gray-600">Create a new product listing</p>
+          </Link>
+          <Link
             href="/admin/orders"
-            className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-gray-400 hover:bg-gray-50"
+            className="group rounded-xl border-2 border-dashed border-gray-300 bg-gradient-to-br from-white to-gray-50 p-8 text-center transition-all duration-200 hover:border-[#f5a5a5] hover:bg-gradient-to-br hover:from-[#fce8e8] hover:to-[#f5d7d7] hover:shadow-md"
           >
-            <ShoppingCart className="mx-auto h-8 w-8 text-gray-400" />
-            <p className="mt-2 font-medium text-gray-900">View Orders</p>
-            <p className="text-sm text-gray-500">Manage customer orders</p>
-          </a>
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#f5d7d7] to-[#f5a5a5] group-hover:scale-110 transition-transform">
+              <Eye className="h-7 w-7 text-gray-900" />
+            </div>
+            <p className="mt-2 text-lg font-semibold text-gray-900">View Orders</p>
+            <p className="mt-1 text-sm text-gray-600">Manage customer orders</p>
+          </Link>
         </div>
       </div>
     </div>

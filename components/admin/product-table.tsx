@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Edit, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeleteProductDialog } from './delete-product-dialog';
 import { Pagination } from './pagination';
@@ -40,80 +40,81 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
 
   if (products.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-12 text-center shadow-md">
-        <p className="text-gray-500">No products found</p>
+      <div className="rounded-xl bg-white p-12 text-center shadow-sm border border-gray-100">
+        <p className="text-gray-500 font-medium">No products found</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg bg-white shadow-md">
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gradient-to-r from-[#fce8e8] to-[#f5d7d7]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Product
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Category
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Price
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Stock
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Status
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className="divide-y divide-gray-100 bg-white">
             {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
+              <tr key={product.id} className="hover:bg-gradient-to-r hover:from-[#fce8e8]/30 hover:to-transparent transition-colors">
                 <td className="whitespace-nowrap px-6 py-4">
-                  <div className="flex items-center">
-                    <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200">
                       {product.images[0] ? (
                         <Image
                           src={product.images[0]}
                           alt={product.title}
-                          width={48}
-                          height={48}
-                          className="h-12 w-12 object-cover"
+                          width={56}
+                          height={56}
+                          className="h-14 w-14 object-cover"
+                          quality={85}
                         />
                       ) : (
-                        <div className="h-12 w-12 bg-gray-200" />
+                        <div className="h-14 w-14 bg-gray-100" />
                       )}
                     </div>
-                    <div className="ml-4">
-                      <div className="font-medium text-gray-900">{product.title}</div>
-                      <div className="text-sm text-gray-500">{product.slug}</div>
+                    <div>
+                      <div className="font-semibold text-gray-900">{product.title}</div>
+                      <div className="text-sm text-gray-500 font-medium">{product.slug}</div>
                     </div>
                   </div>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
-                  <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800">
+                  <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
                     {product.category.name}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                  ${Number(product.price).toFixed(2)}
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className="text-sm font-semibold text-gray-900">${Number(product.price).toFixed(2)}</span>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                  {product.stock}
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className="text-sm font-medium text-gray-900">{product.stock}</span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   {product.featured ? (
-                    <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
+                    <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
                       Featured
                     </span>
                   ) : (
-                    <span className="inline-flex rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-800">
+                    <span className="inline-flex rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600 border border-gray-200">
                       Regular
                     </span>
                   )}
@@ -121,16 +122,21 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/products/${product.id}/edit`}>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="hover:bg-[#f5d7d7]/50 hover:text-gray-900"
+                      >
+                        <Pencil className="h-4 w-4" />
                       </Button>
                     </Link>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeleteProductId(product.id)}
+                      className="hover:bg-red-50 hover:text-red-600"
                     >
-                      <Trash2 className="h-4 w-4 text-red-600" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </td>

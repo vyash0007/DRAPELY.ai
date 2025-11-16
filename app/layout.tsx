@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Navbar } from '@/components/navbar';
+import { headers } from 'next/headers';
 import './globals.css';
+import { Navbar } from '@/components/navbar';
 import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -12,18 +13,30 @@ export const metadata: Metadata = {
   description: 'Shop the latest fashion trends with our curated collection',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || headersList.get('referer') || '';
+  const isAdminRoute = pathname.includes('/admin');
+
   return (
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <Navbar />
-          <main className="min-h-screen bg-gray-50 pt-16">{children}</main>
-          <Footer />
+          {isAdminRoute ? (
+            // Admin routes - no Navbar/Footer, let admin layout handle everything
+            children
+          ) : (
+            // Regular routes - show Navbar and Footer
+            <>
+              <Navbar />
+              <main className="min-h-screen bg-gray-50 pt-16">{children}</main>
+              <Footer />
+            </>
+          )}
         </body>
       </html>
     </ClerkProvider>

@@ -20,13 +20,13 @@ export default async function EditProductPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+        <h1 className="text-4xl font-light tracking-wide text-gray-900">Edit Product</h1>
         <p className="mt-2 text-gray-600">Update product information</p>
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow-md">
+      <div className="rounded-xl bg-white p-8 shadow-sm border border-gray-100">
         <ProductForm product={product} categories={categories} />
       </div>
     </div>
