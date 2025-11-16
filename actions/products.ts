@@ -1,39 +1,57 @@
 'use server';
 
 import { db } from '@/lib/db';
+
 import { Product, Category } from '@prisma/client';
 
 export interface ProductWithCategory extends Product {
   category: Category;
 }
 
+// Serialized type for client components
+export type SerializedProductWithCategory = Omit<ProductWithCategory, 'price'> & {
+  price: number;
+  category: Category;
+};
+
 /**
  * Get all products with optional category filter
  */
-export async function getProducts(categorySlug?: string): Promise<ProductWithCategory[]> {
+export async function getProducts({ categorySlug, page = 1, limit = 12 }: { categorySlug?: string; page?: number; limit?: number } = {}): Promise<{ products: SerializedProductWithCategory[]; total: number }> {
   try {
-    const products = await db.product.findMany({
-      where: categorySlug
-        ? {
-            category: {
-              slug: categorySlug,
-            },
-          }
-        : undefined,
-      include: {
-        category: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return products;
+    const where = categorySlug
+      ? {
+          category: {
+            slug: categorySlug,
+          },
+        }
+      : undefined;
+    const skip = (page - 1) * limit;
+    const [products, total] = await Promise.all([
+      db.product.findMany({
+        where,
+        include: {
+          category: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      db.product.count({ where }),
+    ]);
+    // Serialize Decimal fields (e.g., price) to number
+    const serializedProducts = products.map((product) => ({
+      ...product,
+      price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+        ? product.price.toNumber()
+        : product.price,
+    }));
+    return { products: serializedProducts, total };
   } catch (error) {
     console.error('Error fetching products:', error);
-    // Return empty array to allow products page to render gracefully
-    // when database is unreachable (e.g., Neon free tier sleep mode)
-    return [];
+    return { products: [], total: 0 };
   }
 }
 
@@ -108,36 +126,49 @@ export async function getCategories(): Promise<Category[]> {
 /**
  * Search products by title
  */
-export async function searchProducts(query: string): Promise<ProductWithCategory[]> {
+export async function searchProducts({ query, page = 1, limit = 12 }: { query: string; page?: number; limit?: number }): Promise<{ products: SerializedProductWithCategory[]; total: number }> {
   try {
-    const products = await db.product.findMany({
-      where: {
-        OR: [
-          {
-            title: {
-              contains: query,
-              mode: 'insensitive',
-            },
+    const where = {
+      OR: [
+        {
+          title: {
+            contains: query,
+            mode: 'insensitive' as const,
           },
-          {
-            description: {
-              contains: query,
-              mode: 'insensitive',
-            },
+        },
+        {
+          description: {
+            contains: query,
+            mode: 'insensitive' as const,
           },
-        ],
-      },
-      include: {
-        category: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return products;
+        },
+      ],
+    };
+    const skip = (page - 1) * limit;
+    const [products, total] = await Promise.all([
+      db.product.findMany({
+        where,
+        include: {
+          category: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      db.product.count({ where }),
+    ]);
+    // Serialize Decimal fields (e.g., price) to number
+    const serializedProducts = products.map((product) => ({
+      ...product,
+      price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+        ? product.price.toNumber()
+        : product.price,
+    }));
+    return { products: serializedProducts, total };
   } catch (error) {
     console.error('Error searching products:', error);
-    throw new Error('Failed to search products');
+    return { products: [], total: 0 };
   }
 }

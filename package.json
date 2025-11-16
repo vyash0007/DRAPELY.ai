@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:wake": "node wake-db.js && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:wake": "node wake-db.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

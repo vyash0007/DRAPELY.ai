@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Trash2, Plus, Minus, Edit } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { removeFromCart, updateCartItemQuantity } from '@/actions/cart';
 import { CartItemWithProduct } from '@/actions/cart';
@@ -47,66 +46,105 @@ export function CartItem({ item }: CartItemProps) {
 
   const imageUrl = item.product.images[0] || '/placeholder.png';
 
+  // Calculate original price with discount
+  const originalPrice = Number(item.product.price) * 1.2;
+  const currentPrice = Number(item.product.price);
+
   return (
-    <div className="flex gap-4 border-b py-4">
+    <div className="bg-white rounded-lg p-6 flex gap-6">
+      {/* Product Image */}
       <Link href={`/products/${item.product.slug}`}>
-        <div className="relative h-24 w-24 overflow-hidden rounded-md bg-gray-100">
+        <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
           <Image
             src={imageUrl}
             alt={item.product.title}
             fill
             className="object-cover"
-            sizes="96px"
+            sizes="160px"
           />
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col justify-between">
+      {/* Product Details */}
+      <div className="flex-1 flex flex-col justify-between">
         <div>
           <Link href={`/products/${item.product.slug}`}>
-            <h3 className="font-semibold hover:underline">{item.product.title}</h3>
+            <h3 className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors mb-2">
+              {item.product.title}
+            </h3>
           </Link>
-          <p className="mt-1 text-sm text-gray-600">
-            {formatPrice(item.product.price)}
+          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+            {String(
+              ('description' in item.product && item.product.description)
+                ? item.product.description
+                : 'Button-Down Collar & Placket...'
+            )}
           </p>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-md border">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => handleUpdateQuantity(item.quantity - 1)}
-              disabled={isUpdating || item.quantity <= 1}
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="w-8 text-center">{item.quantity}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => handleUpdateQuantity(item.quantity + 1)}
-              disabled={isUpdating || item.quantity >= item.product.stock}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+          {/* Size and Color */}
+          <div className="flex gap-6 mb-4 text-sm">
+            <div>
+              <span className="text-gray-600">Size </span>
+              <span className="font-semibold text-gray-900">XL</span>
+            </div>
+            <div className="text-gray-300">/</div>
+            <div>
+              <span className="text-gray-600">Color </span>
+              <span className="font-semibold text-gray-900">Default</span>
+            </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleRemove}
-            disabled={isUpdating}
-          >
-            <Trash2 className="h-4 w-4 text-red-600" />
-          </Button>
+          {/* Price */}
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-bold text-gray-900">
+              {formatPrice(currentPrice)}
+            </span>
+            <span className="text-lg text-gray-400 line-through">
+              {formatPrice(originalPrice)}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div className="font-semibold">
-        {formatPrice(item.product.price * item.quantity)}
+        {/* Quantity Controls and Actions */}
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg border-2 border-gray-200 shadow-sm">
+            <button
+              onClick={() => handleUpdateQuantity(item.quantity - 1)}
+              disabled={isUpdating || item.quantity <= 1}
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg active:scale-95"
+            >
+              <Minus className="h-4 w-4 text-gray-700" />
+            </button>
+            <span className="w-12 text-center font-bold text-gray-900">{item.quantity}</span>
+            <button
+              onClick={() => handleUpdateQuantity(item.quantity + 1)}
+              disabled={isUpdating || item.quantity >= item.product.stock}
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg active:scale-95"
+            >
+              <Plus className="h-4 w-4 text-gray-700" />
+            </button>
+          </div>
+
+          {/* Action Icons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRemove}
+              disabled={isUpdating}
+              className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md active:scale-95"
+              aria-label="Remove item"
+            >
+              <Trash2 className="h-5 w-5 text-red-600" />
+            </button>
+            <Link href={`/products/${item.product.slug}`}>
+              <button
+                className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
+                aria-label="Edit item"
+              >
+                <Edit className="h-5 w-5 text-gray-700" />
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

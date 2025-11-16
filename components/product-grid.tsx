@@ -1,8 +1,30 @@
 import { ProductCard } from '@/components/product-card';
-import { ProductWithCategory } from '@/actions/products';
+
+// Match the serialized product type from server actions
+interface SerializedProductWithCategory {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  stock: number;
+  images: string[];
+  featured: boolean;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  category: {
+    id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    slug: string;
+    description: string | null;
+  };
+}
 
 interface ProductGridProps {
-  products: ProductWithCategory[];
+  products: SerializedProductWithCategory[];
   emptyMessage?: string;
 }
 
@@ -10,7 +32,15 @@ export function ProductGrid({ products, emptyMessage = 'No products found' }: Pr
   if (products.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <p className="text-gray-500">{emptyMessage}</p>
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+          </div>
+          <p className="text-lg font-semibold text-gray-900">No Products Found</p>
+          <p className="text-gray-500 leading-relaxed">{emptyMessage}</p>
+        </div>
       </div>
     );
   }

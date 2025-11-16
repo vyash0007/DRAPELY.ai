@@ -6,15 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Pagination } from './pagination';
 import type { Order, OrderItem, Product, User, OrderStatus } from '@prisma/client';
 
-interface OrderWithDetails extends Order {
+
+interface SerializedOrderItem extends Omit<OrderItem, 'price'> {
+  price: number;
+  product: Pick<Product, 'title' | 'images'>;
+}
+
+interface SerializedOrderWithDetails extends Omit<Order, 'total'> {
+  total: number;
   user: Pick<User, 'email' | 'firstName' | 'lastName'>;
-  items: (OrderItem & {
-    product: Pick<Product, 'title' | 'images'>;
-  })[];
+  items: SerializedOrderItem[];
 }
 
 interface OrderTableProps {
-  orders: OrderWithDetails[];
+  orders: SerializedOrderWithDetails[];
   pagination: {
     total: number;
     page: number;

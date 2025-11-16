@@ -9,12 +9,24 @@ import { DeleteProductDialog } from './delete-product-dialog';
 import { Pagination } from './pagination';
 import type { Product, Category } from '@prisma/client';
 
-interface ProductWithCategory extends Product {
+
+interface SerializedProductWithCategory {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  stock: number;
+  images: string[];
+  featured: boolean;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
   category: Category;
 }
 
 interface ProductTableProps {
-  products: ProductWithCategory[];
+  products: SerializedProductWithCategory[];
   pagination: {
     total: number;
     page: number;

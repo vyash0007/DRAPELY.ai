@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CartItem } from '@/components/cart-item';
 import { formatPrice } from '@/lib/utils';
 import { getCart } from '@/actions/cart';
@@ -41,53 +40,114 @@ export default async function CartPage() {
     }
   }
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold">Shopping Cart</h1>
+  // Calculate order summary
+  const subtotal = cart.totalPrice;
+  const discount = subtotal * 0.15; // 15% discount
+  const tax = 0; // Free tax
+  const shipping = 0; // Free shipping
+  const total = subtotal - discount + tax + shipping;
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cart Items ({cart.totalItems})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {cart.items.map((item) => (
-                <CartItem key={item.id} item={item} />
-              ))}
-            </CardContent>
-          </Card>
+  // Estimated delivery date (2 weeks from now)
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + 14);
+  const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  return (
+    <div className="bg-[#faf8f5] min-h-screen">
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-10">
+        {/* Page Title */}
+        <h1 className="mb-8 text-5xl font-serif font-light text-gray-900">Cart</h1>
+
+        {/* Progress Steps */}
+        <div className="mb-12 flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-bold text-gray-900">1. Cart</span>
+          </div>
+          <div className="h-px w-16 bg-gray-300"></div>
+          <div className="flex items-center gap-3">
+            <span className="text-xl text-gray-400">2. Checkout</span>
+          </div>
+          <div className="h-px w-16 bg-gray-300"></div>
+          <div className="flex items-center gap-3">
+            <span className="text-xl text-gray-400">3. Payment</span>
+          </div>
         </div>
 
-        <div>
-          <Card className="sticky top-20">
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-semibold">{formatPrice(cart.totalPrice)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-semibold">Calculated at checkout</span>
-              </div>
-              <div className="border-t pt-4">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>{formatPrice(cart.totalPrice)}</span>
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-6">
+            {cart.items.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))}
+          </div>
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-50 rounded-lg p-8 sticky top-24">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8">Order Summary</h2>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between text-gray-700">
+                  <span>Sub Total</span>
+                  <span className="font-semibold text-gray-900">{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                  <span>Discount</span>
+                  <span className="font-semibold text-gray-900">{formatPrice(discount)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                  <span>Tax</span>
+                  <span className="font-semibold text-gray-900">{formatPrice(tax)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                  <span>Shipping</span>
+                  <span className="font-semibold text-orange-500">Free</span>
                 </div>
               </div>
-            </CardContent>
-            <CardFooter>
-              <form action={handleCheckout} className="w-full">
-                <Button type="submit" className="w-full" size="lg">
+
+              <div className="border-t border-gray-300 pt-4 mb-6">
+                <div className="flex justify-between text-xl">
+                  <span className="font-bold text-gray-900">Total</span>
+                  <span className="font-bold text-gray-900">{formatPrice(total)}</span>
+                </div>
+              </div>
+
+              <form action={handleCheckout} className="w-full mb-8">
+                <button
+                  type="submit"
+                  className="w-full bg-gray-900 text-white py-4 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-xl active:scale-[0.98] uppercase tracking-wide"
+                >
                   Proceed to Checkout
-                </Button>
+                </button>
               </form>
-            </CardFooter>
-          </Card>
+
+              <div className="text-center text-sm text-gray-600 mb-8">
+                Estimated Delivery by <span className="font-semibold text-gray-900">{formattedDeliveryDate}</span>
+              </div>
+
+              {/* Coupon Section */}
+              <div className="border-t border-gray-300 pt-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Have a Coupon?</h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Coupon Code"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+                  />
+                  <button
+                    type="button"
+                    className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -17,10 +17,27 @@ import {
 } from '@/components/ui/select';
 import { ImageUploader } from './image-uploader';
 import { createProduct, updateProduct } from '@/actions/admin-products';
-import type { Category, Product } from '@prisma/client';
+
+import type { Category } from '@prisma/client';
+
+// Match the serialized product type from server actions
+interface SerializedProduct {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  stock: number;
+  images: string[];
+  featured: boolean;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  category: Category;
+}
 
 interface ProductFormProps {
-  product?: Product;
+  product?: SerializedProduct;
   categories: Category[];
 }
 
@@ -173,7 +190,6 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             onValueChange={(value) =>
               setFormData({ ...formData, categoryId: value })
             }
-            required
           >
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select category" />

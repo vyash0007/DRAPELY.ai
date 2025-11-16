@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model linked to Clerk authentication
 model User {
   id        String   @id @default(cuid())
   clerkId   String   @unique
@@ -17,16 +16,13 @@ model User {
   imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  carts  Cart[]
-  orders Order[]
+  carts     Cart?
+  orders    Order[]
 
   @@index([clerkId])
   @@index([email])
 }
 
-// Category model
 model Category {
   id          String    @id @default(cuid())
   name        String    @unique
@@ -34,102 +30,74 @@ model Category {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-
-  // Relations
-  products Product[]
+  products    Product[]
 
   @@index([slug])
 }
 
-// Product model
 model Product {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   title       String
-  slug        String   @unique
-  description String?  @db.Text
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int      @default(0)
-  images      String[] // Array of Cloudinary URLs
-  featured    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Foreign Keys
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  // Relations
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  slug        String      @unique
+  description String?
+  price       Decimal     @db.Decimal(10, 2)
+  stock       Int         @default(0)
+  images      String[]
+  featured    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  categoryId  String
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([slug])
   @@index([categoryId])
   @@index([featured])
 }
 
-// Cart model (persists cart for logged-in users)
 model Cart {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
 
-  // Relations
-  items CartItem[]
-
-  @@unique([userId])
   @@index([userId])
 }
 
-// Cart items
 model CartItem {
   id        String   @id @default(cuid())
   quantity  Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Foreign Keys
   cartId    String
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
   @@index([cartId])
   @@index([productId])
 }
 
-// Order status enum
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-
-// Order model
 model Order {
-  id                String      @id @default(cuid())
-  orderNumber       String      @unique @default(cuid())
-  status            OrderStatus @default(PENDING)
-  total             Decimal     @db.Decimal(10, 2)
-  stripeSessionId   String?     @unique
-  stripePaymentId   String?
-  shippingAddress   String?     @db.Text
-  billingAddress    String?     @db.Text
-  customerEmail     String
-  customerName      String?
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  // Foreign Keys
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Relations
-  items OrderItem[]
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique @default(cuid())
+  status          OrderStatus @default(PENDING)
+  total           Decimal     @db.Decimal(10, 2)
+  stripeSessionId String?     @unique
+  stripePaymentId String?
+  shippingAddress String?
+  billingAddress  String?
+  customerEmail   String
+  customerName    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
 
   @@index([userId])
   @@index([orderNumber])
@@ -137,20 +105,25 @@ model Order {
   @@index([status])
 }
 
-// Order items
 model OrderItem {
   id        String   @id @default(cuid())
   quantity  Int
-  price     Decimal  @db.Decimal(10, 2) // Store price at time of purchase
+  price     Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Foreign Keys
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@index([orderId])
   @@index([productId])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

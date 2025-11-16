@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
           data: {
             status: 'PROCESSING',
             stripePaymentId: session.payment_intent as string,
-            shippingAddress: session.shipping_details
-              ? JSON.stringify(session.shipping_details)
+            shippingAddress: (session as any).shipping_details
+              ? JSON.stringify((session as any).shipping_details)
               : null,
           },
         });
