@@ -47,15 +47,15 @@ export function OrderFilters() {
   };
 
   return (
-    <div className="flex gap-4 rounded-lg bg-white p-4 shadow-md">
+    <div className="flex gap-4 rounded-xl bg-white p-5 shadow-sm border border-gray-100">
       <div className="flex-1">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search by order number or customer email..."
             defaultValue={searchParams.get('search') || ''}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9"
+            className="pl-10 h-11 border-gray-200 focus:border-[#f5a5a5] focus:ring-[#f5a5a5]"
           />
         </div>
       </div>
@@ -64,7 +64,7 @@ export function OrderFilters() {
         defaultValue={searchParams.get('status') || 'all'}
         onValueChange={handleStatusChange}
       >
-        <SelectTrigger className="w-[200px]">
+        <SelectTrigger className="w-[200px] h-11 border-gray-200 focus:border-[#f5a5a5] focus:ring-[#f5a5a5]">
           <SelectValue placeholder="All Statuses" />
         </SelectTrigger>
         <SelectContent>

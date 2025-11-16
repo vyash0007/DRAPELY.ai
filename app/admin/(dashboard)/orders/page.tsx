@@ -24,10 +24,10 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+        <h1 className="text-4xl font-light tracking-wide text-gray-900">Orders</h1>
         <p className="mt-2 text-gray-600">Manage customer orders</p>
       </div>
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, ShoppingCart, LogOut } from 'lucide-react';
+import { BarChart3, Boxes, ShoppingBag, Users, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { logoutAdmin } from '@/actions/admin-auth';
 
@@ -10,17 +10,22 @@ const navigation = [
   {
     name: 'Dashboard',
     href: '/admin/dashboard',
-    icon: LayoutDashboard,
+    icon: BarChart3,
   },
   {
     name: 'Products',
     href: '/admin/products',
-    icon: Package,
+    icon: Boxes,
   },
   {
     name: 'Orders',
     href: '/admin/orders',
-    icon: ShoppingCart,
+    icon: ShoppingBag,
+  },
+  {
+    name: 'Customers',
+    href: '/admin/customers',
+    icon: Users,
   },
 ];
 
@@ -32,14 +37,15 @@ export function AdminSidebar() {
   };
 
   return (
-    <div className="flex w-64 flex-col bg-gray-900 text-white">
+    <div className="flex w-64 flex-col bg-gradient-to-b from-[#f5d7d7] via-[#fce8e8] to-[#f5d7d7] shadow-lg">
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center border-b border-gray-800">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
+      <div className="flex h-20 items-center justify-center border-b border-[#f5a5a5]/30 bg-white/50 backdrop-blur-sm">
+        <h1 className="text-2xl font-serif font-bold text-gray-900 tracking-wide">FASHION</h1>
+        <span className="ml-2 text-xs font-medium text-gray-600 uppercase tracking-wider">Admin</span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-2 p-6">
         {navigation.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
           const Icon = item.icon;
@@ -49,13 +55,16 @@ export function AdminSidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all duration-200',
                 isActive
-                  ? 'bg-gray-800 text-white'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  ? 'bg-white text-gray-900 shadow-md shadow-[#f5a5a5]/20'
+                  : 'text-gray-700 hover:bg-white/70 hover:text-gray-900 hover:shadow-sm'
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className={cn(
+                'h-5 w-5 transition-colors',
+                isActive ? 'text-gray-900' : 'text-gray-800'
+              )} />
               {item.name}
             </Link>
           );
@@ -63,12 +72,12 @@ export function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-gray-800 p-4">
+      <div className="border-t border-[#f5a5a5]/30 p-6 bg-white/30 backdrop-blur-sm">
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold text-gray-700 transition-all duration-200 hover:bg-white hover:text-gray-900 hover:shadow-sm"
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-5 w-5 text-gray-600" />
           Logout
         </button>
       </div>

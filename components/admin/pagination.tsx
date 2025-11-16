@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface PaginationProps {
   pagination: {
@@ -31,13 +32,14 @@ export function Pagination({ pagination }: PaginationProps) {
   const endIndex = Math.min(pagination.page * pagination.limit, pagination.total);
 
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white px-4 py-3 shadow-md sm:px-6">
+    <div className="flex items-center justify-between rounded-xl bg-white px-6 py-4 shadow-sm border border-gray-100">
       <div className="flex flex-1 justify-between sm:hidden">
         <Button
           variant="outline"
           size="sm"
           onClick={() => handlePageChange(pagination.page - 1)}
           disabled={pagination.page === 1}
+          className="border-gray-200 hover:bg-[#f5d7d7]/50"
         >
           Previous
         </Button>
@@ -46,26 +48,27 @@ export function Pagination({ pagination }: PaginationProps) {
           size="sm"
           onClick={() => handlePageChange(pagination.page + 1)}
           disabled={pagination.page === pagination.totalPages}
+          className="border-gray-200 hover:bg-[#f5d7d7]/50"
         >
           Next
         </Button>
       </div>
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">{startIndex}</span> to{' '}
-            <span className="font-medium">{endIndex}</span> of{' '}
-            <span className="font-medium">{pagination.total}</span> results
+          <p className="text-sm text-gray-600 font-medium">
+            Showing <span className="font-semibold text-gray-900">{startIndex}</span> to{' '}
+            <span className="font-semibold text-gray-900">{endIndex}</span> of{' '}
+            <span className="font-semibold text-gray-900">{pagination.total}</span> results
           </p>
         </div>
         <div>
-          <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+          <nav className="isolate inline-flex -space-x-px rounded-lg" aria-label="Pagination">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="rounded-l-md"
+              className="rounded-l-lg border-gray-200 hover:bg-[#f5d7d7]/50 disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -83,7 +86,7 @@ export function Pagination({ pagination }: PaginationProps) {
                   return (
                     <span
                       key={page}
-                      className="inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700"
+                      className="inline-flex items-center border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-500"
                     >
                       ...
                     </span>
@@ -92,13 +95,20 @@ export function Pagination({ pagination }: PaginationProps) {
                 return null;
               }
 
+              const isActive = page === pagination.page;
+
               return (
                 <Button
                   key={page}
-                  variant={page === pagination.page ? 'default' : 'outline'}
+                  variant={isActive ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handlePageChange(page)}
-                  className="rounded-none"
+                  className={cn(
+                    "rounded-none border-gray-200",
+                    isActive 
+                      ? "bg-gradient-to-r from-[#f5a5a5] to-[#f5d7d7] text-gray-900 border-[#f5a5a5] hover:from-[#f5d7d7] hover:to-[#f5a5a5]"
+                      : "hover:bg-[#f5d7d7]/50"
+                  )}
                 >
                   {page}
                 </Button>
@@ -110,7 +120,7 @@ export function Pagination({ pagination }: PaginationProps) {
               size="sm"
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page === pagination.totalPages}
-              className="rounded-r-md"
+              className="rounded-r-lg border-gray-200 hover:bg-[#f5d7d7]/50 disabled:opacity-50"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SelectContextValue {
@@ -50,12 +51,16 @@ export function SelectTrigger({ className, children, ...props }: React.ButtonHTM
       aria-expanded={ctx.open}
       onClick={() => ctx.setOpen(!ctx.open)}
       className={cn(
-        'inline-flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none',
+        'inline-flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 hover:bg-gray-50',
         className
       )}
       {...props}
     >
-      {children}
+      <span className="flex-1 text-left">{children}</span>
+      <ChevronDown className={cn(
+        'ml-2 h-4 w-4 text-gray-500 transition-transform duration-200',
+        ctx.open && 'rotate-180'
+      )} />
     </button>
   );
 }
@@ -74,11 +79,19 @@ export function SelectContent({ className, children }: React.HTMLAttributes<HTML
   if (!ctx.open) return null;
 
   return (
-    <div className={cn('absolute right-0 z-50 mt-2 w-56 rounded-md bg-white shadow-lg', className)}>
-      <div role="listbox" className="max-h-60 overflow-auto">
-        {React.Children.map(children, (child) => child)}
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 z-40" 
+        onClick={() => ctx.setOpen(false)}
+      />
+      {/* Dropdown */}
+      <div className={cn('absolute left-0 right-0 z-50 mt-1 rounded-md bg-white shadow-lg border border-gray-200', className)}>
+        <div role="listbox" className="max-h-60 overflow-auto py-1">
+          {React.Children.map(children, (child) => child)}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -102,8 +115,10 @@ export function SelectItem({ value, children, className, ...props }: React.HTMLA
       aria-selected={isSelected}
       onClick={handleClick}
       className={cn(
-        'cursor-pointer px-3 py-2 text-sm hover:bg-gray-100',
-        isSelected ? 'bg-gray-100 font-medium' : '',
+        'cursor-pointer px-3 py-2 text-sm transition-colors',
+        isSelected 
+          ? 'bg-gray-100 text-gray-900 font-medium' 
+          : 'text-gray-700 hover:bg-gray-50',
         className
       )}
       {...props}
