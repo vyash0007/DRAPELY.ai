@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
 
 const Footer = () => {
@@ -20,13 +21,21 @@ const Footer = () => {
             <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
                     {/* Brand Section */}
-                    <div className="lg:col-span-3">
-                        <h2 className="text-3xl font-serif font-bold text-gray-900 mb-6">
-                            FASHION
-                        </h2>
+                    <div className="lg:col-span-4">
+                        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center mb-2">
+                            <Image
+                                src="/logo2.2k.png"
+                                alt="Logo"
+                                width={80}
+                                height={80}
+                                className="h-20 w-20 flex-shrink-0"
+                            />
+                            <h2 className="text-2xl sm:text-3xl font-light tracking-wide text-gray-900">
+                                DRAPELY.ai
+                            </h2>
+                        </div>
                         <p className="text-sm text-gray-700 leading-relaxed mb-8">
-                            Nascetur enim litora lorem tortor turpis pulvinar aenean lacus amet
-                            venenatis class faucibus sodales nibh malesuada ex dolor nullam
+                            From everyday essentials to standout trends, Drapely.ai uses AI to tailor fashion to your taste. Style made simple, personal, and inspiring.
                         </p>
                         {/* Social Media Icons */}
                         <div className="flex gap-3">
@@ -121,7 +130,7 @@ const Footer = () => {
                     </div>
 
                     {/* Newsletter Section */}
-                    <div className="lg:col-span-5">
+                    <div className="lg:col-span-4">
                         <div className="relative max-w-md mx-auto lg:max-w-none">
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg z-10">
                                 <Mail className="h-8 w-8 text-[#f5a5a5]" />
@@ -162,7 +171,7 @@ const Footer = () => {
                 <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
                     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                         <p className="text-sm text-gray-700">
-                            Copyright © 2025 Fashion Store. All rights reserved. Powered by MoxCreative.
+                            Copyright © 2025 DRAPELY.ai. All rights reserved.
                         </p>
                         <div className="flex gap-6">
                             <Link

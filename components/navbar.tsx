@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, User, Search } from 'lucide-react';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
@@ -16,21 +17,30 @@ export async function Navbar({ homeTransparent }: { homeTransparent?: boolean } 
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors">
-              FASHION
+            <Link href="/" className="flex items-center gap-2  hover:opacity-80 transition-opacity">
+              <Image
+                src="/logo2.2k.png"
+                alt="Logo"
+                width={56}
+                height={56}
+                className="h-12 w-12"
+              />
+              <span className="text-2xl font-light tracking-wide text-gray-900">
+                DRAPELY.ai
+              </span>
             </Link>
           </div>
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/products" className="text-gray-900 hover:text-gray-600 font-medium transition-colors">
+            <Link href="/products" className="text-gray-900 hover:text-gray-600 font-light transition-colors">
               All Products
             </Link>
             {categories.map((category) => (
               <Link
                 key={category.id}
                 href={`/products?category=${category.slug}`}
-                className="text-gray-900 hover:text-gray-600 font-medium transition-colors"
+                className="text-gray-900 hover:text-gray-600 font-light transition-colors"
               >
                 {category.name}
               </Link>
@@ -41,16 +51,16 @@ export async function Navbar({ homeTransparent }: { homeTransparent?: boolean } 
           <div className="flex items-center space-x-2">
             <Link href="/search">
               <Button variant="ghost" size="icon" className="hover:bg-gray-100">
-                <Search className="h-5 w-5 text-gray-900" />
+                <Search className="h-5 w-5 text-gray-900" strokeWidth={1.5} />
               </Button>
             </Link>
 
             <SignedIn>
               <Link href="/cart" className="relative">
                 <Button variant="ghost" size="icon" className="hover:bg-gray-100">
-                  <ShoppingBag className="h-5 w-5 text-gray-900" />
+                  <ShoppingBag className="h-5 w-5 text-gray-900" strokeWidth={1.5} />
                   {cart && cart.totalItems > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black text-xs text-white">
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-gray-900 to-gray-700 text-[10px] font-semibold text-white shadow-md ring-2 ring-white">
                       {cart.totalItems}
                     </span>
                   )}
@@ -58,7 +68,7 @@ export async function Navbar({ homeTransparent }: { homeTransparent?: boolean } 
               </Link>
 
               <Link href="/orders">
-                <Button variant="ghost" className="hover:bg-gray-100 text-gray-900 font-medium">Orders</Button>
+                <Button variant="ghost" className="hover:bg-gray-100 text-gray-900 font-light">Orders</Button>
               </Link>
 
               <UserButton

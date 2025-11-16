@@ -25,6 +25,9 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <link rel="icon" href="/logo2.2k.png" type="image/png" />
+        </head>
         <body className={inter.className}>
           {isAdminRoute ? (
             // Admin routes - no Navbar/Footer, let admin layout handle everything

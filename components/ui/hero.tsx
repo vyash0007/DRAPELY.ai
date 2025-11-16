@@ -54,13 +54,13 @@ const Hero = () => {
           {/* Left Content Section */}
           <div className="space-y-8 z-10">
             <div className="space-y-4">
-              <p className="text-sm font-medium tracking-wider uppercase text-pink-600">
-                Special Offer
+              <p className="text-md font-medium italic tracking-wider uppercase text-pink-600">
+                // Futuristic
               </p>
 
-              <h1 className="text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="font-serif text-navy-900 block">Fashion</span>
-                <span className="font-serif text-navy-900 block">Sale.</span>
+              <h1 className="text-6xl lg:text-7xl font-md italic leading-tight">
+                <span className="font-serif text-navy-900 block">Where AI</span>
+                <span className="font-serif text-navy-900 block">Meets Style.</span>
               </h1>
 
               <div className="inline-block bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-2 rounded-full">
@@ -69,10 +69,10 @@ const Hero = () => {
             </div>
 
             <p className="text-lg text-gray-700 leading-relaxed max-w-lg">
-              Lorem ipsum dolor sit amet, consectetur adipiscing. Vestibulum rutrum metus at enim congue scelerisque. Sed suscipit metunon iaculis semper...
+              Fashion that learns you. Our AI engine adapts to your style preferences to curate a personalized shopping experience like never before.
             </p>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-4 pt-1">
               <Link href="/products">
                 <Button
                   size="lg"
@@ -117,9 +117,9 @@ const Hero = () => {
                 {/* Vertical "LOREM IPSUM" text overlay */}
                 <div className="absolute top-0 left-0 h-full flex items-center">
                   <div className="bg-teal-400/90 px-4 py-8 h-2/3 flex items-center justify-center">
-                    <p className="text-white font-semibold tracking-widest vertical-text transform -rotate-180"
+                    <p className="text-white text-lg font-medium tracking-widest vertical-text transform -rotate-180"
                        style={{ writingMode: 'vertical-rl' }}>
-                      LOREM IPSUM
+                      Luxury
                     </p>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ const Hero = () => {
                 {/* Bottom "50% Off" Badge */}
                 <div className="absolute bottom-0 right-0 w-full">
                   <div className="bg-teal-400/95 text-white py-6 px-8 text-center">
-                    <p className="text-4xl font-bold">50% Off All Items</p>
+                    <p className="text-4xl font-light">FASHIONISTA</p>
                   </div>
                 </div>
 
@@ -136,7 +136,7 @@ const Hero = () => {
                   <div className="bg-pink-400/20 px-3 py-8 h-1/2 flex items-center justify-center">
                     <p className="text-gray-600 font-medium tracking-wider vertical-text transform rotate-0"
                        style={{ writingMode: 'vertical-rl' }}>
-                      LOREM IPSUM
+                      Elegant
                     </p>
                   </div>
                 </div>

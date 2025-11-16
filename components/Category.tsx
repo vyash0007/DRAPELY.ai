@@ -9,10 +9,7 @@ const Category = () => {
           Our Categories
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapere voluptias ut
-          dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
-          voluptate, eum minima, in suscipit explicabo voluptatibus harum, quisquam
-          ex repellat enuqe!
+          Discover our range of categories crafted to help you find exactly what you need. From everyday essentials to standout pieces, everything is organized for effortless browsing.
         </p>
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -42,8 +39,7 @@ const Category = () => {
                   Women's fashion
                 </h2>
                 <p className="text-gray-600 mb-6 leading-relaxed text-sm md:text-base">
-                  Sitamet, consectetur adipiscing elit, sed do eiusmod tempor
-                  incidid-unt labore dolore magna aliquapendisse ultrices gravida.
+                  Get inspired by women’s fashion selected using smart trend analysis. Discover outfits that blend comfort, elegance, and modern flair—all tailored to your taste.
                 </p>
                 <span className="inline-block text-sm font-semibold uppercase tracking-wider border-b-2 border-gray-900 pb-1 hover:border-gray-600 transition-colors cursor-pointer text-gray-900">
                   Shop Now
@@ -61,10 +57,10 @@ const Category = () => {
             >
               <div className="absolute inset-0 flex items-center justify-between p-6 md:p-8">
                 <div className="z-10 flex-1 pr-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl md:text-3xl font-serif text-gray-900 mb-2">
                     Men's fashion
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">358 items</p>
+                  <p className="text-sm text-gray-600 mb-4">Clean lines, timeless fits, and everyday wear made simple. Choose pieces that work seamlessly from day to night.</p>
                   <span className="inline-block text-sm font-semibold uppercase tracking-wider border-b-2 border-gray-900 pb-1 hover:border-gray-600 transition-colors cursor-pointer text-gray-900">
                     Shop Now
                   </span>
@@ -90,10 +86,10 @@ const Category = () => {
             >
               <div className="absolute inset-0 flex items-center justify-between p-6 md:p-8">
                 <div className="z-10 flex-1 pr-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-4xl md:text-3xl font-serif  text-gray-900 mb-2">
                     Accessories
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">159 items</p>
+                  <p className="text-sm text-gray-600 mb-4">Level up your style with must-have accessories that keep you on trend.</p>
                   <span className="inline-block text-sm font-semibold uppercase tracking-wider border-b-2 border-gray-900 pb-1 hover:border-gray-600 transition-colors cursor-pointer text-gray-900">
                     Shop Now
                   </span>

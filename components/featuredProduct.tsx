@@ -19,10 +19,10 @@ const FeaturedProduct = ({ products }: FeaturedProductProps) => {
                         Our Featured
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapere voluptias ut
-                        dolorum consequuntur, adipisci repellat! Eveniet commodi voluptatem
-                        voluptate, eum minima, in suscipit explicabo voluptatibus harum, quisquam
-                        ex repellat enuqe!
+                       Explore what’s trending! updated to keep you ahead of the fashion curve.
+                    </p>
+                    <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+                        From premium accessories to must-have outfits, our featured lineup highlights the products our community can’t get enough of. Curated for every style and story.
                     </p>
                 </div>
 
