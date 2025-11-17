@@ -1,6 +1,6 @@
 'use server';
 
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, revalidateTag } from 'next/cache';
 import { db } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/admin-auth';
 import { OrderStatus } from '@prisma/client';
@@ -220,5 +220,44 @@ export async function getOrderStatistics() {
       deliveredOrders: 0,
       totalRevenue: 0,
     };
+  }
+}
+
+/**
+ * Update order status (Admin)
+ */
+export async function updateOrderStatus(
+  orderId: string,
+  status: OrderStatus
+): Promise<{ success: boolean; message: string }> {
+  try {
+    await requireAdminAuth();
+
+    // Verify order exists
+    const order = await db.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return { success: false, message: 'Order not found' };
+    }
+
+    // Update order status
+    await db.order.update({
+      where: { id: orderId },
+      data: { status },
+    });
+
+    // Revalidate the cache
+    revalidateTag('admin-orders', 'max');
+    revalidateTag('admin-orders-all', 'max');
+    revalidateTag(`admin-orders-${status}`, 'max');
+    revalidateTag(`admin-order-${orderId}`, 'max');
+    revalidateTag('orders', 'max');
+
+    return { success: true, message: `Order status updated to ${status}` };
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return { success: false, message: 'Failed to update order status' };
   }
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Eye, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Pagination } from './pagination';
+import { UpdateOrderStatus } from './update-order-status';
 import type { Order, OrderItem, Product, User, OrderStatus } from '@prisma/client';
 
 
@@ -101,13 +102,7 @@ export function OrderTable({ orders, pagination }: OrderTableProps) {
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
-                  <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                      STATUS_STYLES[order.status]
-                    }`}
-                  >
-                    {order.status}
-                  </span>
+                  <UpdateOrderStatus orderId={order.id} currentStatus={order.status} />
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <span className="text-sm text-gray-600 font-medium">

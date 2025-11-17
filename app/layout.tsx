@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { headers } from 'next/headers';
+import { Toaster } from 'sonner';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
 import Footer from '@/components/Footer';
@@ -40,6 +41,7 @@ export default async function RootLayout({
               <Footer />
             </>
           )}
+          <Toaster position="top-center" richColors />
         </body>
       </html>
     </ClerkProvider>

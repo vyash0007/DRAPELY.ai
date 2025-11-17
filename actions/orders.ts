@@ -1,6 +1,6 @@
 'use server';
 
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, revalidateTag } from 'next/cache';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { stripe } from '@/lib/stripe';
@@ -268,7 +268,7 @@ export async function getOrderBySessionId(sessionId: string): Promise<OrderWithI
     }
 
     const cacheKey = `order-session-${sessionId}-${user.id}`;
-    
+
     return await unstable_cache(
       async () => {
         const order = await db.order.findFirst({
@@ -326,5 +326,57 @@ export async function getOrderBySessionId(sessionId: string): Promise<OrderWithI
   } catch (error) {
     console.error('Error fetching order by session:', error);
     throw new Error('Failed to fetch order');
+  }
+}
+
+/**
+ * Cancel an order
+ */
+export async function cancelOrder(orderId: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return { success: false, message: 'Unauthorized' };
+    }
+
+    // Get the order first to verify ownership and status
+    const order = await db.order.findFirst({
+      where: {
+        id: orderId,
+        userId: user.id,
+      },
+    });
+
+    if (!order) {
+      return { success: false, message: 'Order not found' };
+    }
+
+    // Check if order can be cancelled
+    if (order.status === 'CANCELLED') {
+      return { success: false, message: 'Order is already cancelled' };
+    }
+
+    if (order.status === 'DELIVERED') {
+      return { success: false, message: 'Cannot cancel a delivered order' };
+    }
+
+    // Update order status to CANCELLED
+    await db.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'CANCELLED',
+      },
+    });
+
+    // Revalidate the cache
+    revalidateTag('orders', 'max');
+    revalidateTag(`orders-${user.id}`, 'max');
+    revalidateTag(`order-${orderId}`, 'max');
+
+    return { success: true, message: 'Order cancelled successfully' };
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    return { success: false, message: 'Failed to cancel order' };
   }
 }

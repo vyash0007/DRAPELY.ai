@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { getOrders } from '@/actions/orders';
 import { getCurrentUser } from '@/lib/auth';
+import { CancelOrderButton } from '@/components/cancel-order-button';
 
 export default async function OrdersPage() {
   const user = await getCurrentUser();
@@ -164,10 +165,7 @@ export default async function OrdersPage() {
 
                 {/* Order Footer */}
                 <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-                  <button className="text-gray-600 hover:text-red-600 flex items-center gap-2 transition-colors">
-                    <span className="text-xl">×</span>
-                    <span className="font-semibold">CANCEL ORDER</span>
-                  </button>
+                  <CancelOrderButton orderId={order.id} orderNumber={order.orderNumber} />
                   <div className="flex items-center gap-8">
                     <div className="text-gray-500">
                       Paid using credit card ending with ****
