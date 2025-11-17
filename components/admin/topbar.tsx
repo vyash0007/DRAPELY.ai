@@ -1,5 +1,6 @@
 import { Bell, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export function AdminTopbar() {
   return (
@@ -10,8 +11,8 @@ export function AdminTopbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="icon"
           className="hover:bg-[#f5d7d7]/50 hover:text-gray-900 transition-colors"
         >
@@ -19,9 +20,15 @@ export function AdminTopbar() {
         </Button>
 
         <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#f5d7d7] to-[#f5a5a5] text-gray-900 shadow-sm">
-            <UserCircle className="h-6 w-6" />
-          </div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-white mr-4">
+          <Image
+            src="/logo2.2k.png"
+            alt="Logo"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+          />
+        </div>
           <div className="text-sm">
             <p className="font-semibold text-gray-900">Administrator</p>
             <p className="text-gray-500 text-xs">Admin Account</p>

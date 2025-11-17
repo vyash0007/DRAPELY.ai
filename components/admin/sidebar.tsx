@@ -40,8 +40,8 @@ export function AdminSidebar() {
     <div className="flex w-64 flex-col bg-gradient-to-b from-[#f5d7d7] via-[#fce8e8] to-[#f5d7d7] shadow-lg">
       {/* Logo */}
       <div className="flex h-20 items-center justify-center border-b border-[#f5a5a5]/30 bg-white/50 backdrop-blur-sm">
-        <h1 className="text-2xl font-serif font-bold text-gray-900 tracking-wide">FASHION</h1>
-        <span className="ml-2 text-xs font-medium text-gray-600 uppercase tracking-wider">Admin</span>
+        <h1 className="text-2xl font-serif font-light  text-gray-900 tracking-wide">DRAPELY.ai</h1>
+        <span className="ml-2 text-sm font-light text-gray-900 uppercase tracking-wider">Admin</span>
       </div>
 
       {/* Navigation */}
