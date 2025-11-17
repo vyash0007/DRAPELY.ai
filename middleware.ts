@@ -10,6 +10,13 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
+  // Admin routes use custom authentication, skip Clerk protection
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    const response = NextResponse.next();
+    response.headers.set('x-pathname', request.nextUrl.pathname);
+    return response;
+  }
+
   if (!isPublicRoute(request)) {
     await auth.protect();
   }
