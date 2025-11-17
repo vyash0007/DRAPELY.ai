@@ -87,7 +87,7 @@ export default async function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-50 rounded-lg p-8 sticky top-24">
+            <div className="bg-white rounded-lg p-8 sticky top-24">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">Order Summary</h2>
 
               <div className="space-y-4 mb-6">
@@ -105,7 +105,7 @@ export default async function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Shipping</span>
-                  <span className="font-semibold text-orange-500">Free</span>
+                  <span className="font-semibold text-[#63A361]">Free</span>
                 </div>
               </div>
 
@@ -140,7 +140,7 @@ export default async function CartPage() {
                   />
                   <button
                     type="button"
-                    className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95"
+                    className="px-6 py-3 bg-[#F7A5A5] text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-sm hover:shadow-md active:scale-95"
                   >
                     Apply
                   </button>
