@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth';
 export interface CartItemWithProduct {
   id: string;
   quantity: number;
+  size: string | null;
   product: {
     id: string;
     title: string;
@@ -77,6 +78,7 @@ export async function getCart(): Promise<CartData | null> {
           items: cart.items.map((item) => ({
             id: item.id,
             quantity: item.quantity,
+            size: item.size,
             product: {
               ...item.product,
               price: Number(item.product.price),
@@ -103,7 +105,7 @@ export async function getCart(): Promise<CartData | null> {
 /**
  * Add product to cart
  */
-export async function addToCart(productId: string, quantity: number = 1) {
+export async function addToCart(productId: string, quantity: number = 1, size?: string) {
   try {
     const user = await getCurrentUser();
 
@@ -113,12 +115,18 @@ export async function addToCart(productId: string, quantity: number = 1) {
 
     // Optimize: Run product check and cart lookup in parallel
     const [product, cart] = await Promise.all([
-      // Only fetch needed fields for stock check
+      // Fetch product with size stocks
       db.product.findUnique({
         where: { id: productId },
         select: {
           id: true,
           stock: true,
+          sizeStocks: {
+            select: {
+              size: true,
+              quantity: true,
+            },
+          },
         },
       }),
       // Get or create cart in one operation
@@ -133,16 +141,25 @@ export async function addToCart(productId: string, quantity: number = 1) {
       throw new Error('Product not found');
     }
 
-    if (product.stock < quantity) {
+    // Check stock based on size
+    let availableStock = product.stock;
+    if (size) {
+      const sizeStock = product.sizeStocks.find(s => s.size === size);
+      if (!sizeStock || sizeStock.quantity < quantity) {
+        throw new Error(`Insufficient stock for size ${size}`);
+      }
+      availableStock = sizeStock.quantity;
+    } else if (product.stock < quantity) {
       throw new Error('Insufficient stock');
     }
 
-    // Check if product already in cart and update/create in one operation
+    // Check if product with same size already in cart
     const existingCartItem = await db.cartItem.findUnique({
       where: {
-        cartId_productId: {
+        cartId_productId_size: {
           cartId: cart.id,
           productId,
+          size: size || null,
         },
       },
       select: {
@@ -155,8 +172,8 @@ export async function addToCart(productId: string, quantity: number = 1) {
       // Update quantity
       const newQuantity = existingCartItem.quantity + quantity;
 
-      if (product.stock < newQuantity) {
-        throw new Error('Insufficient stock');
+      if (availableStock < newQuantity) {
+        throw new Error(`Insufficient stock${size ? ` for size ${size}` : ''}`);
       }
 
       await db.cartItem.update({
@@ -170,13 +187,14 @@ export async function addToCart(productId: string, quantity: number = 1) {
           cartId: cart.id,
           productId,
           quantity,
+          size: size || null,
         },
       });
     }
 
     // Revalidate cart page and cache
     revalidatePath('/cart');
-    
+
     return { success: true, message: 'Added to cart' };
   } catch (error) {
     console.error('Error adding to cart:', error);

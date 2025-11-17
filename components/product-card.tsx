@@ -8,6 +8,7 @@ import { formatPrice } from '@/lib/utils';
 import { ProductWithCategory } from '@/actions/products';
 import { addToCart } from '@/actions/cart';
 import { useRouter } from 'next/navigation';
+import { WishlistButton } from '@/components/wishlist-button';
 
 interface ProductCardProps {
   product: SerializedProductWithCategory;
@@ -39,17 +40,16 @@ interface ProductCardProps {
   product: SerializedProductWithCategory;
 }
 export function ProductCard({ product }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
 
   const imageUrl = product.images[0] || '/placeholder.png';
-  
+
   // Calculate discount deterministically based on product ID to avoid hydration mismatch
   // This ensures the same product always has the same discount status on both server and client
   const hash = product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const hasDiscount = product.stock > 0 && (hash % 10) < 3; // ~30% chance based on ID
-  
+
   const originalPrice = hasDiscount ? Number(product.price) * 1.5 : Number(product.price);
   const salePrice = Number(product.price);
 
@@ -71,12 +71,6 @@ export function ProductCard({ product }: ProductCardProps) {
     } finally {
       setIsAdding(false);
     }
-  };
-
-  const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
   };
 
   return (
@@ -115,15 +109,12 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           {/* Wishlist Icon */}
-          <button
-            onClick={toggleWishlist}
+          <WishlistButton
+            productId={product.id}
+            variant="icon-only"
             className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 z-10 active:scale-95"
-            aria-label="Add to wishlist"
-          >
-            <Heart
-              className={`w-5 h-5 transition-all duration-200 ${isWishlisted ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-600'}`}
-            />
-          </button>
+            iconClassName="w-5 h-5"
+          />
         </div>
       </Link>
 

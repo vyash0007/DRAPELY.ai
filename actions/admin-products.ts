@@ -1,9 +1,14 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireAdminAuth } from '@/lib/admin-auth';
+
+export interface SizeStockData {
+  size: string;
+  quantity: number;
+}
 
 export interface ProductFormData {
   title: string;
@@ -14,6 +19,10 @@ export interface ProductFormData {
   categoryId: string;
   images: string[];
   featured: boolean;
+  fit?: string;
+  composition?: string;
+  sizes: string[];
+  sizeStocks: SizeStockData[];
 }
 
 export interface ProductFilters {
@@ -54,6 +63,7 @@ export async function getAdminProducts(filters: ProductFilters = {}) {
         where,
         include: {
           category: true,
+          sizeStocks: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -104,6 +114,7 @@ export async function getAdminProductById(id: string) {
       where: { id },
       include: {
         category: true,
+        sizeStocks: true,
       },
     });
 
@@ -137,12 +148,27 @@ export async function createProduct(data: ProductFormData) {
         categoryId: data.categoryId,
         images: data.images,
         featured: data.featured,
+        fit: data.fit,
+        composition: data.composition,
+        sizes: data.sizes,
+        sizeStocks: {
+          create: data.sizeStocks.map((ss) => ({
+            size: ss.size,
+            quantity: ss.quantity,
+          })),
+        },
       },
     });
 
     revalidatePath('/admin/products');
     revalidatePath('/products');
     revalidatePath('/');
+
+    // Clear cache tags if product is featured
+    if (data.featured) {
+      revalidateTag('featured');
+    }
+    revalidateTag('products');
 
     return { success: true, product };
   } catch (error: any) {
@@ -161,6 +187,12 @@ export async function updateProduct(id: string, data: ProductFormData) {
   await requireAdminAuth();
 
   try {
+    // First, delete all existing size stocks for this product
+    await db.sizeStock.deleteMany({
+      where: { productId: id },
+    });
+
+    // Then update the product and create new size stocks
     const product = await db.product.update({
       where: { id },
       data: {
@@ -172,6 +204,15 @@ export async function updateProduct(id: string, data: ProductFormData) {
         categoryId: data.categoryId,
         images: data.images,
         featured: data.featured,
+        fit: data.fit,
+        composition: data.composition,
+        sizes: data.sizes,
+        sizeStocks: {
+          create: data.sizeStocks.map((ss) => ({
+            size: ss.size,
+            quantity: ss.quantity,
+          })),
+        },
       },
     });
 
@@ -180,6 +221,12 @@ export async function updateProduct(id: string, data: ProductFormData) {
     revalidatePath('/products');
     revalidatePath(`/products/${product.slug}`);
     revalidatePath('/');
+
+    // Clear cache tags if product is or was featured
+    if (data.featured) {
+      revalidateTag('featured');
+    }
+    revalidateTag('products');
 
     return { success: true, product };
   } catch (error: any) {
@@ -202,9 +249,14 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
 
+    // Revalidate paths and cache tags
     revalidatePath('/admin/products');
     revalidatePath('/products');
     revalidatePath('/');
+
+    // Clear featured products cache
+    revalidateTag('products');
+    revalidateTag('featured');
 
     return { success: true };
   } catch (error: any) {

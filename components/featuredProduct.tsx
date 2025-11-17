@@ -22,7 +22,7 @@ const FeaturedProduct = ({ products }: FeaturedProductProps) => {
                        Explore what’s trending! updated to keep you ahead of the fashion curve.
                     </p>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-                        From premium accessories to must-have outfits, our featured lineup highlights the products our community can’t get enough of. Curated for every style and story.
+                        From must-have outfits to kids' fashion, our featured lineup highlights the products our community can't get enough of. Curated for every style and story.
                     </p>
                 </div>
 

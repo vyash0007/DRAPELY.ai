@@ -1211,7 +1211,7 @@ model Category {
   products Product[]
 }
 ```
-**Purpose**: Product categories (Men's Fashion, Women's Fashion, Accessories).
+**Purpose**: Product categories (Men's Fashion, Women's Fashion, Kids).
 
 ---
 
@@ -1336,7 +1336,7 @@ npx prisma migrate reset
 **Purpose**: Populate database with sample data.
 
 **What It Seeds**:
-- 3 Categories (Men's Fashion, Women's Fashion, Accessories)
+- 3 Categories (Men's Fashion, Women's Fashion, Kids)
 - 10 Products with images, prices, stock
 
 **Working**:

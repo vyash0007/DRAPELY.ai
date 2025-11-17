@@ -81,15 +81,15 @@ const Category = () => {
 
             {/* Cosmetics/Accessories */}
             <Link
-              href="/products?category=accessories"
+              href="/products?category=kids"
               className="group relative overflow-hidden rounded-lg bg-[#f4d7e6] hover:shadow-xl transition-all duration-300 min-h-[240px]"
             >
               <div className="absolute inset-0 flex items-center justify-between p-6 md:p-8">
                 <div className="z-10 flex-1 pr-4">
                   <h3 className="text-4xl md:text-3xl font-serif  text-gray-900 mb-2">
-                    Accessories
+                    Kids
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">Level up your style with must-have accessories that keep you on trend.</p>
+                  <p className="text-sm text-gray-600 mb-4">Discover stylish and comfortable fashion for your little ones.</p>
                   <span className="inline-block text-sm font-semibold uppercase tracking-wider border-b-2 border-gray-900 pb-1 hover:border-gray-600 transition-colors cursor-pointer text-gray-900">
                     Shop Now
                   </span>
@@ -97,7 +97,7 @@ const Category = () => {
                 <div className="relative w-44 md:w-56 h-full min-h-[240px]">
                   <Image
                     src="/accessoriesM-removebg-preview.png"
-                    alt="Accessories"
+                    alt="Kids"
                     fill
                     className="object-contain object-right transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                     style={{ objectPosition: 'right center' }}
