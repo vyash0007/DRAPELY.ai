@@ -24,12 +24,13 @@ export async function createAdminSession() {
   const cookieStore = await cookies();
 
   // Set httpOnly cookie for security
+  // Path is set to '/' so it's accessible from API routes like /api/upload
   cookieStore.set(ADMIN_SESSION_COOKIE, 'authenticated', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/admin',
+    path: '/', // Changed from '/admin' to allow API route access
   });
 }
 

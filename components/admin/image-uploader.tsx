@@ -32,17 +32,22 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
         });
 
         if (!response.ok) {
-          throw new Error('Upload failed');
+          const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+          throw new Error(errorData.error || 'Upload failed');
         }
 
         const data = await response.json();
+        if (!data.url) {
+          throw new Error('Invalid response from server');
+        }
         return data.url;
       });
 
       const uploadedUrls = await Promise.all(uploadPromises);
       onChange([...images, ...uploadedUrls]);
     } catch (err) {
-      setError('Failed to upload images. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to upload images. Please try again.';
+      setError(errorMessage);
       console.error('Upload error:', err);
     } finally {
       setUploading(false);

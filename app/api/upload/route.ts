@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
 import cloudinary, { CloudinaryUploadResult } from '@/lib/cloudinary';
+
+const ADMIN_SESSION_COOKIE = 'admin-session';
 
 export async function POST(request: NextRequest) {
   try {
-    // Require authentication (only authenticated users can upload)
-    await requireAuth();
+    // Check admin authentication by reading cookie from request
+    // In API routes, we need to read cookies from the request object
+    const adminSession = request.cookies.get(ADMIN_SESSION_COOKIE);
+    const isAdmin = adminSession?.value === 'authenticated';
+    
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Admin authentication required' },
+        { status: 401 }
+      );
+    }
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -45,8 +55,25 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Upload error:', error);
+    
+    // Handle authentication errors
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+    
+    // Handle Cloudinary errors
+    if (error instanceof Error && error.message.includes('Cloudinary')) {
+      return NextResponse.json(
+        { error: 'Failed to upload to Cloudinary. Please check your configuration.' },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to upload image' },
+      { error: error instanceof Error ? error.message : 'Failed to upload image' },
       { status: 500 }
     );
   }
