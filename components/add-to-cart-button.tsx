@@ -9,6 +9,7 @@ import { addToCart } from '@/actions/cart';
 interface AddToCartButtonProps {
   productId: string;
   quantity?: number;
+  size?: string;
   variant?: 'default' | 'outline';
   className?: string;
 }
@@ -16,6 +17,7 @@ interface AddToCartButtonProps {
 export function AddToCartButton({
   productId,
   quantity = 1,
+  size,
   variant = 'default',
   className,
 }: AddToCartButtonProps) {
@@ -25,7 +27,7 @@ export function AddToCartButton({
   const handleAddToCart = async () => {
     try {
       setIsLoading(true);
-      await addToCart(productId, quantity);
+      await addToCart(productId, quantity, size);
       // Refresh in background (non-blocking)
       router.refresh();
     } catch (error) {

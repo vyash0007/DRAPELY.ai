@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ImageUploader } from './image-uploader';
-import { createProduct, updateProduct } from '@/actions/admin-products';
+import { createProduct, updateProduct, SizeStockData } from '@/actions/admin-products';
 
 import type { Category } from '@prisma/client';
 
@@ -30,6 +30,17 @@ interface SerializedProduct {
   stock: number;
   images: string[];
   featured: boolean;
+  fit: string | null;
+  composition: string | null;
+  sizes: string[];
+  sizeStocks: Array<{
+    id: string;
+    size: string;
+    quantity: number;
+    productId: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -55,7 +66,17 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     categoryId: product?.categoryId || '',
     images: product?.images || [],
     featured: product?.featured || false,
+    fit: product?.fit || '',
+    composition: product?.composition || '',
+    sizes: product?.sizes || [],
+    sizeStocks: product?.sizeStocks?.map(ss => ({
+      size: ss.size,
+      quantity: ss.quantity,
+    })) || [],
   });
+
+  // Calculate total stock from size stocks
+  const totalStock = formData.sizeStocks.reduce((sum, sizeStock) => sum + sizeStock.quantity, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,9 +84,15 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     setLoading(true);
 
     try {
+      // Use calculated total stock instead of manual input
+      const submitData = {
+        ...formData,
+        stock: totalStock,
+      };
+
       const result = product
-        ? await updateProduct(product.id, formData)
-        : await createProduct(formData);
+        ? await updateProduct(product.id, submitData)
+        : await createProduct(submitData);
 
       if (result.success) {
         router.push('/admin/products');
@@ -166,19 +193,22 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           />
         </div>
 
-        {/* Stock */}
+        {/* Stock (Auto-calculated) */}
         <div>
-          <Label htmlFor="stock">Stock Quantity *</Label>
+          <Label htmlFor="stock">
+            Stock Quantity *
+            <span className="ml-2 text-xs text-gray-500 font-normal">
+              (Auto-calculated from sizes)
+            </span>
+          </Label>
           <Input
             id="stock"
             type="number"
-            value={formData.stock}
-            onChange={(e) =>
-              setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })
-            }
-            required
-            placeholder="0"
-            className="mt-1"
+            value={totalStock}
+            readOnly
+            disabled
+            className="mt-1 bg-gray-50 cursor-not-allowed"
+            title="This value is automatically calculated from the sum of all size stock quantities"
           />
         </div>
 
@@ -217,6 +247,105 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         <Label htmlFor="featured" className="cursor-pointer">
           Mark as featured product
         </Label>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Fit */}
+        <div>
+          <Label htmlFor="fit">Fit</Label>
+          <Input
+            id="fit"
+            value={formData.fit}
+            onChange={(e) =>
+              setFormData({ ...formData, fit: e.target.value })
+            }
+            placeholder="e.g., Oversize, Slim Fit, Regular"
+            className="mt-1"
+          />
+        </div>
+
+        {/* Composition */}
+        <div>
+          <Label htmlFor="composition">Composition</Label>
+          <Input
+            id="composition"
+            value={formData.composition}
+            onChange={(e) =>
+              setFormData({ ...formData, composition: e.target.value })
+            }
+            placeholder="e.g., Linen, Cotton, Polyester"
+            className="mt-1"
+          />
+        </div>
+      </div>
+
+      {/* Sizes & Stock */}
+      <div>
+        <Label htmlFor="sizes">Available Sizes & Stock Quantity</Label>
+        <div className="mt-2 space-y-3">
+          <div className="text-sm text-gray-500 mb-2">
+            Select sizes and enter stock quantity for each:
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => {
+              const sizeStock = formData.sizeStocks.find(s => s.size === size);
+              const isSelected = formData.sizes.includes(size);
+
+              return (
+                <div key={size} className="border rounded-lg p-3 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`size-${size}`}
+                      checked={isSelected}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData({
+                            ...formData,
+                            sizes: [...formData.sizes, size],
+                            sizeStocks: [...formData.sizeStocks, { size, quantity: 0 }],
+                          });
+                        } else {
+                          setFormData({
+                            ...formData,
+                            sizes: formData.sizes.filter((s) => s !== size),
+                            sizeStocks: formData.sizeStocks.filter((s) => s.size !== size),
+                          });
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`size-${size}`} className="cursor-pointer font-medium">
+                      {size}
+                    </Label>
+                  </div>
+                  {isSelected && (
+                    <div>
+                      <Label htmlFor={`stock-${size}`} className="text-xs text-gray-600">
+                        Stock Qty
+                      </Label>
+                      <Input
+                        id={`stock-${size}`}
+                        type="number"
+                        min="0"
+                        value={sizeStock?.quantity || 0}
+                        onChange={(e) => {
+                          const newQuantity = parseInt(e.target.value) || 0;
+                          setFormData({
+                            ...formData,
+                            sizeStocks: formData.sizeStocks.map(s =>
+                              s.size === size ? { ...s, quantity: newQuantity } : s
+                            ),
+                          });
+                        }}
+                        placeholder="0"
+                        className="mt-1 h-9"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Images */}

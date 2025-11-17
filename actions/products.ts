@@ -3,10 +3,11 @@
 import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 
-import { Product, Category } from '@prisma/client';
+import { Product, Category, SizeStock } from '@prisma/client';
 
 export interface ProductWithCategory extends Product {
   category: Category;
+  sizeStocks?: SizeStock[];
 }
 
 // Serialized type for client components
@@ -44,6 +45,16 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
               stock: true,
               images: true,
               featured: true,
+              fit: true,
+              composition: true,
+              sizes: true,
+              sizeStocks: {
+                select: {
+                  id: true,
+                  size: true,
+                  quantity: true,
+                },
+              },
               categoryId: true,
               createdAt: true,
               updatedAt: true,
@@ -100,6 +111,7 @@ export async function getFeaturedProducts(): Promise<ProductWithCategory[]> {
           },
           include: {
             category: true,
+            sizeStocks: true,
           },
           take: 6,
           orderBy: {
@@ -107,11 +119,12 @@ export async function getFeaturedProducts(): Promise<ProductWithCategory[]> {
           },
         });
 
-        return products;
+        // Filter out any null/undefined products and ensure they have valid data
+        return products.filter(p => p && p.id && p.category);
       },
       ['featured-products'],
       {
-        revalidate: 300, // Cache for 5 minutes
+        revalidate: 60, // Reduced cache time to 1 minute for fresher data
         tags: ['products', 'featured'],
       }
     )();
@@ -134,6 +147,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
       },
       include: {
         category: true,
+        sizeStocks: true,
       },
     });
 
@@ -210,6 +224,7 @@ export async function searchProducts({ query, page = 1, limit = 12 }: { query: s
         where,
         include: {
           category: true,
+          sizeStocks: true,
         },
         orderBy: {
           createdAt: 'desc',

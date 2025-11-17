@@ -7,6 +7,7 @@ import { Heart } from 'lucide-react';
 import { ProductWithCategory } from '@/actions/products';
 import { formatPrice } from '@/lib/utils';
 import { AddToCartButton } from '@/components/add-to-cart-button';
+import { WishlistButton } from '@/components/wishlist-button';
 
 interface ProductDetailClientProps {
   product: ProductWithCategory;
@@ -22,14 +23,30 @@ const colorOptions = [
 ];
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const [selectedSize, setSelectedSize] = useState('L');
+  // Use product sizes if available, otherwise default to standard sizes
+  const availableSizes = product.sizes && product.sizes.length > 0
+    ? product.sizes
+    : ['S', 'M', 'L', 'XL'];
+
+  // Get size stock information
+  const getSizeStock = (size: string) => {
+    return product.sizeStocks?.find(s => s.size === size)?.quantity || 0;
+  };
+
+  // Find first available size (in stock)
+  const firstAvailableSize = availableSizes.find(size => getSizeStock(size) > 0) || availableSizes[0];
+
+  const [selectedSize, setSelectedSize] = useState(firstAvailableSize || 'L');
   const [selectedColor, setSelectedColor] = useState(0);
 
   const images = product.images.length > 0 ? product.images : ['/placeholder.png'];
-  const sizes = ['S', 'M', 'L', 'XL'];
 
   // Mock product number based on product ID
   const productNumber = `${43287340 + product.id}`;
+
+  // Check if selected size is in stock
+  const selectedSizeStock = getSizeStock(selectedSize);
+  const isSelectedSizeInStock = selectedSizeStock > 0;
 
   return (
     <>
@@ -102,14 +119,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <span className="text-gray-600 min-w-[120px]">Product No.</span>
               <span className="text-gray-900">{productNumber}</span>
             </div>
-            <div className="flex items-start gap-3">
-              <span className="text-gray-600 min-w-[120px]">Fit</span>
-              <span className="text-gray-900">Oversize</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-gray-600 min-w-[120px]">Composition</span>
-              <span className="text-gray-900">Linen</span>
-            </div>
+            {product.fit && (
+              <div className="flex items-start gap-3">
+                <span className="text-gray-600 min-w-[120px]">Fit</span>
+                <span className="text-gray-900">{product.fit}</span>
+              </div>
+            )}
+            {product.composition && (
+              <div className="flex items-start gap-3">
+                <span className="text-gray-600 min-w-[120px]">Composition</span>
+                <span className="text-gray-900">{product.composition}</span>
+              </div>
+            )}
           </div>
 
           {/* Product Details / Shipping Tabs */}
@@ -159,41 +180,69 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           {/* Size Selection */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <div className="flex gap-2">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-14 h-12 text-sm font-medium transition-all border ${
-                      selectedSize === size
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-gray-900 border-gray-300 hover:border-black'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+              <div className="flex gap-2 flex-wrap">
+                {availableSizes.map((size) => {
+                  const sizeStock = getSizeStock(size);
+                  const isOutOfStock = sizeStock === 0;
+
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => !isOutOfStock && setSelectedSize(size)}
+                      disabled={isOutOfStock}
+                      className={`w-14 h-12 text-sm font-medium transition-all border relative ${
+                        selectedSize === size
+                          ? 'bg-black text-white border-black'
+                          : isOutOfStock
+                          ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                          : 'bg-white text-gray-900 border-gray-300 hover:border-black'
+                      }`}
+                      title={isOutOfStock ? 'Out of stock' : `${sizeStock} in stock`}
+                    >
+                      {size}
+                      {isOutOfStock && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-full h-px bg-gray-400 rotate-45 absolute"></div>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
               <button className="text-sm underline hover:no-underline">
                 Size Guide
               </button>
             </div>
+            {selectedSize && (
+              <div className="text-sm text-gray-600 mb-2">
+                {isSelectedSizeInStock ? (
+                  <span className="text-green-600">
+                    ✓ Size {selectedSize}: {selectedSizeStock} in stock
+                  </span>
+                ) : (
+                  <span className="text-red-600">
+                    Size {selectedSize} is currently out of stock
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-3">
             {/* Wishlist Button */}
-            <button
+            <WishlistButton
+              productId={product.id}
+              variant="icon-only"
               className="w-14 h-14 flex items-center justify-center border border-gray-300 hover:border-black transition-colors"
-              aria-label="Add to wishlist"
-            >
-              <Heart className="h-5 w-5" />
-            </button>
+              iconClassName="h-5 w-5"
+            />
 
             {/* Add to Cart Button */}
-            {product.stock > 0 ? (
+            {isSelectedSizeInStock ? (
               <AddToCartButton
                 productId={product.id}
+                size={selectedSize}
                 className="flex-1 h-14 bg-black text-white hover:bg-gray-800 uppercase tracking-wider text-sm font-medium transition-colors"
               />
             ) : (

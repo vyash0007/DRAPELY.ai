@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, User, Search } from 'lucide-react';
+import { ShoppingBag, User, Search, Heart } from 'lucide-react';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { getCart } from '@/actions/cart';
@@ -56,6 +56,12 @@ export async function Navbar({ homeTransparent }: { homeTransparent?: boolean } 
             </Link>
 
             <SignedIn>
+              <Link href="/wishlist">
+                <Button variant="ghost" size="icon" className="hover:bg-gray-100">
+                  <Heart className="h-5 w-5 text-gray-900" strokeWidth={1.5} />
+                </Button>
+              </Link>
+
               <Link href="/cart" className="relative">
                 <Button variant="ghost" size="icon" className="hover:bg-gray-100">
                   <ShoppingBag className="h-5 w-5 text-gray-900" strokeWidth={1.5} />

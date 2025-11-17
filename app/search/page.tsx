@@ -96,7 +96,7 @@ export default function SearchPage() {
               </span>
               <input
                 type="text"
-                placeholder="Search for dresses, accessories, shoes..."
+                placeholder="Search for dresses, kids fashion, shoes..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-1 bg-transparent outline-none text-lg text-gray-900 placeholder:text-gray-400 font-normal px-2 py-2 border-none shadow-none"
@@ -134,10 +134,10 @@ export default function SearchPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleCategoryFilter('accessories')}
+              onClick={() => handleCategoryFilter('kids')}
               className="px-4 py-2 bg-white border-2 border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-gray-900 hover:text-gray-900 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              Accessories
+              Kids
             </button>
           </div>
         </div>

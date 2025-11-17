@@ -12,7 +12,7 @@ async function main() {
     create: {
       name: "Men's Fashion",
       slug: 'mens-fashion',
-      description: 'Stylish clothing and accessories for men',
+      description: 'Stylish clothing for men',
     },
   });
 
@@ -22,17 +22,17 @@ async function main() {
     create: {
       name: "Women's Fashion",
       slug: 'womens-fashion',
-      description: 'Elegant clothing and accessories for women',
+      description: 'Elegant clothing for women',
     },
   });
 
-  const accessoriesCategory = await prisma.category.upsert({
-    where: { slug: 'accessories' },
+  const kidsCategory = await prisma.category.upsert({
+    where: { slug: 'kids' },
     update: {},
     create: {
-      name: 'Accessories',
-      slug: 'accessories',
-      description: 'Fashion accessories for everyone',
+      name: 'Kids',
+      slug: 'kids',
+      description: 'Stylish and comfortable fashion for kids',
     },
   });
 
@@ -114,48 +114,48 @@ async function main() {
       ],
     },
     {
-      title: 'Leather Handbag',
-      slug: 'leather-handbag',
-      description: 'Premium leather handbag with multiple compartments.',
-      price: 199.99,
+      title: 'Kids Cotton T-Shirt',
+      slug: 'kids-cotton-tshirt',
+      description: 'Soft and comfortable cotton t-shirt for kids. Perfect for everyday wear.',
+      price: 19.99,
       stock: 25,
-      categoryId: accessoriesCategory.id,
+      categoryId: kidsCategory.id,
       featured: true,
       images: [
         'https://images.unsplash.com/photo-1548036328-c9fa89d128fa',
       ],
     },
     {
-      title: 'Sunglasses',
-      slug: 'sunglasses',
-      description: 'UV protection sunglasses with polarized lenses.',
-      price: 149.99,
+      title: 'Kids Denim Jeans',
+      slug: 'kids-denim-jeans',
+      description: 'Durable and stylish denim jeans for active kids.',
+      price: 39.99,
       stock: 80,
-      categoryId: accessoriesCategory.id,
+      categoryId: kidsCategory.id,
       featured: false,
       images: [
         'https://images.unsplash.com/photo-1572635196237-14b3f281503f',
       ],
     },
     {
-      title: 'Leather Belt',
-      slug: 'leather-belt',
-      description: 'Classic leather belt with metal buckle. Available in multiple sizes.',
-      price: 49.99,
+      title: 'Kids Summer Dress',
+      slug: 'kids-summer-dress',
+      description: 'Colorful and playful summer dress for girls. Light and breathable.',
+      price: 34.99,
       stock: 70,
-      categoryId: accessoriesCategory.id,
+      categoryId: kidsCategory.id,
       featured: false,
       images: [
         'https://images.unsplash.com/photo-1624222247344-550fb60583c2',
       ],
     },
     {
-      title: 'Wool Scarf',
-      slug: 'wool-scarf',
-      description: 'Warm wool scarf perfect for cold weather. Soft and comfortable.',
-      price: 39.99,
+      title: 'Kids Hoodie',
+      slug: 'kids-hoodie',
+      description: 'Warm and cozy hoodie perfect for cooler days. Soft fleece lining.',
+      price: 44.99,
       stock: 90,
-      categoryId: accessoriesCategory.id,
+      categoryId: kidsCategory.id,
       featured: false,
       images: [
         'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9',

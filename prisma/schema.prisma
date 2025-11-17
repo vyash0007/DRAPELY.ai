@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  firstName String?
-  lastName  String?
-  imageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  carts     Cart?
-  orders    Order[]
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  firstName     String?
+  lastName      String?
+  imageUrl      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  carts         Cart?
+  orders        Order[]
+  wishlistItems WishlistItem[]
 
   @@index([clerkId])
   @@index([email])
@@ -36,24 +37,42 @@ model Category {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  title       String
-  slug        String      @unique
-  description String?
-  price       Decimal     @db.Decimal(10, 2)
-  stock       Int         @default(0)
-  images      String[]
-  featured    Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  categoryId  String
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String?
+  price         Decimal        @db.Decimal(10, 2)
+  stock         Int            @default(0)
+  images        String[]
+  featured      Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  categoryId    String
+  composition   String?
+  fit           String?
+  sizes         String[]       @default([])
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  sizeStocks    SizeStock[]
+  wishlistItems WishlistItem[]
 
   @@index([slug])
   @@index([categoryId])
   @@index([featured])
+}
+
+model SizeStock {
+  id        String   @id @default(cuid())
+  size      String
+  quantity  Int      @default(0)
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, size])
+  @@index([productId])
 }
 
 model Cart {
@@ -74,10 +93,11 @@ model CartItem {
   updatedAt DateTime @updatedAt
   cartId    String
   productId String
+  size      String?
   cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, size])
   @@index([cartId])
   @@index([productId])
 }
@@ -113,10 +133,25 @@ model OrderItem {
   updatedAt DateTime @updatedAt
   orderId   String
   productId String
+  size      String?
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id])
 
   @@index([orderId])
+  @@index([productId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
   @@index([productId])
 }
 

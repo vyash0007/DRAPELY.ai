@@ -125,7 +125,12 @@ export async function getOrders(): Promise<OrderWithItems[]> {
     return await unstable_cache(
       async () => {
         const orders = await db.order.findMany({
-          where: { userId: user.id },
+          where: {
+            userId: user.id,
+            status: {
+              not: 'CANCELLED', // Exclude cancelled orders
+            },
+          },
           include: {
             items: {
               include: {

@@ -167,7 +167,7 @@ Scripts:
 Linked to Clerk, stores user info and relations to carts/orders.
 
 ### Category
-Product categories (Men's Fashion, Women's Fashion, Accessories).
+Product categories (Men's Fashion, Women's Fashion, Kids).
 
 ### Product
 Complete product info including images, price, stock, category.
