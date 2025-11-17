@@ -166,9 +166,9 @@ export async function createProduct(data: ProductFormData) {
 
     // Clear cache tags if product is featured
     if (data.featured) {
-      revalidateTag('featured');
+      revalidateTag('featured', 'max');
     }
-    revalidateTag('products');
+    revalidateTag('products', 'max');
 
     return { success: true, product };
   } catch (error: any) {
@@ -224,9 +224,9 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
     // Clear cache tags if product is or was featured
     if (data.featured) {
-      revalidateTag('featured');
+      revalidateTag('featured', 'max');
     }
-    revalidateTag('products');
+    revalidateTag('products', 'max');
 
     return { success: true, product };
   } catch (error: any) {
@@ -255,8 +255,8 @@ export async function deleteProduct(id: string) {
     revalidatePath('/');
 
     // Clear featured products cache
-    revalidateTag('products');
-    revalidateTag('featured');
+    revalidateTag('products', 'max');
+    revalidateTag('featured', 'max');
 
     return { success: true };
   } catch (error: any) {

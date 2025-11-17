@@ -53,6 +53,9 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
                   id: true,
                   size: true,
                   quantity: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  productId: true,
                 },
               },
               categoryId: true,
@@ -83,7 +86,9 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
           price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
             ? product.price.toNumber()
             : product.price,
+          sizeStocks: product.sizeStocks?.map((ss) => ({ ...ss })),
         }));
+        const serializedProductsTyped = serializedProducts as unknown as SerializedProductWithCategory[];
         return { products: serializedProducts, total };
       },
       [cacheKey],
@@ -161,7 +166,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
       price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
         ? product.price.toNumber()
         : product.price,
-    } as ProductWithCategory;
+    } as unknown as ProductWithCategory;
   } catch (error) {
     console.error('Error fetching product:', error);
     throw new Error('Failed to fetch product');

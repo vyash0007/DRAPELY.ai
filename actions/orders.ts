@@ -169,7 +169,7 @@ export async function getOrders(): Promise<OrderWithItems[]> {
                 : item.product.price,
             },
           })),
-        })) as OrderWithItems[];
+        })) as unknown as OrderWithItems[];
       },
       [cacheKey],
       {
@@ -242,7 +242,7 @@ export async function getOrderById(orderId: string): Promise<OrderWithItems | nu
                 : item.product.price,
             },
           })),
-        } as OrderWithItems;
+        } as unknown as OrderWithItems;
       },
       [cacheKey],
       {
@@ -315,7 +315,7 @@ export async function getOrderBySessionId(sessionId: string): Promise<OrderWithI
                 : item.product.price,
             },
           })),
-        } as OrderWithItems;
+        } as unknown as OrderWithItems;
       },
       [cacheKey],
       {

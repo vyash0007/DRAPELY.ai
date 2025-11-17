@@ -159,7 +159,7 @@ export async function addToCart(productId: string, quantity: number = 1, size?: 
         cartId_productId_size: {
           cartId: cart.id,
           productId,
-          size: size || null,
+          size: size || "",
         },
       },
       select: {
