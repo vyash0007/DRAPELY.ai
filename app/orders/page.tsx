@@ -35,17 +35,17 @@ export default async function OrdersPage() {
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return { text: 'In - Transit', color: 'text-orange-500' };
+        return { text: 'In - Transit', color: 'text-[#E2A16F]' };
       case 'PROCESSING':
-        return { text: 'In - Transit', color: 'text-orange-500' };
+        return { text: 'In - Transit', color: 'text-[#E2A16F]' };
       case 'SHIPPED':
-        return { text: 'In - Transit', color: 'text-orange-500' };
+        return { text: 'In - Transit', color: 'text-[#E2A16F]' };
       case 'DELIVERED':
-        return { text: 'Delivered', color: 'text-green-600' };
+        return { text: 'Delivered', color: 'text-[#41A67E]' };
       case 'CANCELLED':
-        return { text: 'Cancelled', color: 'text-red-600' };
+        return { text: 'Cancelled', color: 'text-[#DC0E0E]' };
       default:
-        return { text: 'In - Transit', color: 'text-orange-500' };
+        return { text: 'In - Transit', color: 'text-[#E2A16F]' };
     }
   };
 
@@ -90,7 +90,7 @@ export default async function OrdersPage() {
                       Order Placed: {formatDate(order.createdAt)}
                     </div>
                   </div>
-                  <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-colors">
+                  <button className="bg-[#E2A16F] text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-colors">
                     <MapPin className="w-5 h-5" />
                     TRACK ORDER
                   </button>
