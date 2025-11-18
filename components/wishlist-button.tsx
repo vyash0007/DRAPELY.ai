@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { toggleWishlist, isInWishlist } from '@/actions/wishlist';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface WishlistButtonProps {
   productId: string;
@@ -50,10 +51,17 @@ export function WishlistButton({
       setIsLoading(true);
       const result = await toggleWishlist(productId);
       setIsInWishlistState(result.inWishlist);
+
+      if (result.inWishlist) {
+        toast.success('Added to Wishlist');
+      } else {
+        toast.success('Removed from Wishlist');
+      }
+
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update wishlist';
-      alert(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
