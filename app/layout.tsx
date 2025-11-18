@@ -10,7 +10,7 @@ import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Fashion Store - Your Style Destination',
+  title: 'DRAPELY.ai',
   description: 'Shop the latest fashion trends with our curated collection',
 };
 
