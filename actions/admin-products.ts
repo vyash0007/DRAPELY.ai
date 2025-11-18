@@ -245,6 +245,19 @@ export async function deleteProduct(id: string) {
   await requireAdminAuth();
 
   try {
+    // Check if product has associated orders
+    const ordersCount = await db.orderItem.count({
+      where: { productId: id },
+    });
+
+    if (ordersCount > 0) {
+      return {
+        success: false,
+        error: `Cannot delete product. It has ${ordersCount} associated order(s). Products with order history cannot be deleted to maintain order integrity.`,
+      };
+    }
+
+    // Delete the product (this will cascade delete cart items, wishlist items, and size stocks)
     await db.product.delete({
       where: { id },
     });
