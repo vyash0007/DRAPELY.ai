@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { ProductWithCategory } from '@/actions/products';
 import { addToCart } from '@/actions/cart';
 import { useRouter } from 'next/navigation';
 import { WishlistButton } from '@/components/wishlist-button';
+import { SmartImage } from '@/components/smart-image';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: SerializedProductWithCategory;
+  userId?: string | null;
+  hasPremium?: boolean;
+  aiEnabled?: boolean;
 }
 // Match the serialized product type from ProductGrid
 interface SerializedProductWithCategory {
@@ -24,6 +27,7 @@ interface SerializedProductWithCategory {
   stock: number;
   images: string[];
   featured: boolean;
+  metadata?: Record<string, string>;
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -39,12 +43,16 @@ interface SerializedProductWithCategory {
 
 interface ProductCardProps {
   product: SerializedProductWithCategory;
+  userId?: string | null;
+  hasPremium?: boolean;
+  aiEnabled?: boolean;
 }
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, userId, hasPremium = false, aiEnabled = false }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
 
   const imageUrl = product.images[0] || '/placeholder.png';
+  const isTrialProduct = product.metadata?.is_trial === 'true';
 
   // Calculate discount deterministically based on product ID to avoid hydration mismatch
   // This ensures the same product always has the same discount status on both server and client
@@ -77,9 +85,15 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group">
       <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3 rounded-xl">
-          <Image
+          <SmartImage
             src={imageUrl}
             alt={product.title}
+            userId={userId}
+            productId={product.id}
+            hasPremium={hasPremium}
+            aiEnabled={aiEnabled}
+            isTrialProduct={isTrialProduct}
+            imageIndex={0}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"

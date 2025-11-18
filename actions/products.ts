@@ -48,6 +48,7 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
               fit: true,
               composition: true,
               sizes: true,
+              metadata: true,
               sizeStocks: {
                 select: {
                   id: true,
@@ -85,7 +86,8 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
           ...product,
           price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
             ? product.price.toNumber()
-            : product.price,
+            : Number(product.price),
+          metadata: (product.metadata as Record<string, string>) || {},
           sizeStocks: product.sizeStocks?.map((ss) => ({ ...ss })),
         }));
         const serializedProductsTyped = serializedProducts as unknown as SerializedProductWithCategory[];
@@ -104,9 +106,65 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
 }
 
 /**
+ * Get products with specific metadata (for AI-enabled users)
+ */
+export async function getProductsByMetadata(
+  metadataKey: string,
+  metadataValue: string,
+  limit: number = 6
+): Promise<SerializedProductWithCategory[]> {
+  try {
+    return await unstable_cache(
+      async () => {
+        // Fetch all products and filter by metadata in JavaScript
+        // Prisma JSON filtering can be complex, so we'll filter after fetching
+        const products = await db.product.findMany({
+          include: {
+            category: true,
+            sizeStocks: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+
+        // Filter products by metadata
+        const filteredProducts = products.filter((product) => {
+          if (!product.metadata) return false;
+          const metadata = product.metadata as Record<string, any>;
+          return metadata[metadataKey] === metadataValue;
+        });
+
+        // Take only the limit
+        const limitedProducts = filteredProducts.slice(0, limit);
+        const validProducts = limitedProducts.filter(p => p && p.id && p.category);
+        
+        const serializedProducts = validProducts.map((product) => ({
+          ...product,
+          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+            ? product.price.toNumber()
+            : Number(product.price),
+          metadata: (product.metadata as Record<string, string>) || {},
+        })) as unknown as SerializedProductWithCategory[];
+        
+        return serializedProducts;
+      },
+      [`products-metadata-${metadataKey}-${metadataValue}`],
+      {
+        revalidate: 60,
+        tags: ['products', `metadata-${metadataKey}`],
+      }
+    )();
+  } catch (error) {
+    console.error('Error fetching products by metadata:', error);
+    return [];
+  }
+}
+
+/**
  * Get featured products for homepage
  */
-export async function getFeaturedProducts(): Promise<ProductWithCategory[]> {
+export async function getFeaturedProducts(): Promise<SerializedProductWithCategory[]> {
   try {
     return await unstable_cache(
       async () => {
@@ -125,7 +183,17 @@ export async function getFeaturedProducts(): Promise<ProductWithCategory[]> {
         });
 
         // Filter out any null/undefined products and ensure they have valid data
-        return products.filter(p => p && p.id && p.category);
+        const validProducts = products.filter(p => p && p.id && p.category);
+        
+        // Serialize Decimal fields (e.g., price) to number
+        const serializedProducts = validProducts.map((product) => ({
+          ...product,
+          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+            ? product.price.toNumber()
+            : Number(product.price),
+        })) as unknown as SerializedProductWithCategory[];
+        
+        return serializedProducts;
       },
       ['featured-products'],
       {
@@ -165,7 +233,7 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
       ...product,
       price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
         ? product.price.toNumber()
-        : product.price,
+        : Number(product.price),
     } as unknown as ProductWithCategory;
   } catch (error) {
     console.error('Error fetching product:', error);
@@ -244,7 +312,7 @@ export async function searchProducts({ query, page = 1, limit = 12 }: { query: s
       ...product,
       price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
         ? product.price.toNumber()
-        : product.price,
+        : Number(product.price),
     }));
     return { products: serializedProducts, total };
   } catch (error) {

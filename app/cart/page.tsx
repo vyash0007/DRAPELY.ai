@@ -81,7 +81,13 @@ export default async function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-6">
             {cart.items.map((item) => (
-              <CartItem key={item.id} item={item} />
+              <CartItem 
+                key={item.id} 
+                item={item}
+                userId={user.id}
+                hasPremium={user.hasPremium || false}
+                aiEnabled={user.aiEnabled || false}
+              />
             ))}
           </div>
 

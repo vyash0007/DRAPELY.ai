@@ -10,6 +10,8 @@ export interface CustomerWithStats {
   firstName: string | null;
   lastName: string | null;
   imageUrl: string | null;
+  aiEnabled: boolean;
+  hasPremium: boolean;
   createdAt: Date;
   totalOrders: number;
   totalSpent: number;
@@ -48,6 +50,8 @@ export async function getAdminCustomers({
           firstName: true,
           lastName: true,
           imageUrl: true,
+          aiEnabled: true,
+          hasPremium: true,
           createdAt: true,
           orders: {
             select: {
@@ -83,6 +87,8 @@ export async function getAdminCustomers({
         firstName: user.firstName,
         lastName: user.lastName,
         imageUrl: user.imageUrl,
+        aiEnabled: user.aiEnabled,
+        hasPremium: user.hasPremium,
         createdAt: user.createdAt,
         totalOrders: user.orders.length,
         totalSpent,
@@ -165,6 +171,58 @@ export async function getAdminCustomerById(id: string) {
   } catch (error) {
     console.error('Error fetching customer:', error);
     throw new Error('Failed to fetch customer');
+  }
+}
+
+/**
+ * Update user AI enabled status
+ */
+export async function updateUserAiEnabled(userId: string, aiEnabled: boolean) {
+  await requireAdminAuth();
+
+  try {
+    const user = await db.user.update({
+      where: { id: userId },
+      data: { aiEnabled },
+    });
+
+    return { success: true, user };
+  } catch (error: any) {
+    console.error('Error updating user AI status:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to update AI status',
+    };
+  }
+}
+
+/**
+ * Update user premium status
+ * If premium is enabled, AI is automatically enabled
+ */
+export async function updateUserPremiumStatus(userId: string, hasPremium: boolean) {
+  await requireAdminAuth();
+
+  try {
+    // If premium is enabled, automatically enable AI
+    // If premium is disabled, keep AI status as is (don't change it)
+    const updateData: { hasPremium: boolean; aiEnabled?: boolean } = { hasPremium };
+    if (hasPremium) {
+      updateData.aiEnabled = true;
+    }
+
+    const user = await db.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    return { success: true, user };
+  } catch (error: any) {
+    console.error('Error updating user premium status:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to update premium status',
+    };
   }
 }
 

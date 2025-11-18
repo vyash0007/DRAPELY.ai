@@ -19,6 +19,9 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const categorySlug = formData.get('categorySlug') as string | null;
+    const productId = formData.get('productId') as string | null;
+    const imageIndex = formData.get('imageIndex') as string | null;
 
     if (!file) {
       return NextResponse.json(
@@ -32,12 +35,28 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     const base64File = `data:${file.type};base64,${buffer.toString('base64')}`;
 
+    // Build folder path: ecommerce-products/{category-slug} or ecommerce-products if no category
+    const folderPath = categorySlug 
+      ? `ecommerce-products/${categorySlug}`
+      : 'ecommerce-products';
+
+    // Build image name: {productId}_{index} or use Cloudinary's default if no productId
+    // Note: public_id should not include folder path when folder parameter is used
+    let publicId: string | undefined;
+    
+    if (productId) {
+      const index = imageIndex !== null && imageIndex !== '0' ? `_${imageIndex}` : '';
+      // Only use productId and index, folder will be handled by folder parameter
+      publicId = `${productId}${index}`;
+    }
+
     // Upload to Cloudinary
     const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
       cloudinary.uploader.upload(
         base64File,
         {
-          folder: 'ecommerce-products',
+          folder: folderPath,
+          public_id: publicId, // Use custom name if productId provided (will be in the folder)
           resource_type: 'auto',
         },
         (error, result) => {

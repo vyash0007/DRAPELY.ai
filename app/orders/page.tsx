@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Package, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { getOrders } from '@/actions/orders';
 import { getCurrentUser } from '@/lib/auth';
+import { SmartImage } from '@/components/smart-image';
 import { CancelOrderButton } from '@/components/cancel-order-button';
 
 export default async function OrdersPage() {
@@ -106,9 +106,15 @@ export default async function OrdersPage() {
                         {/* Product Image */}
                         <Link href={`/products/${item.product.slug}`}>
                           <div className="relative w-28 h-32 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                            <Image
+                            <SmartImage
                               src={imageUrl}
                               alt={item.product.title}
+                              userId={user.id}
+                              productId={item.product.id}
+                              hasPremium={user.hasPremium || false}
+                              aiEnabled={user.aiEnabled || false}
+                              isTrialProduct={item.product.metadata?.is_trial === 'true'}
+                              imageIndex={0}
                               fill
                               className="object-cover"
                               sizes="112px"

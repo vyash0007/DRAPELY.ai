@@ -1,13 +1,16 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ProductWithCategory } from '@/actions/products';
+import { SerializedProductWithCategory } from '@/actions/products';
+import { SmartImage } from '@/components/smart-image';
 
 interface FeaturedProductProps {
-    products: ProductWithCategory[];
+    products: SerializedProductWithCategory[];
+    userId?: string | null;
+    hasPremium?: boolean;
+    aiEnabled?: boolean;
 }
 
-const FeaturedProduct = ({ products }: FeaturedProductProps) => {
+const FeaturedProduct = ({ products, userId, hasPremium = false, aiEnabled = false }: FeaturedProductProps) => {
     const displayProducts = products.slice(0, 3);
 
     return (
@@ -19,7 +22,7 @@ const FeaturedProduct = ({ products }: FeaturedProductProps) => {
                         Our Featured
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-                       Explore what’s trending! updated to keep you ahead of the fashion curve.
+                       Explore what's trending! updated to keep you ahead of the fashion curve.
                     </p>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
                         From must-have outfits to kids' fashion, our featured lineup highlights the products our community can't get enough of. Curated for every style and story.
@@ -51,9 +54,15 @@ const FeaturedProduct = ({ products }: FeaturedProductProps) => {
                                 <Link href={`/products/${product.slug}`}>
                                     <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
                                         {product.images && product.images.length > 0 ? (
-                                            <Image
+                                            <SmartImage
                                                 src={product.images[0]}
                                                 alt={product.title}
+                                                userId={userId}
+                                                productId={product.id}
+                                                hasPremium={hasPremium}
+                                                aiEnabled={aiEnabled}
+                                                isTrialProduct={product.metadata?.is_trial === 'true'}
+                                                imageIndex={0}
                                                 fill
                                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                                                 sizes="(max-width: 768px) 100vw, 33vw"

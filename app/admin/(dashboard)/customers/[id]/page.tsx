@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ArrowLeft, UserCircle, Mail, Calendar, DollarSign, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getAdminCustomerById } from '@/actions/admin-customers';
+import { CustomerToggles } from '@/components/admin/customer-toggles';
 
 interface PageProps {
   params: Promise<{
@@ -104,6 +105,16 @@ export default async function CustomerDetailPage({ params }: PageProps) {
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Feature Toggles */}
+          <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100">
+            <h2 className="text-xl font-light tracking-wide text-gray-900 mb-4">Features</h2>
+            <CustomerToggles 
+              userId={customer.id}
+              aiEnabled={customer.aiEnabled}
+              hasPremium={customer.hasPremium}
+            />
           </div>
         </div>
 
