@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { addToCart } from '@/actions/cart';
+import { toast } from 'sonner';
 
 interface AddToCartButtonProps {
   productId: string;
@@ -28,11 +29,12 @@ export function AddToCartButton({
     try {
       setIsLoading(true);
       await addToCart(productId, quantity, size);
+      toast.success('Added to Cart');
       // Refresh in background (non-blocking)
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add to cart';
-      alert(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

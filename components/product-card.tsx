@@ -9,6 +9,7 @@ import { ProductWithCategory } from '@/actions/products';
 import { addToCart } from '@/actions/cart';
 import { useRouter } from 'next/navigation';
 import { WishlistButton } from '@/components/wishlist-button';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: SerializedProductWithCategory;
@@ -62,12 +63,11 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsAdding(true);
     try {
       await addToCart(product.id);
+      toast.success('Added to Cart');
       router.refresh();
-      // Optional: Show success notification
-      console.log('Added to cart successfully');
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      // Optional: Show error notification
+      const message = error instanceof Error ? error.message : 'Failed to add to cart';
+      toast.error(message);
     } finally {
       setIsAdding(false);
     }
