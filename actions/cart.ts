@@ -197,8 +197,8 @@ export async function addToCart(productId: string, quantity: number = 1, size?: 
     // Revalidate all pages to update navbar cart count
     revalidatePath('/', 'layout');
     // Revalidate cart cache tags
-    revalidateTag('cart');
-    revalidateTag(`cart-${user.id}`);
+    revalidateTag('cart', 'max');
+    revalidateTag(`cart-${user.id}`, 'max');
 
     return { success: true, message: 'Added to cart' };
   } catch (error) {
@@ -236,8 +236,8 @@ export async function removeFromCart(cartItemId: string) {
 
     revalidatePath('/cart');
     revalidatePath('/', 'layout');
-    revalidateTag('cart');
-    revalidateTag(`cart-${user.id}`);
+    revalidateTag('cart', 'max');
+    revalidateTag(`cart-${user.id}`, 'max');
     return { success: true, message: 'Removed from cart' };
   } catch (error) {
     console.error('Error removing from cart:', error);
@@ -284,8 +284,8 @@ export async function updateCartItemQuantity(cartItemId: string, quantity: numbe
 
     revalidatePath('/cart');
     revalidatePath('/', 'layout');
-    revalidateTag('cart');
-    revalidateTag(`cart-${user.id}`);
+    revalidateTag('cart', 'max');
+    revalidateTag(`cart-${user.id}`, 'max');
     return { success: true, message: 'Cart updated' };
   } catch (error) {
     console.error('Error updating cart:', error);
@@ -316,8 +316,8 @@ export async function clearCart() {
 
     revalidatePath('/cart');
     revalidatePath('/', 'layout');
-    revalidateTag('cart');
-    revalidateTag(`cart-${user.id}`);
+    revalidateTag('cart', 'max');
+    revalidateTag(`cart-${user.id}`, 'max');
     return { success: true, message: 'Cart cleared' };
   } catch (error) {
     console.error('Error clearing cart:', error);
