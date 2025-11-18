@@ -53,6 +53,7 @@ export async function getAdminCustomers({
             select: {
               total: true,
               createdAt: true,
+              status: true,
             },
           },
         },
@@ -64,12 +65,14 @@ export async function getAdminCustomers({
     ]);
 
     const customers: CustomerWithStats[] = users.map((user) => {
-      const totalSpent = user.orders.reduce(
-        (sum, order) => sum + (typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
-          ? order.total.toNumber()
-          : Number(order.total)),
-        0
-      );
+      const totalSpent = user.orders
+        .filter(order => order.status !== 'CANCELLED')
+        .reduce(
+          (sum, order) => sum + (typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
+            ? order.total.toNumber()
+            : Number(order.total)),
+          0
+        );
       const lastOrder = user.orders.length > 0
         ? user.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
         : null;
@@ -133,12 +136,14 @@ export async function getAdminCustomerById(id: string) {
       return null;
     }
 
-    const totalSpent = user.orders.reduce(
-      (sum, order) => sum + (typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
-        ? order.total.toNumber()
-        : Number(order.total)),
-      0
-    );
+    const totalSpent = user.orders
+      .filter(order => order.status !== 'CANCELLED')
+      .reduce(
+        (sum, order) => sum + (typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
+          ? order.total.toNumber()
+          : Number(order.total)),
+        0
+      );
 
     return {
       ...user,
