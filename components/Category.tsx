@@ -23,7 +23,7 @@ const Category = () => {
               {/* Image at top right */}
               <div className="absolute -top-2 -right-2 w-full h-full max-w-[520px] max-h-[520px]">
                 <Image
-                  src="/womenM-removebg-preview.png"
+                  src="/womenM5.png"
                   alt="Women's Fashion"
                   fill
                   className="object-contain object-right-top transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
@@ -65,9 +65,9 @@ const Category = () => {
                     Shop Now
                   </span>
                 </div>
-                <div className="relative w-44 md:w-56 h-full min-h-[240px]">
+                <div className="relative w-44 md:w-56 h-full min-h-[400px] ">
                   <Image
-                    src="/menM-removebg-preview.png"
+                    src="/menM2.png"
                     alt="Men's Fashion"
                     fill
                     className="object-contain object-right transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
@@ -94,9 +94,9 @@ const Category = () => {
                     Shop Now
                   </span>
                 </div>
-                <div className="relative w-44 md:w-56 h-full min-h-[240px]">
+                <div className="relative w-44 md:w-56 h-full min-h-[360px]">
                   <Image
-                    src="/accessoriesM-removebg-preview.png"
+                    src="/kidM2.png"
                     alt="Kids"
                     fill
                     className="object-contain object-right transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
