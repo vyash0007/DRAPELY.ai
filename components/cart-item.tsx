@@ -2,18 +2,21 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2, Plus, Minus, Edit } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { removeFromCart, updateCartItemQuantity } from '@/actions/cart';
 import { CartItemWithProduct } from '@/actions/cart';
+import { SmartImage } from '@/components/smart-image';
 
 interface CartItemProps {
   item: CartItemWithProduct;
+  userId?: string | null;
+  hasPremium?: boolean;
+  aiEnabled?: boolean;
 }
 
-export function CartItem({ item }: CartItemProps) {
+export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }: CartItemProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
 
@@ -45,6 +48,7 @@ export function CartItem({ item }: CartItemProps) {
   };
 
   const imageUrl = item.product.images[0] || '/placeholder.png';
+  const isTrialProduct = item.product.metadata?.is_trial === 'true';
 
   // Calculate original price with discount
   const originalPrice = Number(item.product.price) * 1.2;
@@ -55,9 +59,15 @@ export function CartItem({ item }: CartItemProps) {
       {/* Product Image */}
       <Link href={`/products/${item.product.slug}`}>
         <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
-          <Image
+          <SmartImage
             src={imageUrl}
             alt={item.product.title}
+            userId={userId}
+            productId={item.product.id}
+            hasPremium={hasPremium}
+            aiEnabled={aiEnabled}
+            isTrialProduct={isTrialProduct}
+            imageIndex={0}
             fill
             className="object-cover"
             sizes="160px"

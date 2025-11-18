@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 interface ImageUploaderProps {
   images: string[];
   onChange: (images: string[]) => void;
+  categorySlug?: string;
+  productId?: string;
 }
 
-export function ImageUploader({ images, onChange }: ImageUploaderProps) {
+export function ImageUploader({ images, onChange, categorySlug, productId }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,9 +24,17 @@ export function ImageUploader({ images, onChange }: ImageUploaderProps) {
     setError('');
 
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
+      const uploadPromises = Array.from(files).map(async (file, index) => {
         const formData = new FormData();
         formData.append('file', file);
+        if (categorySlug) {
+          formData.append('categorySlug', categorySlug);
+        }
+        if (productId) {
+          formData.append('productId', productId);
+        }
+        // Add index for multiple images of same product
+        formData.append('imageIndex', index.toString());
 
         const response = await fetch('/api/upload', {
           method: 'POST',

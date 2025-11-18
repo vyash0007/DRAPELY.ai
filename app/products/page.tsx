@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getProducts } from '@/actions/products';
+import { getProducts, getProductsByMetadata } from '@/actions/products';
+import { getCurrentUser } from '@/lib/auth';
 import { ProductGrid } from '@/components/product-grid';
 
 interface ProductsPageProps {
@@ -14,7 +15,38 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const page = params.page;
   const currentPage = page ? parseInt(page, 10) : 1;
   const limit = 12;
-  const { products, total } = await getProducts({ categorySlug: category, page: currentPage, limit });
+  
+  const [productsData, user] = await Promise.all([
+    getProducts({ categorySlug: category, page: currentPage, limit }),
+    getCurrentUser(),
+  ]);
+  
+  let { products, total } = productsData;
+
+  // Debug: Print user ID and product IDs
+  console.log('=== Products Page Debug ===');
+  console.log('User ID:', user?.id || 'No user');
+  console.log('User AI Enabled:', user?.aiEnabled || false);
+  console.log('Product IDs:', products.map(p => p.id));
+  console.log('Total Products:', products.length);
+  console.log('========================');
+
+  // Get AI products if user has AI enabled (only on first page and no category filter)
+  // Merge them with regular products, putting AI products first
+  if (user?.aiEnabled && currentPage === 1 && !category) {
+    const aiProducts = await getProductsByMetadata('is_trial', 'true', 6);
+    
+    console.log('AI Products IDs:', aiProducts.map(p => p.id));
+    
+    // Remove AI products from regular products to avoid duplicates
+    const aiProductIds = new Set(aiProducts.map(p => p.id));
+    const regularProducts = products.filter(p => !aiProductIds.has(p.id));
+    
+    // Combine: AI products first, then regular products
+    products = [...aiProducts, ...regularProducts];
+    
+    console.log('Final Products IDs (after merge):', products.map(p => p.id));
+  }
 
   // Format category name for display
   const categoryTitle = category
@@ -41,7 +73,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </div>
 
         {/* Products Grid */}
-        <ProductGrid products={products} />
+        <ProductGrid 
+        products={products}
+        userId={user?.id || null}
+        hasPremium={user?.hasPremium || false}
+        aiEnabled={user?.aiEnabled || false}
+      />
 
         {/* Pagination Controls */}
         {totalPages > 1 && (

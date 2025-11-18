@@ -11,6 +11,7 @@ export interface SizeStockData {
 }
 
 export interface ProductFormData {
+  id?: string; // Optional: for new products, use temp ID generated on form load
   title: string;
   slug: string;
   description: string;
@@ -23,6 +24,7 @@ export interface ProductFormData {
   composition?: string;
   sizes: string[];
   sizeStocks: SizeStockData[];
+  metadata?: Record<string, string>;
 }
 
 export interface ProductFilters {
@@ -74,10 +76,11 @@ export async function getAdminProducts(filters: ProductFilters = {}) {
       db.product.count({ where }),
     ]);
 
-    // Convert Decimal fields to plain numbers for client-safe serialization
+    // Convert Decimal fields to plain numbers and ensure metadata is properly serialized
     const safeProducts = products.map((p) => ({
       ...p,
       price: Number((p as any).price),
+      metadata: (p.metadata as Record<string, string>) || {},
     }));
 
     return {
@@ -120,10 +123,11 @@ export async function getAdminProductById(id: string) {
 
     if (!product) return null;
 
-    // Convert Decimal price to plain number to avoid passing Decimal to client components
+    // Convert Decimal price to plain number and ensure metadata is properly serialized
     return {
       ...product,
       price: Number((product as any).price),
+      metadata: (product.metadata as Record<string, string>) || {},
     };
   } catch (error) {
     console.error('Error fetching admin product:', error);
@@ -140,6 +144,7 @@ export async function createProduct(data: ProductFormData) {
   try {
     const product = await db.product.create({
       data: {
+        id: data.id, // Use provided ID (temp ID from form) or let Prisma generate one
         title: data.title,
         slug: data.slug,
         description: data.description,
@@ -151,6 +156,7 @@ export async function createProduct(data: ProductFormData) {
         fit: data.fit,
         composition: data.composition,
         sizes: data.sizes,
+        metadata: data.metadata || {},
         sizeStocks: {
           create: data.sizeStocks.map((ss) => ({
             size: ss.size,
@@ -207,6 +213,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
         fit: data.fit,
         composition: data.composition,
         sizes: data.sizes,
+        metadata: data.metadata || {},
         sizeStocks: {
           create: data.sizeStocks.map((ss) => ({
             size: ss.size,

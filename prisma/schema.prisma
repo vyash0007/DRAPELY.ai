@@ -14,6 +14,8 @@ model User {
   firstName     String?
   lastName      String?
   imageUrl      String?
+  aiEnabled     Boolean        @default(false)
+  hasPremium    Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   carts         Cart?
@@ -51,6 +53,7 @@ model Product {
   composition   String?
   fit           String?
   sizes         String[]       @default([])
+  metadata      Json?          @default("{}")
   cartItems     CartItem[]
   orderItems    OrderItem[]
   category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)

@@ -1,11 +1,12 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { getWishlist } from '@/actions/wishlist';
 import { formatPrice } from '@/lib/utils';
 import { WishlistButton } from '@/components/wishlist-button';
 import { AddToCartButton } from '@/components/add-to-cart-button';
+import { SmartImage } from '@/components/smart-image';
+import { getCurrentUser } from '@/lib/auth';
 
 export const metadata = {
   title: 'My Wishlist | Fashion Store',
@@ -13,7 +14,10 @@ export const metadata = {
 };
 
 async function WishlistContent() {
-  const wishlistItems = await getWishlist();
+  const [wishlistItems, user] = await Promise.all([
+    getWishlist(),
+    getCurrentUser(),
+  ]);
 
   if (wishlistItems.length === 0) {
     return (
@@ -68,9 +72,15 @@ async function WishlistContent() {
               <div className="flex-1 flex flex-col">
                 <Link href={`/products/${product.slug}`} className="block flex-1">
                   <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 mb-4">
-                    <Image
+                    <SmartImage
                       src={image}
                       alt={product.title}
+                      userId={user?.id || null}
+                      productId={product.id}
+                      hasPremium={user?.hasPremium || false}
+                      aiEnabled={user?.aiEnabled || false}
+                      isTrialProduct={product.metadata?.is_trial === 'true'}
+                      imageIndex={0}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"

@@ -156,17 +156,17 @@ export async function getOrders(): Promise<OrderWithItems[]> {
           ...order,
           total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
             ? order.total.toNumber()
-            : order.total,
+            : Number(order.total),
           items: order.items.map((item) => ({
             ...item,
             price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
               ? item.price.toNumber()
-              : item.price,
+              : Number(item.price),
             product: {
               ...item.product,
               price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
                 ? item.product.price.toNumber()
-                : item.product.price,
+                : Number(item.product.price),
             },
           })),
         })) as unknown as OrderWithItems[];
@@ -229,17 +229,17 @@ export async function getOrderById(orderId: string): Promise<OrderWithItems | nu
           ...order,
           total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
             ? order.total.toNumber()
-            : order.total,
+            : Number(order.total),
           items: order.items.map((item) => ({
             ...item,
             price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
               ? item.price.toNumber()
-              : item.price,
+              : Number(item.price),
             product: {
               ...item.product,
               price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
                 ? item.product.price.toNumber()
-                : item.product.price,
+                : Number(item.product.price),
             },
           })),
         } as unknown as OrderWithItems;
@@ -302,17 +302,17 @@ export async function getOrderBySessionId(sessionId: string): Promise<OrderWithI
           ...order,
           total: typeof order.total === 'object' && order.total !== null && 'toNumber' in order.total
             ? order.total.toNumber()
-            : order.total,
+            : Number(order.total),
           items: order.items.map((item) => ({
             ...item,
             price: typeof item.price === 'object' && item.price !== null && 'toNumber' in item.price
               ? item.price.toNumber()
-              : item.price,
+              : Number(item.price),
             product: {
               ...item.product,
               price: typeof item.product.price === 'object' && item.product.price !== null && 'toNumber' in item.product.price
                 ? item.product.price.toNumber()
-                : item.product.price,
+                : Number(item.product.price),
             },
           })),
         } as unknown as OrderWithItems;

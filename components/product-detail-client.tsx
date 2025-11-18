@@ -1,16 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { ProductWithCategory } from '@/actions/products';
 import { formatPrice } from '@/lib/utils';
 import { AddToCartButton } from '@/components/add-to-cart-button';
 import { WishlistButton } from '@/components/wishlist-button';
+import { SmartImage } from '@/components/smart-image';
 
 interface ProductDetailClientProps {
   product: ProductWithCategory;
+  userId?: string | null;
+  hasPremium?: boolean;
+  aiEnabled?: boolean;
 }
 
 // Color options matching Zara style
@@ -22,7 +25,7 @@ const colorOptions = [
   { name: 'Black', value: '#000000', border: false },
 ];
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, userId, hasPremium = false, aiEnabled = false }: ProductDetailClientProps) {
   // Use product sizes if available, otherwise default to standard sizes
   const availableSizes = product.sizes && product.sizes.length > 0
     ? product.sizes
@@ -40,6 +43,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedColor, setSelectedColor] = useState(0);
 
   const images = product.images.length > 0 ? product.images : ['/placeholder.png'];
+  const isTrialProduct = product.metadata?.is_trial === 'true';
 
   // Mock product number based on product ID
   const productNumber = `${43287340 + product.id}`;
@@ -81,15 +85,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 key={index}
                 className="relative aspect-[4/5] overflow-hidden bg-gray-100"
               >
-                <Image
+                <SmartImage
                   src={image}
                   alt={`${product.title} ${index + 1}`}
+                  userId={userId}
+                  productId={product.id}
+                  hasPremium={hasPremium}
+                  aiEnabled={aiEnabled}
+                  isTrialProduct={isTrialProduct}
+                  imageIndex={index}
                   fill
                   className="object-cover"
                   priority={index === 0}
                   sizes="(max-width: 1024px) 100vw, 45vw"
                   quality={index === 0 ? 90 : 85}
                   loading={index === 0 ? undefined : 'lazy'}
+                  badgePosition="right"
                 />
               </div>
             ))}

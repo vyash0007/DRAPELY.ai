@@ -10,6 +10,7 @@ interface SerializedProductWithCategory {
   stock: number;
   images: string[];
   featured: boolean;
+  metadata?: Record<string, string>;
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -26,9 +27,12 @@ interface SerializedProductWithCategory {
 interface ProductGridProps {
   products: SerializedProductWithCategory[];
   emptyMessage?: string;
+  userId?: string | null;
+  hasPremium?: boolean;
+  aiEnabled?: boolean;
 }
 
-export function ProductGrid({ products, emptyMessage = 'No products found' }: ProductGridProps) {
+export function ProductGrid({ products, emptyMessage = 'No products found', userId, hasPremium = false, aiEnabled = false }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -48,7 +52,13 @@ export function ProductGrid({ products, emptyMessage = 'No products found' }: Pr
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard 
+          key={product.id} 
+          product={product}
+          userId={userId}
+          hasPremium={hasPremium}
+          aiEnabled={aiEnabled}
+        />
       ))}
     </div>
   );

@@ -33,6 +33,7 @@ interface SerializedProduct {
   fit: string | null;
   composition: string | null;
   sizes: string[];
+  metadata: Record<string, string> | null;
   sizeStocks: Array<{
     id: string;
     size: string;
@@ -52,10 +53,20 @@ interface ProductFormProps {
   categories: Category[];
 }
 
+// Generate a temporary ID for new products (similar to cuid format)
+function generateTempId(): string {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2, 15);
+  return `cl${timestamp}${random}`;
+}
+
 export function ProductForm({ product, categories }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Generate temp ID for new products, use existing ID for updates
+  const [productId] = useState(() => product?.id || generateTempId());
 
   const [formData, setFormData] = useState({
     title: product?.title || '',
@@ -69,6 +80,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     fit: product?.fit || '',
     composition: product?.composition || '',
     sizes: product?.sizes || [],
+    metadata: product?.metadata || {},
     sizeStocks: product?.sizeStocks?.map(ss => ({
       size: ss.size,
       quantity: ss.quantity,
@@ -84,10 +96,21 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     setLoading(true);
 
     try {
+      // Filter out empty metadata keys
+      const cleanedMetadata: Record<string, string> = {};
+      Object.entries(formData.metadata).forEach(([key, value]) => {
+        if (key.trim() && value.trim()) {
+          cleanedMetadata[key.trim()] = value.trim();
+        }
+      });
+
       // Use calculated total stock instead of manual input
       const submitData = {
         ...formData,
         stock: totalStock,
+        metadata: cleanedMetadata,
+        // For new products, include the temp ID so images match
+        ...(product ? {} : { id: productId }),
       };
 
       const result = product
@@ -354,7 +377,93 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         <ImageUploader
           images={formData.images}
           onChange={(images) => setFormData({ ...formData, images })}
+          categorySlug={categories.find(c => c.id === formData.categoryId)?.slug}
+          productId={productId}
         />
+      </div>
+
+      {/* Metadata */}
+      <div>
+        <Label>Product Metadata (Key-Value Pairs)</Label>
+        <div className="mt-2 space-y-3">
+          <div className="text-sm text-gray-500 mb-2">
+            Add custom metadata as key-value pairs (e.g., Brand, Material, Care Instructions, etc.)
+          </div>
+          <div className="space-y-2 border rounded-lg p-4">
+            {Object.entries(formData.metadata).map(([key, value], index) => (
+              <div key={index} className="grid grid-cols-2 gap-2 items-end">
+                <div>
+                  <Label htmlFor={`meta-key-${index}`} className="text-xs text-gray-600">
+                    Key
+                  </Label>
+                  <Input
+                    id={`meta-key-${index}`}
+                    value={key}
+                    onChange={(e) => {
+                      const newMetadata = { ...formData.metadata };
+                      delete newMetadata[key];
+                      newMetadata[e.target.value] = value;
+                      setFormData({ ...formData, metadata: newMetadata });
+                    }}
+                    placeholder="e.g., Brand"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`meta-value-${index}`} className="text-xs text-gray-600">
+                    Value
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id={`meta-value-${index}`}
+                      value={value}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          metadata: { ...formData.metadata, [key]: e.target.value },
+                        });
+                      }}
+                      placeholder="e.g., Nike"
+                      className="mt-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newMetadata = { ...formData.metadata };
+                        delete newMetadata[key];
+                        setFormData({ ...formData, metadata: newMetadata });
+                      }}
+                      className="mt-1"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setFormData({
+                  ...formData,
+                  metadata: { ...formData.metadata, '': '' },
+                });
+              }}
+              className="w-full mt-2"
+            >
+              + Add Metadata Field
+            </Button>
+            {Object.keys(formData.metadata).length === 0 && (
+              <p className="text-sm text-gray-400 text-center py-2">
+                No metadata added. Click "Add Metadata Field" to add key-value pairs.
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Submit Buttons */}
