@@ -62,7 +62,7 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
           <SmartImage
             src={imageUrl}
             alt={item.product.title}
-            userId={userId}
+            userId={userId || null}
             productId={item.product.id}
             hasPremium={hasPremium}
             aiEnabled={aiEnabled}

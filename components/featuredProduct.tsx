@@ -57,7 +57,7 @@ const FeaturedProduct = ({ products, userId, hasPremium = false, aiEnabled = fal
                                             <SmartImage
                                                 src={product.images[0]}
                                                 alt={product.title}
-                                                userId={userId}
+                                                userId={userId || null}
                                                 productId={product.id}
                                                 hasPremium={hasPremium}
                                                 aiEnabled={aiEnabled}

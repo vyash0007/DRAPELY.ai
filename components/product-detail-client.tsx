@@ -43,7 +43,7 @@ export function ProductDetailClient({ product, userId, hasPremium = false, aiEna
   const [selectedColor, setSelectedColor] = useState(0);
 
   const images = product.images.length > 0 ? product.images : ['/placeholder.png'];
-  const isTrialProduct = product.metadata?.is_trial === 'true';
+  const isTrialProduct = (product.metadata as { is_trial?: string })?.is_trial === 'true';
 
   // Mock product number based on product ID
   const productNumber = `${43287340 + product.id}`;
@@ -88,7 +88,7 @@ export function ProductDetailClient({ product, userId, hasPremium = false, aiEna
                 <SmartImage
                   src={image}
                   alt={`${product.title} ${index + 1}`}
-                  userId={userId}
+                  userId={userId || null}
                   productId={product.id}
                   hasPremium={hasPremium}
                   aiEnabled={aiEnabled}

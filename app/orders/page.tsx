@@ -113,7 +113,7 @@ export default async function OrdersPage() {
                               productId={item.product.id}
                               hasPremium={user.hasPremium || false}
                               aiEnabled={user.aiEnabled || false}
-                              isTrialProduct={item.product.metadata?.is_trial === 'true'}
+                              isTrialProduct={(item.product.metadata as { is_trial?: string })?.is_trial === 'true'}
                               imageIndex={0}
                               fill
                               className="object-cover"

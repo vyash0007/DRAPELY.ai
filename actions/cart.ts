@@ -16,6 +16,7 @@ export interface CartItemWithProduct {
     price: number;
     images: string[];
     stock: number;
+    metadata?: Record<string, string>;
   };
 }
 
@@ -56,6 +57,7 @@ export async function getCart(): Promise<CartData | null> {
                     price: true,
                     images: true,
                     stock: true,
+                    metadata: true,
                   },
                 },
               },
@@ -82,6 +84,7 @@ export async function getCart(): Promise<CartData | null> {
             product: {
               ...item.product,
               price: Number(item.product.price),
+              metadata: (item.product.metadata as Record<string, string>) || {},
             },
           })),
           totalItems,

@@ -15,6 +15,7 @@ export interface WishlistItemWithProduct {
     price: number;
     images: string[];
     stock: number;
+    metadata?: Record<string, string>;
     category: {
       id: string;
       name: string;
@@ -52,6 +53,7 @@ export async function getWishlist(): Promise<WishlistItemWithProduct[]> {
                 price: true,
                 images: true,
                 stock: true,
+                metadata: true,
                 category: {
                   select: {
                     id: true,
@@ -73,6 +75,7 @@ export async function getWishlist(): Promise<WishlistItemWithProduct[]> {
           product: {
             ...item.product,
             price: Number(item.product.price),
+            metadata: (item.product.metadata as Record<string, string>) || {},
           },
           createdAt: item.createdAt,
         }));

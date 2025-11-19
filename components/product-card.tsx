@@ -88,7 +88,7 @@ export function ProductCard({ product, userId, hasPremium = false, aiEnabled = f
           <SmartImage
             src={imageUrl}
             alt={product.title}
-            userId={userId}
+            userId={userId || null}
             productId={product.id}
             hasPremium={hasPremium}
             aiEnabled={aiEnabled}
