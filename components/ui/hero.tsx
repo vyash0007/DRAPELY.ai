@@ -73,7 +73,7 @@ const Hero = () => {
             </p>
 
             <div className="flex gap-4 pt-1">
-              <Link href="/products">
+              <Link href="/tryonyou">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-10 py-6 text-base rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 font-bold uppercase tracking-wide"

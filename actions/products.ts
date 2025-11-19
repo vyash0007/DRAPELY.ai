@@ -11,9 +11,10 @@ export interface ProductWithCategory extends Product {
 }
 
 // Serialized type for client components
-export type SerializedProductWithCategory = Omit<ProductWithCategory, 'price'> & {
+export type SerializedProductWithCategory = Omit<ProductWithCategory, 'price' | 'metadata'> & {
   price: number;
   category: Category;
+  metadata?: Record<string, string>;
 };
 
 /**
@@ -313,6 +314,7 @@ export async function searchProducts({ query, page = 1, limit = 12 }: { query: s
       price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
         ? product.price.toNumber()
         : Number(product.price),
+      metadata: (product.metadata as Record<string, string>) || {},
     }));
     return { products: serializedProducts, total };
   } catch (error) {
