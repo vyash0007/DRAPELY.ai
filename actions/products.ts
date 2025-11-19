@@ -37,42 +37,9 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
         const [products, total] = await Promise.all([
           db.product.findMany({
             where,
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              description: true,
-              price: true,
-              stock: true,
-              images: true,
-              featured: true,
-              fit: true,
-              composition: true,
-              sizes: true,
-              metadata: true,
-              sizeStocks: {
-                select: {
-                  id: true,
-                  size: true,
-                  quantity: true,
-                  createdAt: true,
-                  updatedAt: true,
-                  productId: true,
-                },
-              },
-              categoryId: true,
-              createdAt: true,
-              updatedAt: true,
-              category: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  description: true,
-                  createdAt: true,
-                  updatedAt: true,
-                },
-              },
+            include: {
+              category: true,
+              sizeStocks: true,
             },
             orderBy: {
               createdAt: 'desc',
@@ -83,16 +50,18 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
           db.product.count({ where }),
         ]);
         // Serialize Decimal fields (e.g., price) to number
-        const serializedProducts = products.map((product) => ({
-          ...product,
-          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
-            ? product.price.toNumber()
-            : Number(product.price),
-          metadata: (product.metadata as Record<string, string>) || {},
-          sizeStocks: product.sizeStocks?.map((ss) => ({ ...ss })),
-        }));
-        const serializedProductsTyped = serializedProducts as unknown as SerializedProductWithCategory[];
-        return { products: serializedProducts, total };
+        const serializedProducts = products.map((product) => {
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          return {
+            ...product,
+            price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+              ? product.price.toNumber()
+              : Number(product.price),
+            metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+            sizeStocks: product.sizeStocks?.map((ss) => ({ ...ss })),
+          };
+        });
+        return { products: serializedProducts as unknown as SerializedProductWithCategory[], total };
       },
       [cacheKey],
       {
@@ -131,8 +100,9 @@ export async function getProductsByMetadata(
 
         // Filter products by metadata
         const filteredProducts = products.filter((product) => {
-          if (!product.metadata) return false;
-          const metadata = product.metadata as Record<string, any>;
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          if (!productWithMetadata.metadata) return false;
+          const metadata = productWithMetadata.metadata as Record<string, any>;
           return metadata[metadataKey] === metadataValue;
         });
 
@@ -140,13 +110,16 @@ export async function getProductsByMetadata(
         const limitedProducts = filteredProducts.slice(0, limit);
         const validProducts = limitedProducts.filter(p => p && p.id && p.category);
         
-        const serializedProducts = validProducts.map((product) => ({
-          ...product,
-          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
-            ? product.price.toNumber()
-            : Number(product.price),
-          metadata: (product.metadata as Record<string, string>) || {},
-        })) as unknown as SerializedProductWithCategory[];
+        const serializedProducts = validProducts.map((product) => {
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          return {
+            ...product,
+            price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+              ? product.price.toNumber()
+              : Number(product.price),
+            metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+          };
+        }) as unknown as SerializedProductWithCategory[];
         
         return serializedProducts;
       },
@@ -187,12 +160,16 @@ export async function getFeaturedProducts(): Promise<SerializedProductWithCatego
         const validProducts = products.filter(p => p && p.id && p.category);
         
         // Serialize Decimal fields (e.g., price) to number
-        const serializedProducts = validProducts.map((product) => ({
-          ...product,
-          price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
-            ? product.price.toNumber()
-            : Number(product.price),
-        })) as unknown as SerializedProductWithCategory[];
+        const serializedProducts = validProducts.map((product) => {
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          return {
+            ...product,
+            price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+              ? product.price.toNumber()
+              : Number(product.price),
+            metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+          };
+        }) as unknown as SerializedProductWithCategory[];
         
         return serializedProducts;
       },
@@ -213,7 +190,7 @@ export async function getFeaturedProducts(): Promise<SerializedProductWithCatego
 /**
  * Get a single product by slug
  */
-export async function getProductBySlug(slug: string): Promise<ProductWithCategory | null> {
+export async function getProductBySlug(slug: string): Promise<SerializedProductWithCategory | null> {
   try {
     const product = await db.product.findUnique({
       where: {
@@ -230,12 +207,14 @@ export async function getProductBySlug(slug: string): Promise<ProductWithCategor
     }
 
     // Serialize Decimal fields (e.g., price) to number
+    const productWithMetadata = product as typeof product & { metadata?: any };
     return {
       ...product,
       price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
         ? product.price.toNumber()
         : Number(product.price),
-    } as unknown as ProductWithCategory;
+      metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+    } as unknown as SerializedProductWithCategory;
   } catch (error) {
     console.error('Error fetching product:', error);
     throw new Error('Failed to fetch product');
@@ -309,14 +288,17 @@ export async function searchProducts({ query, page = 1, limit = 12 }: { query: s
       db.product.count({ where }),
     ]);
     // Serialize Decimal fields (e.g., price) to number
-    const serializedProducts = products.map((product) => ({
-      ...product,
-      price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
-        ? product.price.toNumber()
-        : Number(product.price),
-      metadata: (product.metadata as Record<string, string>) || {},
-    }));
-    return { products: serializedProducts, total };
+    const serializedProducts = products.map((product) => {
+      const productWithMetadata = product as typeof product & { metadata?: any };
+      return {
+        ...product,
+        price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+          ? product.price.toNumber()
+          : Number(product.price),
+        metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+      };
+    });
+    return { products: serializedProducts as unknown as SerializedProductWithCategory[], total };
   } catch (error) {
     console.error('Error searching products:', error);
     return { products: [], total: 0 };

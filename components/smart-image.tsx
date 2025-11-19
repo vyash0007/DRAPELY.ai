@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getUserSpecificImageUrl, getBestImageUrl } from '@/actions/images';
-import { Sparkles } from 'lucide-react';
+import { GiAbstract090 } from "react-icons/gi";
+import { GiAbstract103 } from "react-icons/gi";
 
 interface SmartImageProps {
   src: string;
@@ -249,15 +250,14 @@ export function SmartImage({
       {/* Toggle Badge - positioned based on badgePosition prop */}
       <button
         onClick={handleToggle}
-        className={`absolute top-2 z-10 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2 text-xs font-semibold shadow-lg hover:bg-white transition-all duration-200 hover:scale-105 active:scale-95 border border-gray-200 ${
-          badgePosition === 'left' ? 'left-2' : 'right-2'
+        className={`absolute top-3 z-10 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
+          badgePosition === 'left' ? 'left-3' : 'right-3'
         }`}
         aria-label={showAiImage ? 'Show original image' : 'Show AI image'}
         title={showAiImage ? 'Click to view original' : 'Click to view AI try-on'}
       >
-        <Sparkles className={`w-3.5 h-3.5 ${showAiImage ? 'text-purple-600' : 'text-gray-400'}`} />
-        <span className={showAiImage ? 'text-purple-700' : 'text-gray-600'}>
-          {showAiImage ? 'AI View' : 'Original'}
+        <span className={`${showAiImage ? 'text-purple-700' : 'text-gray-600'}`}>
+          {showAiImage ? <GiAbstract090 className='w-5 h-5'/> : <GiAbstract103 className='w-5 h-5' />}
         </span>
       </button>
     </>

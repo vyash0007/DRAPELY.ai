@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
-import { ProductWithCategory } from '@/actions/products';
+import { SerializedProductWithCategory } from '@/actions/products';
 import { formatPrice } from '@/lib/utils';
 import { AddToCartButton } from '@/components/add-to-cart-button';
 import { WishlistButton } from '@/components/wishlist-button';
 import { SmartImage } from '@/components/smart-image';
 
 interface ProductDetailClientProps {
-  product: ProductWithCategory;
+  product: SerializedProductWithCategory;
   userId?: string | null;
   hasPremium?: boolean;
   aiEnabled?: boolean;
