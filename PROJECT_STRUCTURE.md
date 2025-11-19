@@ -1,15 +1,36 @@
-# Project Structure
+# DRAPELY.ai Project Structure
 
 ## Complete File Tree
 
 ```
-virtual-tryon/
+DRAPELY-Ecommerce/
 ├── actions/
+│   ├── admin-auth.ts              # Admin authentication actions
+│   ├── admin-orders.ts            # Admin order queries
+│   ├── admin-products.ts          # Admin product CRUD actions
 │   ├── cart.ts                    # Cart server actions (add, remove, update, get)
 │   ├── orders.ts                  # Order & Stripe checkout actions
 │   └── products.ts                # Product queries (get, search, featured)
 │
 ├── app/
+│   ├── admin/
+│   │   ├── login/
+│   │   │   └── page.tsx          # Admin login page
+│   │   └── (dashboard)/
+│   │       ├── layout.tsx        # Admin dashboard layout
+│   │       ├── dashboard/
+│   │       │   └── page.tsx      # Admin dashboard overview
+│   │       ├── products/
+│   │       │   ├── page.tsx      # Product list
+│   │       │   ├── new/
+│   │       │   │   └── page.tsx  # Create product
+│   │       │   └── [id]/edit/
+│   │       │       └── page.tsx  # Edit product
+│   │       └── orders/
+│   │           ├── page.tsx      # Order list
+│   │           └── [id]/
+│   │               └── page.tsx  # Order details
+│   │
 │   ├── api/
 │   │   ├── upload/
 │   │   │   └── route.ts          # Cloudinary image upload endpoint
@@ -41,19 +62,39 @@ virtual-tryon/
 │   └── page.tsx                  # Homepage
 │
 ├── components/
+│   ├── admin/
+│   │   ├── delete-product-dialog.tsx  # Confirmation dialog
+│   │   ├── image-uploader.tsx         # Cloudinary image upload
+│   │   ├── login-form.tsx             # Admin login form
+│   │   ├── order-filters.tsx          # Order search/filters
+│   │   ├── order-table.tsx            # Order listing table
+│   │   ├── pagination.tsx             # Pagination controls
+│   │   ├── product-filters.tsx        # Product search/filters
+│   │   ├── product-form.tsx           # Product create/edit form
+│   │   ├── product-table.tsx          # Product listing table
+│   │   ├── sidebar.tsx                # Admin navigation sidebar
+│   │   └── topbar.tsx                 # Admin top header bar
+│   │
 │   ├── ui/
-│   │   ├── badge.tsx             # Badge component (Shadcn-style)
+│   │   ├── alert-dialog.tsx      # Alert dialog component
+│   │   ├── badge.tsx             # Badge component
 │   │   ├── button.tsx            # Button component
 │   │   ├── card.tsx              # Card components
-│   │   └── input.tsx             # Input component
+│   │   ├── checkbox.tsx          # Checkbox component
+│   │   ├── input.tsx             # Input component
+│   │   ├── label.tsx             # Label component
+│   │   ├── select.tsx            # Select dropdown component
+│   │   └── textarea.tsx          # Textarea component
 │   │
 │   ├── add-to-cart-button.tsx   # Reusable add to cart button
 │   ├── cart-item.tsx             # Cart item with quantity controls
 │   ├── navbar.tsx                # Navigation bar with cart icon
 │   ├── product-card.tsx          # Product card component
-│   └── product-grid.tsx          # Product grid layout
+│   ├── product-grid.tsx          # Product grid layout
+│   └── smart-image.tsx           # Optimized image component
 │
 ├── lib/
+│   ├── admin-auth.ts             # Admin authentication helpers
 │   ├── auth.ts                   # Clerk auth helpers (getCurrentUser, requireAuth)
 │   ├── cloudinary.ts             # Cloudinary configuration
 │   ├── db.ts                     # Prisma client singleton
@@ -70,7 +111,11 @@ virtual-tryon/
 │
 ├── .env.example                  # Environment variables template
 ├── .gitignore
+├── ADMIN_PANEL_GUIDE.md          # Detailed admin documentation
+├── ADMIN_README.md               # Admin quick start
+├── COMPLETE_GUIDE.md             # Complete file & folder guide
 ├── eslint.config.mjs
+├── IMPLEMENTATION_SUMMARY.md     # Feature checklist
 ├── middleware.ts                 # Clerk authentication middleware
 ├── next.config.ts
 ├── next-env.d.ts
@@ -78,9 +123,12 @@ virtual-tryon/
 ├── package-lock.json
 ├── postcss.config.mjs
 ├── PROJECT_STRUCTURE.md          # This file
+├── QUICKSTART.md                 # 5-minute setup guide
 ├── README.md                     # Project overview
 ├── SETUP.md                      # Detailed setup instructions
-└── tsconfig.json
+├── TROUBLESHOOTING.md            # Common issues and solutions
+├── tsconfig.json
+└── wake-db.js                    # Database wake script for Neon
 ```
 
 ## Directory Descriptions
@@ -88,15 +136,20 @@ virtual-tryon/
 ### `/actions`
 Server actions for data mutations and queries. These are "use server" functions that can be called directly from client components.
 
-**Files:**
+**Customer Actions:**
 - `cart.ts`: Add/remove/update cart items, get user's cart
 - `orders.ts`: Create checkout sessions, fetch orders
 - `products.ts`: Get products, search, filter by category
 
-### `/app`
-Next.js 14 App Router directory. Each folder represents a route.
+**Admin Actions:**
+- `admin-auth.ts`: Admin login/logout
+- `admin-products.ts`: Product CRUD operations
+- `admin-orders.ts`: Admin order queries and statistics
 
-**Key Pages:**
+### `/app`
+Next.js 16 App Router directory. Each folder represents a route.
+
+**Customer Pages:**
 - `/`: Homepage with hero and featured products
 - `/products`: Product listing with category filter
 - `/products/[slug]`: Individual product detail page
@@ -105,6 +158,12 @@ Next.js 14 App Router directory. Each folder represents a route.
 - `/orders`: Order history
 - `/search`: Product search
 
+**Admin Pages:**
+- `/admin/login`: Admin authentication
+- `/admin/dashboard`: Overview with statistics
+- `/admin/products`: Product management (list, create, edit, delete)
+- `/admin/orders`: Order viewing and filtering
+
 **API Routes:**
 - `/api/upload`: Image upload to Cloudinary
 - `/api/webhooks/stripe`: Stripe payment webhook handler
@@ -112,21 +171,32 @@ Next.js 14 App Router directory. Each folder represents a route.
 ### `/components`
 Reusable React components.
 
+**Admin Components** (`/admin`):
+- `sidebar.tsx`: Admin navigation
+- `topbar.tsx`: Admin header
+- `product-form.tsx`: Product create/edit form
+- `product-table.tsx`: Product listing with actions
+- `order-table.tsx`: Order listing
+- `image-uploader.tsx`: Multi-image upload with preview
+- `pagination.tsx`: Reusable pagination
+
 **UI Components** (`/ui`):
-- Shadcn-style components (Button, Card, Input, Badge)
+- Radix UI based components (Button, Card, Input, Badge, Select, etc.)
 - Fully customizable with TailwindCSS
 
-**Feature Components:**
+**Customer Components:**
 - `navbar.tsx`: Main navigation with auth, cart icon, categories
 - `product-card.tsx`: Product display card
 - `product-grid.tsx`: Responsive product grid
 - `cart-item.tsx`: Cart item with quantity controls
 - `add-to-cart-button.tsx`: Reusable add to cart functionality
+- `smart-image.tsx`: Optimized image loading with Next-Cloudinary
 
 ### `/lib`
 Utility functions and configurations.
 
 **Files:**
+- `admin-auth.ts`: Admin authentication and session management
 - `auth.ts`: Clerk authentication helpers
 - `db.ts`: Prisma client (singleton pattern)
 - `stripe.ts`: Stripe API client
@@ -234,12 +304,14 @@ Order tracking with Stripe integration.
 
 ## Security Features
 
-- Clerk authentication
-- Protected API routes
-- Stripe webhook signature verification
-- SQL injection prevention (Prisma)
-- CSRF protection (Next.js built-in)
-- Environment variable validation
+- **Customer Auth**: Clerk authentication with middleware
+- **Admin Auth**: Email/password with httpOnly cookies
+- **Protected Routes**: Middleware for customer, layout checks for admin
+- **API Security**: Authentication required for uploads
+- **Payment Security**: Stripe webhook signature verification
+- **Database Security**: SQL injection prevention (Prisma)
+- **CSRF Protection**: Next.js built-in
+- **Environment Variables**: Validated on startup
 
 ## Deployment Considerations
 
@@ -258,4 +330,10 @@ Order tracking with Stripe integration.
 - Test checkout flow
 - Verify webhook handling
 - Check email notifications
+- Test admin login and features
+- Change admin credentials to production values
 - Monitor error logs
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16

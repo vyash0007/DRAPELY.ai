@@ -1,4 +1,4 @@
-# Admin Panel - Quick Start
+# DRAPELY.ai Admin Panel - Quick Start
 
 ## Access
 
@@ -100,12 +100,17 @@ See `ADMIN_PANEL_GUIDE.md` for complete documentation.
 
 ## Tech Stack
 
-- Next.js 14 (App Router + Server Actions)
-- TypeScript
-- PostgreSQL + Prisma
-- TailwindCSS + Shadcn UI
-- Cloudinary
+- Next.js 16.0.3 (App Router + Server Actions)
+- React 19.2.0
+- TypeScript 5
+- PostgreSQL (Neon) + Prisma 6.19.0
+- TailwindCSS 4 + Radix UI Components
+- Cloudinary 2.8.0 + Next-Cloudinary 6.17.5
 
 ---
 
 **For detailed documentation, see [ADMIN_PANEL_GUIDE.md](./ADMIN_PANEL_GUIDE.md)**
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16

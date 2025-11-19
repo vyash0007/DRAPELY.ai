@@ -1,7 +1,7 @@
-# Fashion E-commerce Setup Guide
+# DRAPELY.ai E-commerce Setup Guide
 
 ## Overview
-This is a full-stack e-commerce application built with Next.js 14, featuring:
+This is a full-stack e-commerce application built with Next.js 16, featuring:
 - Product browsing and detailed views
 - Shopping cart functionality
 - Stripe checkout integration
@@ -10,12 +10,13 @@ This is a full-stack e-commerce application built with Next.js 14, featuring:
 - Cloudinary image management
 
 ## Tech Stack
-- **Frontend**: Next.js 14, React 19, TypeScript, TailwindCSS
-- **Backend**: Next.js Server Actions, Prisma ORM
+- **Frontend**: Next.js 16.0.3, React 19.2.0, TypeScript 5, TailwindCSS 4
+- **Backend**: Next.js Server Actions, Prisma ORM 6.19.0
 - **Database**: PostgreSQL (Neon recommended)
-- **Authentication**: Clerk
-- **Payments**: Stripe
-- **Image Storage**: Cloudinary
+- **Authentication**: Clerk 6.35.1
+- **Payments**: Stripe 19.3.1
+- **Image Storage**: Cloudinary 2.8.0 with Next-Cloudinary 6.17.5
+- **UI Components**: Radix UI with custom components
 
 ---
 
@@ -32,7 +33,7 @@ This is a full-stack e-commerce application built with Next.js 14, featuring:
 
 ### 1. Clone and Install Dependencies
 ```bash
-cd virtual-tryon
+cd DRAPELY-Ecommerce
 npm install
 ```
 
@@ -102,6 +103,14 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
 
+#### Admin Panel Setup
+```env
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=StrongPass123
+```
+
+**IMPORTANT**: Change these credentials before deploying to production!
+
 #### App URL
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -121,10 +130,16 @@ npm run db:seed
 
 ### 5. Run Development Server
 ```bash
+# Option 1: Standard dev server
 npm run dev
+
+# Option 2: Wake database and start (recommended for Neon)
+npm run dev:wake
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+**Admin Panel**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
 ---
 
@@ -150,12 +165,15 @@ npx prisma migrate reset
 ## Project Structure
 
 ```
-virtual-tryon/
+DRAPELY-Ecommerce/
 ├── actions/              # Server actions
 │   ├── cart.ts          # Cart operations
 │   ├── orders.ts        # Order & Stripe integration
 │   └── products.ts      # Product queries
 ├── app/                 # Next.js app directory
+│   ├── admin/           # Admin panel
+│   │   ├── login/       # Admin login
+│   │   └── (dashboard)/ # Dashboard, products, orders
 │   ├── api/
 │   │   ├── upload/      # Cloudinary upload endpoint
 │   │   └── webhooks/
@@ -170,6 +188,11 @@ virtual-tryon/
 │   ├── layout.tsx       # Root layout with Navbar
 │   └── page.tsx         # Homepage
 ├── components/          # React components
+│   ├── admin/           # Admin-specific components
+│   │   ├── sidebar.tsx
+│   │   ├── topbar.tsx
+│   │   ├── product-form.tsx
+│   │   └── ...
 │   ├── ui/              # Reusable UI components
 │   │   ├── button.tsx
 │   │   ├── card.tsx
@@ -179,7 +202,8 @@ virtual-tryon/
 │   ├── cart-item.tsx
 │   ├── navbar.tsx
 │   ├── product-card.tsx
-│   └── product-grid.tsx
+│   ├── product-grid.tsx
+│   └── smart-image.tsx  # Optimized image component
 ├── lib/                 # Utilities
 │   ├── auth.ts          # Clerk helpers
 │   ├── cloudinary.ts    # Cloudinary config
@@ -223,9 +247,17 @@ virtual-tryon/
 
 ---
 
-## Adding Products Manually
+## Adding Products
 
-### Using Prisma Studio
+### Option 1: Admin Panel (Recommended)
+1. Go to http://localhost:3000/admin/login
+2. Login with your admin credentials
+3. Navigate to Products → Add Product
+4. Fill in product details
+5. Upload images (multi-image support)
+6. Click "Create Product"
+
+### Option 2: Prisma Studio
 ```bash
 npm run db:studio
 ```
@@ -282,10 +314,14 @@ git push -u origin main
    - Events: `checkout.session.completed`, `checkout.session.expired`, `payment_intent.payment_failed`
 2. Copy webhook secret to Vercel environment variables
 
-### 4. Update App URL
+### 4. Update Environment Variables
 ```env
 NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+ADMIN_EMAIL=your-secure-email@domain.com
+ADMIN_PASSWORD=VeryStrongPassword123!
 ```
+
+**IMPORTANT**: Use strong, unique admin credentials in production!
 
 ---
 
@@ -333,22 +369,24 @@ stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 ---
 
-## Admin Tasks
+## Admin Panel
 
-Since there's no admin dashboard, manage data via:
+Access the admin panel at `/admin/login`.
 
-1. **Prisma Studio** (Recommended)
-   ```bash
-   npm run db:studio
-   ```
+### Features
+- **Dashboard**: Revenue, order stats, product count
+- **Product Management**: Full CRUD operations with image upload
+- **Order Viewing**: Customer orders with filtering
+- **Search**: Find products and orders quickly
 
-2. **Direct PostgreSQL Access**
-   ```bash
-   psql $DATABASE_URL
-   ```
+See [ADMIN_README.md](./ADMIN_README.md) and [ADMIN_PANEL_GUIDE.md](./ADMIN_PANEL_GUIDE.md) for detailed documentation.
 
-3. **Neon Console**
-   - Access via Neon dashboard
+### Alternative: Prisma Studio
+
+For direct database access:
+```bash
+npm run db:studio
+```
 
 ---
 
@@ -364,3 +402,7 @@ For issues:
 
 ## License
 MIT
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16

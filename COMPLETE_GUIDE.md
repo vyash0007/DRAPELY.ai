@@ -1,6 +1,6 @@
-# Complete Project Guide - File & Folder Explanation
+# DRAPELY.ai Complete Project Guide - File & Folder Explanation
 
-This document explains **every file and folder** in the project, what it does, and how to use it.
+This document explains **every file and folder** in the DRAPELY.ai project, what it does, and how to use it.
 
 ---
 
@@ -11,14 +11,19 @@ This document explains **every file and folder** in the project, what it does, a
 
 **Key Dependencies**:
 - `next@16.0.3` - Next.js framework
+- `react@19.2.0` - React library
 - `@clerk/nextjs@6.35.1` - Authentication
 - `@prisma/client@6.19.0` - Database client
 - `stripe@19.3.1` - Payment processing
 - `cloudinary@2.8.0` - Image management
+- `next-cloudinary@6.17.5` - Next.js Cloudinary integration
+- `sonner@2.0.7` - Toast notifications
+- `@radix-ui/react-scroll-area@1.2.10` - UI components
 
 **Scripts**:
 ```bash
 npm run dev        # Start development server on localhost:3000
+npm run dev:wake   # Wake Neon database and start dev server
 npm run build      # Create production build
 npm run start      # Start production server
 npm run lint       # Run ESLint for code quality
@@ -26,6 +31,7 @@ npm run lint       # Run ESLint for code quality
 npm run db:push    # Push Prisma schema to database
 npm run db:seed    # Populate database with sample data
 npm run db:studio  # Open Prisma Studio (visual database editor)
+npm run db:wake    # Wake up Neon database from sleep
 ```
 
 **Usage**: Run scripts to manage your development workflow.
@@ -113,6 +119,8 @@ npm run lint  # Check for linting errors
 
 **Usage**: Automatically runs. Add/remove protected routes by modifying `isPublicRoute()`.
 
+**Note**: Middleware only protects customer routes. Admin routes are protected separately via layout-level authentication checks.
+
 ---
 
 ### `.env` (Create this file)
@@ -138,6 +146,10 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+# Admin Panel
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=StrongPass123
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -169,6 +181,30 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ## 📁 `/actions` - Server Actions
 
 Server actions are "use server" functions that run on the server and can be called from client components.
+
+### Admin Actions
+
+The admin panel has its own set of server actions:
+
+**`actions/admin-auth.ts`** - Admin authentication
+```typescript
+await loginAdmin(email, password);
+await logoutAdmin();
+```
+
+**`actions/admin-products.ts`** - Product management
+```typescript
+await getAdminProducts({ search, categoryId, page, limit });
+await createProduct(formData);
+await updateProduct(id, formData);
+await deleteProduct(id);
+```
+
+**`actions/admin-orders.ts`** - Order viewing
+```typescript
+await getAdminOrders({ search, status, page, limit });
+await getOrderStatistics();
+```
 
 ### `actions/products.ts`
 **Purpose**: Product-related database queries.
@@ -1556,4 +1592,44 @@ npm run db:seed
 
 ---
 
-This completes the comprehensive guide for every file and folder in your e-commerce project!
+## Admin Panel Files
+
+### `lib/admin-auth.ts`
+**Purpose**: Admin authentication utilities.
+
+**Functions**:
+```typescript
+verifyAdminCredentials(email, password)  // Check credentials
+createAdminSession()                      // Create cookie
+isAdminAuthenticated()                    // Check if logged in
+requireAdminAuth()                        // Require or redirect
+destroyAdminSession()                     // Logout
+```
+
+### Admin Components (`components/admin/`)
+
+All admin components are in the `/admin` folder:
+- **sidebar.tsx**: Navigation menu
+- **topbar.tsx**: Header with user info
+- **product-form.tsx**: Shared create/edit form
+- **product-table.tsx**: Product listing with actions
+- **image-uploader.tsx**: Cloudinary multi-image upload
+- **pagination.tsx**: Reusable pagination
+- And more...
+
+### Admin Pages (`app/admin/`)
+
+- **login/page.tsx**: Admin login page (public)
+- **(dashboard)/dashboard/page.tsx**: Overview with statistics
+- **(dashboard)/products/**: Product CRUD pages
+- **(dashboard)/orders/**: Order viewing pages
+
+See [ADMIN_PANEL_GUIDE.md](./ADMIN_PANEL_GUIDE.md) for complete admin documentation.
+
+---
+
+This completes the comprehensive guide for every file and folder in your DRAPELY.ai e-commerce project!
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16

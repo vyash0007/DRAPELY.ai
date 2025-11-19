@@ -1,11 +1,11 @@
-# 🚀 Quick Start Guide
+# 🚀 DRAPELY.ai Quick Start Guide
 
 Get your e-commerce store running in **5 minutes**!
 
 ## Step 1: Install Dependencies (1 min)
 
 ```bash
-cd virtual-tryon
+cd DRAPELY-Ecommerce
 npm install
 ```
 
@@ -62,6 +62,10 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
+# Admin Panel (Optional - set your own credentials)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=StrongPass123
+
 # Local dev
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
@@ -104,10 +108,16 @@ npm run db:seed
 ## Step 6: Start Development Server (10 sec)
 
 ```bash
+# Option 1: Standard dev server
 npm run dev
+
+# Option 2: Wake database first (recommended for Neon)
+npm run dev:wake
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+**Admin Panel**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
 ---
 
@@ -159,6 +169,8 @@ Your e-commerce store is running!
 - ✅ Stripe checkout (test mode)
 - ✅ Order tracking
 - ✅ User authentication
+- ✅ Admin panel with dashboard
+- ✅ Product management interface
 
 ---
 
@@ -187,6 +199,15 @@ Your e-commerce store is running!
 ## 📚 Next Steps
 
 ### Add Your Own Products
+
+**Option 1: Admin Panel (Recommended)**
+1. Go to http://localhost:3000/admin/login
+2. Login with your admin credentials
+3. Navigate to Products → Add Product
+4. Fill in details and upload images
+5. Save
+
+**Option 2: Prisma Studio**
 ```bash
 # Open Prisma Studio
 npm run db:studio
@@ -238,6 +259,11 @@ See [SETUP.md](./SETUP.md) for detailed deployment guide.
 
 5. **Check Clerk Dashboard** to manage users
 
+6. **Use Admin Panel** to manage products:
+   ```
+   http://localhost:3000/admin/login
+   ```
+
 ---
 
-**Happy Coding!** 🚀
+**Happy Coding!** 🚀 | DRAPELY.ai

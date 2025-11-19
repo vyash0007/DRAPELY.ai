@@ -1,4 +1,4 @@
-# Troubleshooting Guide
+# DRAPELY.ai Troubleshooting Guide
 
 ## Database Connection Issues
 
@@ -15,10 +15,14 @@ This error occurs when the application cannot connect to your Neon PostgreSQL da
 - Verify your database is active
 - Check if it's been suspended due to inactivity
 
-#### 2. **Restart Development Server**
+#### 2. **Wake Database and Restart Server**
 ```bash
 # Kill the current dev server (Ctrl+C)
-# Then restart:
+# Wake database and restart:
+npm run dev:wake
+
+# Or wake manually then start:
+npm run db:wake
 npm run dev
 ```
 
@@ -239,18 +243,59 @@ npm run db:seed
 
 ---
 
+## Admin Panel Issues
+
+### Problem: Can't access admin panel
+
+### Solutions:
+
+#### 1. **Check Admin Credentials**
+Verify `.env` has admin credentials:
+```env
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=StrongPass123
+```
+
+#### 2. **Restart Server After Adding Credentials**
+```bash
+# Ctrl+C to stop
+npm run dev
+```
+
+#### 3. **Clear Browser Cookies**
+- Admin session is stored in cookies
+- Clear cookies for localhost
+- Try logging in again
+
+### Problem: Admin session expires immediately
+
+### Solution:
+- Check browser isn't blocking cookies
+- Ensure you're accessing via http://localhost:3000 (not 127.0.0.1)
+- Clear cookies and try again
+
+### Problem: Can't upload images in admin panel
+
+### Solution:
+- Verify Cloudinary credentials in `.env`
+- Check you're logged in (authentication required)
+- Ensure image file size is reasonable (< 10MB)
+
+---
+
 ## Quick Debug Checklist
 
 When something isn't working:
 
-- [ ] **Check `.env` file** - All variables filled in?
-- [ ] **Database reachable?** - Run `npx prisma db pull`
+- [ ] **Check `.env` file** - All variables filled in (including admin credentials)?
+- [ ] **Database reachable?** - Run `npm run db:wake` or `npx prisma db pull`
 - [ ] **Prisma generated?** - Run `npx prisma generate`
 - [ ] **Dev server running?** - Check terminal
 - [ ] **Browser console errors?** - Open DevTools (F12)
 - [ ] **Clerk authenticated?** - Try signing out/in
+- [ ] **Admin authenticated?** - Check admin login at /admin/login
 - [ ] **Stripe webhook running?** - Check `stripe listen` terminal
-- [ ] **Clear cache** - Delete `.next` folder and restart
+- [ ] **Clear cache** - Delete `.next` folder and browser cache, restart
 
 ---
 
@@ -267,9 +312,11 @@ When something isn't working:
 
 | Error | Location | Solution |
 |-------|----------|----------|
-| "Can't reach database" | Terminal | Check Neon status, restart server |
+| "Can't reach database" | Terminal | Check Neon status, run `npm run db:wake` |
 | "Prisma Client not initialized" | Terminal | Run `npx prisma generate` |
-| "Unauthorized" | Browser | Sign in with Clerk |
+| "Unauthorized" (customer) | Browser | Sign in with Clerk |
+| "Unauthorized" (admin) | Admin panel | Login at /admin/login |
+| "Invalid email or password" | Admin login | Check ADMIN_EMAIL and ADMIN_PASSWORD in .env |
 | "Webhook signature invalid" | Stripe | Update STRIPE_WEBHOOK_SECRET |
 | "Port in use" | Terminal | Kill process or use different port |
 
@@ -308,14 +355,21 @@ When something isn't working:
 ### Before Deployment
 - [ ] Run `npm run build` locally
 - [ ] Test full checkout flow
+- [ ] Test admin panel functionality
 - [ ] Verify webhook endpoints
+- [ ] Change admin credentials to strong production values
 - [ ] Update production environment variables
 
 ---
 
 **Remember**: Most issues are related to:
-1. Missing/incorrect environment variables
-2. Database connectivity
+1. Missing/incorrect environment variables (especially admin credentials)
+2. Database connectivity (Neon sleep mode)
 3. Cached data (clear `.next` folder and browser cache)
+4. Admin session cookies (clear and re-login)
 
 For deployment-specific issues, see [SETUP.md](./SETUP.md)
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16

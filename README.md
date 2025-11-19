@@ -1,27 +1,37 @@
-# Fashion E-commerce Store
+# DRAPELY.ai - Fashion E-commerce Store
 
-A modern, full-stack e-commerce application built with Next.js 14, featuring a complete shopping experience with product browsing, cart management, secure checkout, and order tracking.
+A modern, full-stack e-commerce application built with Next.js 16, featuring a complete shopping experience with product browsing, cart management, secure checkout, order tracking, and an admin panel for product management.
 
 ## Features
 
+### Customer Features
 - **Product Catalog**: Browse and search products with category filtering
 - **Product Details**: Detailed product pages with image galleries
 - **Shopping Cart**: Persistent cart with real-time updates
 - **Secure Checkout**: Stripe payment integration
 - **Order Management**: Order history and tracking
 - **Authentication**: Clerk-powered user authentication
-- **Image Management**: Cloudinary integration for product images
+- **Smart Images**: Optimized image loading with Next-Cloudinary
 - **Responsive Design**: Mobile-first design with TailwindCSS
+
+### Admin Features
+- **Admin Dashboard**: Overview with statistics and quick actions
+- **Product Management**: Create, edit, and delete products
+- **Image Upload**: Multi-image upload with Cloudinary integration
+- **Order Viewing**: View and track customer orders
+- **Search & Filters**: Find products and orders quickly
+- **Secure Access**: Email/password authentication for admin
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS 4
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: Clerk
-- **Payments**: Stripe
-- **Image Storage**: Cloudinary
+- **Framework**: Next.js 16.0.3 (App Router)
+- **UI Library**: React 19.2.0
+- **Language**: TypeScript 5
+- **Styling**: TailwindCSS 4 with Radix UI components
+- **Database**: PostgreSQL with Prisma ORM 6.19.0
+- **Authentication**: Clerk 6.35.1
+- **Payments**: Stripe 19.3.1
+- **Image Storage**: Cloudinary 2.8.0 with Next-Cloudinary 6.17.5
 - **Deployment**: Vercel (recommended)
 
 ## Quick Start
@@ -64,9 +74,10 @@ For detailed setup instructions, see [SETUP.md](./SETUP.md)
 ## Project Structure
 
 ```
-virtual-tryon/
+DRAPELY-Ecommerce/
 ├── actions/              # Server actions for data mutations
 ├── app/                  # Next.js app directory
+│   ├── admin/           # Admin panel (dashboard, products, orders)
 │   ├── api/             # API routes (upload, webhooks)
 │   ├── cart/            # Shopping cart page
 │   ├── checkout/        # Checkout success page
@@ -74,6 +85,7 @@ virtual-tryon/
 │   ├── products/        # Product pages
 │   └── search/          # Search page
 ├── components/          # React components
+│   ├── admin/           # Admin-specific components
 │   ├── ui/              # Reusable UI components
 │   └── ...              # Feature components
 ├── lib/                 # Utilities and configurations
@@ -116,6 +128,7 @@ virtual-tryon/
 
 ```bash
 npm run dev          # Start development server
+npm run dev:wake     # Wake database and start dev server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
@@ -123,6 +136,7 @@ npm run lint         # Run ESLint
 npm run db:push      # Push schema to database
 npm run db:seed      # Seed database with sample data
 npm run db:studio    # Open Prisma Studio
+npm run db:wake      # Wake up Neon database from sleep
 ```
 
 ## Environment Variables
@@ -130,16 +144,31 @@ npm run db:studio    # Open Prisma Studio
 Required environment variables:
 
 ```env
-DATABASE_URL                          # PostgreSQL connection string
+# Database
+DATABASE_URL                          # PostgreSQL connection string (Neon)
+
+# Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY    # Clerk public key
 CLERK_SECRET_KEY                      # Clerk secret key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+# Stripe Payments
 STRIPE_SECRET_KEY                     # Stripe secret key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   # Stripe public key
 STRIPE_WEBHOOK_SECRET                 # Stripe webhook secret
+
+# Cloudinary Images
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME    # Cloudinary cloud name
 CLOUDINARY_API_KEY                    # Cloudinary API key
 CLOUDINARY_API_SECRET                 # Cloudinary API secret
-NEXT_PUBLIC_APP_URL                   # Your app URL
+
+# Admin Panel
+ADMIN_EMAIL                           # Admin login email
+ADMIN_PASSWORD                        # Admin login password
+
+# App Configuration
+NEXT_PUBLIC_APP_URL                   # Your app URL (http://localhost:3000)
 ```
 
 See [.env.example](./.env.example) for complete list.
@@ -256,6 +285,19 @@ For detailed setup instructions, see [SETUP.md](./SETUP.md)
 
 For questions or issues, please open an issue on GitHub.
 
+## Admin Panel
+
+Access the admin panel at `/admin/login` with your configured credentials.
+
+**Features:**
+- Dashboard with revenue and order statistics
+- Complete product management (CRUD operations)
+- Multi-image upload with preview
+- Order viewing and filtering
+- Search functionality
+
+See [ADMIN_README.md](./ADMIN_README.md) and [ADMIN_PANEL_GUIDE.md](./ADMIN_PANEL_GUIDE.md) for detailed admin documentation.
+
 ---
 
-Built with ❤️ using Next.js 14
+Built with ❤️ using Next.js 16 | DRAPELY.ai

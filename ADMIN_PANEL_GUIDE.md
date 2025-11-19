@@ -1,8 +1,8 @@
-# Admin Panel Guide
+# DRAPELY.ai Admin Panel Guide
 
 ## Overview
 
-The Admin Panel is a complete management system for your e-commerce store. It provides a secure interface for managing products, viewing orders, and monitoring store performance.
+The DRAPELY.ai Admin Panel is a complete management system for your e-commerce store. It provides a secure interface for managing products, viewing orders, and monitoring store performance.
 
 ## Features
 
@@ -16,11 +16,12 @@ The Admin Panel is a complete management system for your e-commerce store. It pr
 
 ## Tech Stack
 
-- **Next.js 14** - App Router, Server Components, Server Actions
-- **TypeScript** - Full type safety
-- **PostgreSQL + Prisma** - Database (shared with main app)
-- **TailwindCSS + Shadcn UI** - Styling
-- **Cloudinary** - Image storage and optimization
+- **Next.js 16.0.3** - App Router, Server Components, Server Actions
+- **React 19.2.0** - UI Library
+- **TypeScript 5** - Full type safety
+- **PostgreSQL (Neon) + Prisma 6.19.0** - Database (shared with main app)
+- **TailwindCSS 4 + Radix UI** - Styling and components
+- **Cloudinary 2.8.0 + Next-Cloudinary 6.17.5** - Image storage and optimization
 
 ---
 
@@ -766,5 +767,9 @@ For issues or questions:
 
 ## License
 
-Same as main e-commerce application.
+Same as main e-commerce application (MIT).
+
+---
+
+**DRAPELY.ai** - Built with Next.js 16
 
