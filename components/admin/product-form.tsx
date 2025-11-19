@@ -385,82 +385,85 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       {/* Metadata */}
       <div>
         <Label>Product Metadata (Key-Value Pairs)</Label>
-        <div className="mt-2 space-y-3">
-          <div className="text-sm text-gray-500 mb-2">
-            Add custom metadata as key-value pairs (e.g., Brand, Material, Care Instructions, etc.)
-          </div>
-          <div className="space-y-2 border rounded-lg p-4">
-            {Object.entries(formData.metadata).map(([key, value], index) => (
-              <div key={index} className="grid grid-cols-2 gap-2 items-end">
-                <div>
-                  <Label htmlFor={`meta-key-${index}`} className="text-xs text-gray-600">
-                    Key
-                  </Label>
-                  <Input
-                    id={`meta-key-${index}`}
-                    value={key}
-                    onChange={(e) => {
-                      const newMetadata = { ...formData.metadata };
-                      delete newMetadata[key];
-                      newMetadata[e.target.value] = value;
-                      setFormData({ ...formData, metadata: newMetadata });
-                    }}
-                    placeholder="e.g., Brand"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor={`meta-value-${index}`} className="text-xs text-gray-600">
-                    Value
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id={`meta-value-${index}`}
-                      value={value}
-                      onChange={(e) => {
-                        setFormData({
-                          ...formData,
-                          metadata: { ...formData.metadata, [key]: e.target.value },
-                        });
-                      }}
-                      placeholder="e.g., Nike"
-                      className="mt-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newMetadata = { ...formData.metadata };
-                        delete newMetadata[key];
-                        setFormData({ ...formData, metadata: newMetadata });
-                      }}
-                      className="mt-1"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="mt-2 text-sm text-gray-500">
+          Add custom metadata as key-value pairs (e.g., Brand, Material, Care Instructions, etc.)
+        </div>
+        <div className="mt-3 border-2 border-gray-200 rounded-lg p-6">
+          <div className="space-y-4">
             <Button
               type="button"
               variant="outline"
-              size="sm"
               onClick={() => {
                 setFormData({
                   ...formData,
                   metadata: { ...formData.metadata, '': '' },
                 });
               }}
-              className="w-full mt-2"
+              className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-100 hover:border-gray-900 hover:text-gray-900 font-medium bg-white"
             >
               + Add Metadata Field
             </Button>
-            {Object.keys(formData.metadata).length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-2">
-                No metadata added. Click "Add Metadata Field" to add key-value pairs.
+
+            {Object.keys(formData.metadata).length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-8">
+                No metadata added. Click &quot;Add Metadata Field&quot; to add key-value pairs.
               </p>
+            ) : (
+              <div className="space-y-3 mt-4">
+                {Object.entries(formData.metadata).map(([key, value], index) => (
+                  <div key={index} className="grid grid-cols-2 gap-3 items-end">
+                    <div>
+                      <Label htmlFor={`meta-key-${index}`} className="text-xs text-gray-600">
+                        Key
+                      </Label>
+                      <Input
+                        id={`meta-key-${index}`}
+                        value={key}
+                        onChange={(e) => {
+                          const newMetadata = { ...formData.metadata };
+                          delete newMetadata[key];
+                          newMetadata[e.target.value] = value;
+                          setFormData({ ...formData, metadata: newMetadata });
+                        }}
+                        placeholder="e.g., Brand"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`meta-value-${index}`} className="text-xs text-gray-600">
+                        Value
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id={`meta-value-${index}`}
+                          value={value}
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              metadata: { ...formData.metadata, [key]: e.target.value },
+                            });
+                          }}
+                          placeholder="e.g., Nike"
+                          className="mt-1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newMetadata = { ...formData.metadata };
+                            delete newMetadata[key];
+                            setFormData({ ...formData, metadata: newMetadata });
+                          }}
+                          className="mt-1 shrink-0"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
