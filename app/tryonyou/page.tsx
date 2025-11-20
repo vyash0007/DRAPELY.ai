@@ -8,15 +8,22 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowRight, Shield, Camera, Upload, User, X, Info, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Shield, Camera, Upload, User, X, Info, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function TryOnYouPage() {
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [showTerms, setShowTerms] = useState(true)
     const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null)
     const [userName, setUserName] = useState('')
     const [fashionCategory, setFashionCategory] = useState('')
+    const [isUploading, setIsUploading] = useState(false)
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [uploadError, setUploadError] = useState<string | null>(null)
+    const [uploadSuccess, setUploadSuccess] = useState(false)
+    const [processError, setProcessError] = useState<string | null>(null)
+    const [processResult, setProcessResult] = useState<any>(null)
 
     const handleAcceptTerms = () => {
         if (termsAccepted) {
@@ -27,21 +34,118 @@ export default function TryOnYouPage() {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
+            setUploadedFile(file)
             const reader = new FileReader()
             reader.onloadend = () => {
                 setUploadedImage(reader.result as string)
             }
             reader.readAsDataURL(file)
+            // Reset error and success states when new image is uploaded
+            setUploadError(null)
+            setUploadSuccess(false)
         }
     }
 
     const handleRemoveImage = () => {
         setUploadedImage(null)
+        setUploadedFile(null)
+        setUploadError(null)
+        setUploadSuccess(false)
     }
 
-    const handleSubmit = () => {
-        console.log('Submitting:', { userName, fashionCategory, uploadedImage })
-        // Handle form submission
+    const handleSubmit = async () => {
+        if (!uploadedFile || !userName || !fashionCategory) {
+            return
+        }
+
+        setIsUploading(true)
+        setUploadError(null)
+        setUploadSuccess(false)
+        setProcessError(null)
+        setProcessResult(null)
+
+        try {
+            // Step 1: Upload to Cloudinary
+            const formData = new FormData()
+            formData.append('file', uploadedFile)
+            formData.append('userName', userName)
+
+            const uploadResponse = await fetch('/api/upload/avatar', {
+                method: 'POST',
+                body: formData,
+            })
+
+            if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json()
+                throw new Error(errorData.error || 'Failed to upload image')
+            }
+
+            const uploadResult = await uploadResponse.json()
+            console.log('Avatar uploaded successfully:', uploadResult)
+            
+            setUploadSuccess(true)
+            const personImageUrl = uploadResult.url
+
+            // Step 2: Fetch trial products (is_trial: true)
+            setIsUploading(false)
+            setIsProcessing(true)
+            setProcessError(null)
+
+            const trialProductsResponse = await fetch('/api/products/trial')
+            
+            if (!trialProductsResponse.ok) {
+                throw new Error('Failed to fetch trial products')
+            }
+
+            const trialProductsData = await trialProductsResponse.json()
+            const garmentImages = trialProductsData.garment_images || {}
+            
+            console.log('📦 [TRY-ON PAGE] Trial products data received:', trialProductsData)
+            console.log('👕 [TRY-ON PAGE] Garment images:', garmentImages)
+            console.log('👕 [TRY-ON PAGE] Garment images count:', Object.keys(garmentImages).length)
+
+            // Check if garment_images is empty
+            if (!garmentImages || Object.keys(garmentImages).length === 0) {
+                throw new Error('No trial products found. Please ensure there are products marked as trial products.')
+            }
+
+            // Step 3: Process try-on with the uploaded image and trial products
+            // Make POST request to external API via our API route
+            const requestBody = {
+                person_image: personImageUrl,
+                garment_images: garmentImages,
+            }
+            
+            console.log('📤 [TRY-ON PAGE] Sending request body to /api/try-on/trial:', JSON.stringify(requestBody, null, 2))
+            
+            const processResponse = await fetch('/api/try-on/trial', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            })
+
+            if (!processResponse.ok) {
+                const errorData = await processResponse.json()
+                throw new Error(errorData.error || 'Failed to process try-on')
+            }
+
+            const processResult = await processResponse.json()
+            console.log('Try-on processed successfully:', processResult)
+            setProcessResult(processResult)
+            
+        } catch (error) {
+            console.error('Error:', error)
+            if (!uploadSuccess) {
+                setUploadError(error instanceof Error ? error.message : 'Failed to upload image. Please try again.')
+            } else {
+                setProcessError(error instanceof Error ? error.message : 'Failed to process try-on. Please try again.')
+            }
+        } finally {
+            setIsUploading(false)
+            setIsProcessing(false)
+        }
     }
 
     return (
@@ -451,14 +555,77 @@ export default function TryOnYouPage() {
 
                                        
 
+                                        {/* Upload Status Messages */}
+                                        {uploadError && (
+                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">
+                                                <p className="font-semibold mb-1">Upload Failed</p>
+                                                <p>{uploadError}</p>
+                                            </div>
+                                        )}
+                                        
+                                        {uploadSuccess && !processError && !processResult && (
+                                            <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl text-blue-800">
+                                                <div className="flex items-start gap-3">
+                                                    <Loader2 className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0 animate-spin" />
+                                                    <div className="flex-1">
+                                                        <p className="font-bold text-lg mb-2 text-blue-900">We are creating your model!</p>
+                                                        <p className="text-base mb-2 text-blue-800">
+                                                            You will be informed through email once your virtual try-on model is ready.
+                                                        </p>
+                                                        <p className="text-sm text-blue-700 font-medium">
+                                                            ⏱️ Approximate processing time: 4-5 minutes
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {processError && (
+                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">
+                                                <p className="font-semibold mb-1">Processing Failed</p>
+                                                <p>{processError}</p>
+                                            </div>
+                                        )}
+                                        
+                                        {processResult && (
+                                            <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl text-green-800">
+                                                <div className="flex items-start gap-3 mb-3">
+                                                    <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                                                    <div className="flex-1">
+                                                        <p className="font-bold text-lg mb-2 text-green-900">We are creating your model!</p>
+                                                        <p className="text-base mb-2 text-green-800">
+                                                            You will be informed through email once your virtual try-on model is ready.
+                                                        </p>
+                                                        <p className="text-sm text-green-700 font-medium">
+                                                            ⏱️ Approximate processing time: 4-5 minutes
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         {/* Submit Button */}
                                         <Button
                                             onClick={handleSubmit}
-                                            disabled={!uploadedImage || !userName || !fashionCategory}
+                                            disabled={!uploadedImage || !userName || !fashionCategory || isUploading || isProcessing || !!processResult}
                                             className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-7 text-lg font-bold rounded-2xl  hover:shadow-pink-500/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
                                         >
-                                            Start Virtual Try-On
-                                            <ArrowRight className="ml-2 h-6 w-6" />
+                                            {isUploading ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                                                    Uploading Image...
+                                                </>
+                                            ) : isProcessing ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                                                    Processing Try-On...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Start Virtual Try-On
+                                                    <ArrowRight className="ml-2 h-6 w-6" />
+                                                </>
+                                            )}
                                         </Button>
                                     </div>
                                 </CardContent>

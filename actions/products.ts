@@ -101,10 +101,31 @@ export async function getProductsByMetadata(
         // Filter products by metadata
         const filteredProducts = products.filter((product) => {
           const productWithMetadata = product as typeof product & { metadata?: any };
-          if (!productWithMetadata.metadata) return false;
+          if (!productWithMetadata.metadata) {
+            console.log(`🔍 [getProductsByMetadata] Product ${product.id} has no metadata`);
+            return false;
+          }
           const metadata = productWithMetadata.metadata as Record<string, any>;
-          return metadata[metadataKey] === metadataValue;
+          const value = metadata[metadataKey];
+          
+          // Log for debugging
+          if (metadataKey === 'is_trial') {
+            console.log(`🔍 [getProductsByMetadata] Product ${product.id} (${product.title}):`, {
+              metadataKey,
+              metadataValue,
+              actualValue: value,
+              type: typeof value,
+              matches: value === metadataValue || (metadataValue === 'true' && value === true) || (metadataValue === 'false' && value === false),
+            });
+          }
+          
+          // Support both string and boolean matching
+          return value === metadataValue || 
+                 (metadataValue === 'true' && value === true) || 
+                 (metadataValue === 'false' && value === false);
         });
+        
+        console.log(`📊 [getProductsByMetadata] Total products: ${products.length}, Filtered: ${filteredProducts.length} for ${metadataKey}=${metadataValue}`);
 
         // Take only the limit
         const limitedProducts = filteredProducts.slice(0, limit);

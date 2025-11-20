@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getUserSpecificImageUrl, getBestImageUrl } from '@/actions/images';
-import { GiAbstract090 } from "react-icons/gi";
-import { GiAbstract103 } from "react-icons/gi";
+import { IoShirtOutline } from "react-icons/io5";
+import { IoShirtSharp } from "react-icons/io5";
 
 interface SmartImageProps {
   src: string;
@@ -255,11 +255,11 @@ export function SmartImage({
         }`}
         aria-label={showAiImage ? 'Show original image' : 'Show AI image'}
         title={showAiImage ? 'Click to view original' : 'Click to view AI try-on'}
-      >
-        <span className={`${showAiImage ? 'text-purple-700' : 'text-gray-600'}`}>
-          {showAiImage ? <GiAbstract090 className='w-5 h-5'/> : <GiAbstract103 className='w-5 h-5' />}
+        >
+        <span className="text-purple-700">
+          {showAiImage ? <IoShirtSharp className='w-5 h-5'/> : <IoShirtOutline className='w-5 h-5' />}
         </span>
-      </button>
+        </button>
     </>
   );
 }
