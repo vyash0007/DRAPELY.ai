@@ -157,12 +157,14 @@ export default async function OrdersPage() {
                               {statusInfo.text}
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-600 mb-1">Delivery Expected by</div>
-                            <div className="text-lg font-bold text-gray-900">
-                              {deliveryDate}
+                          {order.status !== 'DELIVERED' && (
+                            <div className="text-right">
+                              <div className="text-sm text-gray-600 mb-1">Delivery Expected by</div>
+                              <div className="text-lg font-bold text-gray-900">
+                                {deliveryDate}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -171,7 +173,7 @@ export default async function OrdersPage() {
 
                 {/* Order Footer */}
                 <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-                  <CancelOrderButton orderId={order.id} orderNumber={order.orderNumber} />
+                  <CancelOrderButton orderId={order.id} orderNumber={order.orderNumber} isDelivered={order.status === 'DELIVERED'} />
                   <div className="flex items-center gap-8">
                     <div className="text-gray-500">
                       Paid using credit card ending with ****

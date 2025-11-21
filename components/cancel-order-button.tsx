@@ -19,9 +19,10 @@ import { toast } from 'sonner';
 interface CancelOrderButtonProps {
   orderId: string;
   orderNumber: string;
+  isDelivered?: boolean;
 }
 
-export function CancelOrderButton({ orderId, orderNumber }: CancelOrderButtonProps) {
+export function CancelOrderButton({ orderId, orderNumber, isDelivered = false }: CancelOrderButtonProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -53,7 +54,7 @@ export function CancelOrderButton({ orderId, orderNumber }: CancelOrderButtonPro
         className="text-gray-600 hover:text-red-600 flex items-center gap-2 transition-colors"
       >
         <span className="text-xl">×</span>
-        <span className="font-semibold">CANCEL ORDER</span>
+        <span className="font-semibold">{isDelivered ? 'RETURN ORDER' : 'CANCEL ORDER'}</span>
       </button>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
