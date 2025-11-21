@@ -28,7 +28,12 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   // Clear the cart when the user reaches the success page
   // This ensures the cart is emptied even if the webhook hasn't fired yet
-  await clearCart();
+  try {
+    await clearCart();
+  } catch (error) {
+    // Ignore errors - webhook will handle cart clearing as backup
+    console.error('Failed to clear cart on success page:', error);
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
