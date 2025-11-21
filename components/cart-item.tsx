@@ -93,11 +93,15 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
 
           {/* Size and Color */}
           <div className="flex gap-6 mb-4 text-sm">
-            <div>
-              <span className="text-gray-600">Size </span>
-              <span className="font-semibold text-gray-900">XL</span>
-            </div>
-            <div className="text-gray-300">/</div>
+            {item.size && (
+              <>
+                <div>
+                  <span className="text-gray-600">Size </span>
+                  <span className="font-semibold text-gray-900">{item.size}</span>
+                </div>
+                <div className="text-gray-300">/</div>
+              </>
+            )}
             <div>
               <span className="text-gray-600">Color </span>
               <span className="font-semibold text-gray-900">Default</span>

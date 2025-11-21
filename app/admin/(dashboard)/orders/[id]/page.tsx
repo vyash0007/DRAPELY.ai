@@ -77,6 +77,11 @@ export default async function OrderDetailPage({ params }: PageProps) {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">{item.product.title}</h3>
+                    {item.size && (
+                      <p className="mt-1 text-sm text-gray-500">
+                        Size: {item.size}
+                      </p>
+                    )}
                     <p className="mt-1 text-sm text-gray-500">
                       Quantity: {item.quantity}
                     </p>

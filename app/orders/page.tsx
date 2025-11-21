@@ -135,10 +135,12 @@ export default async function OrdersPage() {
                             By: {order.customerName || 'Guest'}
                           </p>
                           <div className="flex items-center gap-6 text-sm">
-                            <div>
-                              <span className="text-gray-600">Size: </span>
-                              <span className="font-semibold text-gray-900">S</span>
-                            </div>
+                            {item.size && (
+                              <div>
+                                <span className="text-gray-600">Size: </span>
+                                <span className="font-semibold text-gray-900">{item.size}</span>
+                              </div>
+                            )}
                             <div>
                               <span className="text-gray-600">Qty: </span>
                               <span className="font-semibold text-gray-900">{item.quantity}</span>

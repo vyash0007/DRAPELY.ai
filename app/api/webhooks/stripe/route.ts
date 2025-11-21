@@ -62,8 +62,9 @@ export async function POST(req: NextRequest) {
         });
 
         if (order) {
-          // Decrease product stock
+          // Decrease product stock and size-specific stock
           for (const item of order.items) {
+            // Decrement general product stock
             await db.product.update({
               where: { id: item.productId },
               data: {
@@ -72,6 +73,21 @@ export async function POST(req: NextRequest) {
                 },
               },
             });
+
+            // Also decrement size-specific stock if size was specified
+            if (item.size) {
+              await db.sizeStock.updateMany({
+                where: {
+                  productId: item.productId,
+                  size: item.size,
+                },
+                data: {
+                  quantity: {
+                    decrement: item.quantity,
+                  },
+                },
+              });
+            }
           }
 
           // Clear user's cart
