@@ -1,6 +1,6 @@
 'use server';
 
-import { unstable_cache, revalidateTag } from 'next/cache';
+import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { stripe } from '@/lib/stripe';
@@ -458,6 +458,10 @@ export async function processOrderCompletion(sessionId: string) {
         where: { cartId: cart.id },
       });
     }
+
+    // Revalidate cart and layout to update navbar cart count
+    revalidatePath('/cart');
+    revalidatePath('/', 'layout');
 
     return { success: true, message: 'Order processed successfully' };
   } catch (error) {

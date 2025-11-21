@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { getOrderBySessionId, processOrderCompletion } from '@/actions/orders';
+import { RefreshOnMount } from '@/components/refresh-on-mount';
 
 interface SuccessPageProps {
   searchParams: Promise<{
@@ -36,6 +37,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
+      <RefreshOnMount />
       <div className="text-center">
         <CheckCircle className="mx-auto h-16 w-16 text-green-600" />
         <h1 className="mt-4 text-3xl font-bold">Order Successful!</h1>

@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { unstable_cache } from 'next/cache';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -28,7 +27,7 @@ export interface CartData {
 }
 
 /**
- * Get current user's cart
+ * Get current user's cart (no caching - cart needs fresh data)
  */
 export async function getCart(): Promise<CartData | null> {
   try {
@@ -38,65 +37,54 @@ export async function getCart(): Promise<CartData | null> {
       return null;
     }
 
-    const cacheKey = `cart-${user.id}`;
-    
-    return await unstable_cache(
-      async () => {
-        const cart = await db.cart.findUnique({
-          where: {
-            userId: user.id,
-          },
+    const cart = await db.cart.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        items: {
           include: {
-            items: {
-              include: {
-                product: {
-                  select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                    price: true,
-                    images: true,
-                    stock: true,
-                    metadata: true,
-                  },
-                },
+            product: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                price: true,
+                images: true,
+                stock: true,
+                metadata: true,
               },
             },
           },
-        });
-
-        if (!cart) {
-          return null;
-        }
-
-        const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = cart.items.reduce(
-          (sum, item) => sum + Number(item.product.price) * item.quantity,
-          0
-        );
-
-        return {
-          id: cart.id,
-          items: cart.items.map((item) => ({
-            id: item.id,
-            quantity: item.quantity,
-            size: item.size,
-            product: {
-              ...item.product,
-              price: Number(item.product.price),
-              metadata: (item.product.metadata as Record<string, string>) || {},
-            },
-          })),
-          totalItems,
-          totalPrice,
-        };
+        },
       },
-      [cacheKey],
-      {
-        revalidate: 10, // Cache for 10 seconds (cart changes frequently)
-        tags: ['cart', `cart-${user.id}`],
-      }
-    )();
+    });
+
+    if (!cart) {
+      return null;
+    }
+
+    const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = cart.items.reduce(
+      (sum, item) => sum + Number(item.product.price) * item.quantity,
+      0
+    );
+
+    return {
+      id: cart.id,
+      items: cart.items.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        size: item.size,
+        product: {
+          ...item.product,
+          price: Number(item.product.price),
+          metadata: (item.product.metadata as Record<string, string>) || {},
+        },
+      })),
+      totalItems,
+      totalPrice,
+    };
   } catch (error) {
     console.error('Error fetching cart:', error);
     // Return null instead of throwing to allow UI to render gracefully
