@@ -24,11 +24,21 @@ type User = {
     updatedAt: Date;
 };
 
+type Category = {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
 interface TryOnYouClientProps {
     user: User;
+    categories: Category[];
 }
 
-export default function TryOnYouClient({ user }: TryOnYouClientProps) {
+export default function TryOnYouClient({ user, categories }: TryOnYouClientProps) {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showTerms, setShowTerms] = useState(true);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -562,10 +572,11 @@ export default function TryOnYouClient({ user }: TryOnYouClientProps) {
                                                     <SelectValue placeholder="Select your style preference" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="Women">Women's Fashion</SelectItem>
-                                                    <SelectItem value="Men">Men's Fashion</SelectItem>
-                                                    <SelectItem value="kids">Kid's Fashion</SelectItem>
-
+                                                    {categories.map((category) => (
+                                                        <SelectItem key={category.id} value={category.slug}>
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
                                         </div>

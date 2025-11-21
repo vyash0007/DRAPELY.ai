@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
+import { getCategories } from '@/actions/products';
 import TryOnYouClient from './try-on-you-client';
 
 export default async function TryOnYouPage() {
@@ -12,6 +13,8 @@ export default async function TryOnYouPage() {
     return null;
   }
 
+  const categories = await getCategories();
+
   // Optionally pass user as prop if needed
-  return <TryOnYouClient user={user} />;
+  return <TryOnYouClient user={user} categories={categories} />;
 }
