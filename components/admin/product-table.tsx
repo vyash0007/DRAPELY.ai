@@ -19,6 +19,7 @@ interface SerializedProductWithCategory {
   stock: number;
   images: string[];
   featured: boolean;
+  availableForTryOn: boolean;
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -108,16 +109,23 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
                 <td className="whitespace-nowrap px-6 py-4">
                   <span className="text-sm font-medium text-gray-900">{product.stock}</span>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {product.featured ? (
-                    <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
-                      Featured
-                    </span>
-                  ) : (
-                    <span className="inline-flex rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600 border border-gray-200">
-                      Regular
-                    </span>
-                  )}
+                <td className="px-6 py-4">
+                  <div className="flex flex-col gap-2">
+                    {product.featured ? (
+                      <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200 w-fit">
+                        Featured
+                      </span>
+                    ) : (
+                      <span className="inline-flex rounded-full bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600 border border-gray-200 w-fit">
+                        Regular
+                      </span>
+                    )}
+                    {product.availableForTryOn && (
+                      <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 border border-blue-200 w-fit">
+                        AI Try-On
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">

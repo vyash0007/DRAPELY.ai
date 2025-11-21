@@ -20,6 +20,7 @@ export interface ProductFormData {
   categoryId: string;
   images: string[];
   featured: boolean;
+  availableForTryOn?: boolean;
   fit?: string;
   composition?: string;
   sizes: string[];
@@ -153,6 +154,7 @@ export async function createProduct(data: ProductFormData) {
         categoryId: data.categoryId,
         images: data.images,
         featured: data.featured,
+        availableForTryOn: data.availableForTryOn || false,
         fit: data.fit,
         composition: data.composition,
         sizes: data.sizes,
@@ -210,6 +212,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
         categoryId: data.categoryId,
         images: data.images,
         featured: data.featured,
+        availableForTryOn: data.availableForTryOn || false,
         fit: data.fit,
         composition: data.composition,
         sizes: data.sizes,

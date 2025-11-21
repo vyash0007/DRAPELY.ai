@@ -30,6 +30,7 @@ interface SerializedProduct {
   stock: number;
   images: string[];
   featured: boolean;
+  availableForTryOn: boolean;
   fit: string | null;
   composition: string | null;
   sizes: string[];
@@ -77,6 +78,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     categoryId: product?.categoryId || '',
     images: product?.images || [],
     featured: product?.featured || false,
+    availableForTryOn: product?.availableForTryOn || false,
     fit: product?.fit || '',
     composition: product?.composition || '',
     sizes: product?.sizes || [],
@@ -258,18 +260,32 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         </div>
       </div>
 
-      {/* Featured */}
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="featured"
-          checked={formData.featured}
-          onCheckedChange={(checked) =>
-            setFormData({ ...formData, featured: checked as boolean })
-          }
-        />
-        <Label htmlFor="featured" className="cursor-pointer">
-          Mark as featured product
-        </Label>
+      {/* Featured & Try-On Availability */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="featured"
+            checked={formData.featured}
+            onCheckedChange={(checked) =>
+              setFormData({ ...formData, featured: checked as boolean })
+            }
+          />
+          <Label htmlFor="featured" className="cursor-pointer">
+            Mark as featured product
+          </Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="availableForTryOn"
+            checked={formData.availableForTryOn}
+            onCheckedChange={(checked) =>
+              setFormData({ ...formData, availableForTryOn: checked as boolean })
+            }
+          />
+          <Label htmlFor="availableForTryOn" className="cursor-pointer">
+            Available for AI Try-On
+          </Label>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

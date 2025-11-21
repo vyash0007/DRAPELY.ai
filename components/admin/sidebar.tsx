@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Boxes, ShoppingBag, Users, LogOut } from 'lucide-react';
+import { BarChart3, Boxes, ShoppingBag, Users, LogOut, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { logoutAdmin } from '@/actions/admin-auth';
 
@@ -16,6 +16,11 @@ const navigation = [
     name: 'Products',
     href: '/admin/products',
     icon: Boxes,
+  },
+  {
+    name: 'Categories',
+    href: '/admin/categories',
+    icon: Tag,
   },
   {
     name: 'Orders',
