@@ -4,8 +4,7 @@ import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice, formatDate } from '@/lib/utils';
-import { getOrderBySessionId } from '@/actions/orders';
-import { clearCart } from '@/actions/cart';
+import { getOrderBySessionId, processOrderCompletion } from '@/actions/orders';
 
 interface SuccessPageProps {
   searchParams: Promise<{
@@ -26,13 +25,13 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
     redirect('/');
   }
 
-  // Clear the cart when the user reaches the success page
-  // This ensures the cart is emptied even if the webhook hasn't fired yet
+  // Process order completion - decrement stock and clear cart
+  // This ensures stock is decremented even if the webhook doesn't fire
   try {
-    await clearCart();
+    await processOrderCompletion(session_id);
   } catch (error) {
-    // Ignore errors - webhook will handle cart clearing as backup
-    console.error('Failed to clear cart on success page:', error);
+    // Ignore errors - webhook will handle it as backup
+    console.error('Failed to process order completion:', error);
   }
 
   return (

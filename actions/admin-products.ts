@@ -178,7 +178,13 @@ export async function createProduct(data: ProductFormData) {
     }
     revalidateTag('products', 'max');
 
-    return { success: true, product };
+    return {
+      success: true,
+      product: {
+        ...product,
+        price: Number(product.price),
+      }
+    };
   } catch (error: any) {
     console.error('Error creating product:', error);
     return {
@@ -238,7 +244,13 @@ export async function updateProduct(id: string, data: ProductFormData) {
     }
     revalidateTag('products', 'max');
 
-    return { success: true, product };
+    return {
+      success: true,
+      product: {
+        ...product,
+        price: Number(product.price),
+      }
+    };
   } catch (error: any) {
     console.error('Error updating product:', error);
     return {

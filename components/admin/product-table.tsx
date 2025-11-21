@@ -49,26 +49,26 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="overflow-x-auto rounded-xl bg-white shadow-sm border border-gray-100">
+        <table className="w-full divide-y divide-gray-200 table-fixed">
           <thead className="bg-gradient-to-r from-[#fce8e8] to-[#f5d7d7]">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[35%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Product
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[15%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Category
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[10%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Price
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[10%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Stock
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[15%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Status
               </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-700">
+              <th className="w-[15%] px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Actions
               </th>
             </tr>
@@ -76,7 +76,7 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
           <tbody className="divide-y divide-gray-100 bg-white">
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-gradient-to-r hover:from-[#fce8e8]/30 hover:to-transparent transition-colors">
-                <td className="whitespace-nowrap px-6 py-4">
+                <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200">
                       {product.images[0] ? (
@@ -92,9 +92,9 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
                         <div className="h-14 w-14 bg-gray-100" />
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{product.title}</div>
-                      <div className="text-sm text-gray-500 font-medium">{product.slug}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-gray-900 truncate">{product.title}</div>
+                      <div className="text-sm text-gray-500 font-medium truncate">{product.slug}</div>
                     </div>
                   </div>
                 </td>

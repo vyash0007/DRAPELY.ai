@@ -14,6 +14,8 @@ interface SerializedProductWithCategory {
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
+  sizes?: string[];
+  sizeStocks?: { size: string; quantity: number }[];
   category: {
     id: string;
     name: string;

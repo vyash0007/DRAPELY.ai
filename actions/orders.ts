@@ -64,6 +64,7 @@ export async function createCheckoutSession() {
             productId: item.productId,
             quantity: item.quantity,
             price: item.product.price,
+            size: item.size,
           })),
         },
       },
@@ -378,5 +379,89 @@ export async function cancelOrder(orderId: string): Promise<{ success: boolean; 
   } catch (error) {
     console.error('Error cancelling order:', error);
     return { success: false, message: 'Failed to cancel order' };
+  }
+}
+
+/**
+ * Process order completion - decrement stock and clear cart
+ * Called from success page as backup when webhook doesn't fire
+ */
+export async function processOrderCompletion(sessionId: string) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return { success: false, message: 'Unauthorized' };
+    }
+
+    // Find the order by session ID
+    const order = await db.order.findFirst({
+      where: {
+        stripeSessionId: sessionId,
+        userId: user.id,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      return { success: false, message: 'Order not found' };
+    }
+
+    // Check if already processed (status is not PENDING)
+    if (order.status !== 'PENDING') {
+      return { success: true, message: 'Order already processed' };
+    }
+
+    // Update order status to PROCESSING
+    await db.order.update({
+      where: { id: order.id },
+      data: { status: 'PROCESSING' },
+    });
+
+    // Decrement stock for each item
+    for (const item of order.items) {
+      // Decrement general product stock
+      await db.product.update({
+        where: { id: item.productId },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
+
+      // Also decrement size-specific stock if size was specified
+      if (item.size) {
+        await db.sizeStock.updateMany({
+          where: {
+            productId: item.productId,
+            size: item.size,
+          },
+          data: {
+            quantity: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+    }
+
+    // Clear user's cart
+    const cart = await db.cart.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (cart) {
+      await db.cartItem.deleteMany({
+        where: { cartId: cart.id },
+      });
+    }
+
+    return { success: true, message: 'Order processed successfully' };
+  } catch (error) {
+    console.error('Error processing order completion:', error);
+    return { success: false, message: 'Failed to process order' };
   }
 }

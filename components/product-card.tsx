@@ -11,12 +11,6 @@ import { WishlistButton } from '@/components/wishlist-button';
 import { SmartImage } from '@/components/smart-image';
 import { toast } from 'sonner';
 
-interface ProductCardProps {
-  product: SerializedProductWithCategory;
-  userId?: string | null;
-  hasPremium?: boolean;
-  aiEnabled?: boolean;
-}
 // Match the serialized product type from ProductGrid
 interface SerializedProductWithCategory {
   id: string;
@@ -31,6 +25,8 @@ interface SerializedProductWithCategory {
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
+  sizes?: string[];
+  sizeStocks?: { size: string; quantity: number }[];
   category: {
     id: string;
     name: string;
@@ -62,6 +58,34 @@ export function ProductCard({ product, userId, hasPremium = false, aiEnabled = f
   const originalPrice = hasDiscount ? Number(product.price) * 1.5 : Number(product.price);
   const salePrice = Number(product.price);
 
+  // Get first available size with stock (in standard size order: S, M, L, XL)
+  const getFirstAvailableSize = () => {
+    // Standard size order to ensure we pick smallest available first
+    const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
+
+    const productSizes = product.sizes && product.sizes.length > 0
+      ? product.sizes
+      : ['S', 'M', 'L', 'XL'];
+
+    // Sort sizes by standard order
+    const sortedSizes = [...productSizes].sort((a, b) => {
+      const indexA = sizeOrder.indexOf(a);
+      const indexB = sizeOrder.indexOf(b);
+      // If size not in standard order, put it at the end
+      return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+    });
+
+    if (product.sizeStocks && product.sizeStocks.length > 0) {
+      // Find first size (in order) with stock > 0
+      const availableSize = sortedSizes.find(size => {
+        const sizeStock = product.sizeStocks?.find(s => s.size === size);
+        return sizeStock && sizeStock.quantity > 0;
+      });
+      return availableSize || sortedSizes[0];
+    }
+    return sortedSizes[0];
+  };
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -70,7 +94,8 @@ export function ProductCard({ product, userId, hasPremium = false, aiEnabled = f
 
     setIsAdding(true);
     try {
-      await addToCart(product.id);
+      const size = getFirstAvailableSize();
+      await addToCart(product.id, 1, size);
       toast.success('Added to Cart');
       router.refresh();
     } catch (error) {
