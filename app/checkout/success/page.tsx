@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice, formatDate } from '@/lib/utils';
 import { getOrderBySessionId } from '@/actions/orders';
+import { clearCart } from '@/actions/cart';
 
 interface SuccessPageProps {
   searchParams: Promise<{
@@ -24,6 +25,10 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   if (!order) {
     redirect('/');
   }
+
+  // Clear the cart when the user reaches the success page
+  // This ensures the cart is emptied even if the webhook hasn't fired yet
+  await clearCart();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">

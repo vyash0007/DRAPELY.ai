@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { db } from '@/lib/db';
@@ -83,6 +84,10 @@ export async function POST(req: NextRequest) {
               where: { cartId: cart.id },
             });
           }
+
+          // Revalidate cart cache so the UI updates
+          revalidatePath('/cart');
+          revalidatePath('/', 'layout');
         }
 
         console.log(`Order ${session.metadata.orderId} completed successfully`);
