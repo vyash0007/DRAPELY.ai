@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getProducts, getProductsByMetadata } from '@/actions/products';
+import { getProducts, getTrialProducts } from '@/actions/products';
 import { getCurrentUser } from '@/lib/auth';
 import { ProductGrid } from '@/components/product-grid';
 
@@ -34,7 +34,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   // Get AI products if user has AI enabled (only on first page and no category filter)
   // Merge them with regular products, putting AI products first
   if (user?.aiEnabled && currentPage === 1 && !category) {
-    const aiProducts = await getProductsByMetadata('is_trial', 'true', 6);
+    const allTrialProducts = await getTrialProducts(6);
+    const aiProducts = allTrialProducts.slice(0, 6);
     
     console.log('AI Products IDs:', aiProducts.map(p => p.id));
     

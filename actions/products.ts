@@ -76,19 +76,16 @@ export async function getProducts({ categorySlug, page = 1, limit = 12 }: { cate
 }
 
 /**
- * Get products with specific metadata (for AI-enabled users)
+ * Get trial products using availableForTryOn field (dedicated way)
  */
-export async function getProductsByMetadata(
-  metadataKey: string,
-  metadataValue: string,
-  limit: number = 6
-): Promise<SerializedProductWithCategory[]> {
+export async function getTrialProducts(limit: number = 100): Promise<SerializedProductWithCategory[]> {
   try {
     return await unstable_cache(
       async () => {
-        // Fetch all products and filter by metadata in JavaScript
-        // Prisma JSON filtering can be complex, so we'll filter after fetching
         const products = await db.product.findMany({
+          where: {
+            availableForTryOn: true,
+          },
           include: {
             category: true,
             sizeStocks: true,
@@ -96,40 +93,12 @@ export async function getProductsByMetadata(
           orderBy: {
             createdAt: 'desc',
           },
+          take: limit,
         });
 
-        // Filter products by metadata
-        const filteredProducts = products.filter((product) => {
-          const productWithMetadata = product as typeof product & { metadata?: any };
-          if (!productWithMetadata.metadata) {
-            console.log(`🔍 [getProductsByMetadata] Product ${product.id} has no metadata`);
-            return false;
-          }
-          const metadata = productWithMetadata.metadata as Record<string, any>;
-          const value = metadata[metadataKey];
-          
-          // Log for debugging
-          if (metadataKey === 'is_trial') {
-            console.log(`🔍 [getProductsByMetadata] Product ${product.id} (${product.title}):`, {
-              metadataKey,
-              metadataValue,
-              actualValue: value,
-              type: typeof value,
-              matches: value === metadataValue || (metadataValue === 'true' && value === true) || (metadataValue === 'false' && value === false),
-            });
-          }
-          
-          // Support both string and boolean matching
-          return value === metadataValue || 
-                 (metadataValue === 'true' && value === true) || 
-                 (metadataValue === 'false' && value === false);
-        });
-        
-        console.log(`📊 [getProductsByMetadata] Total products: ${products.length}, Filtered: ${filteredProducts.length} for ${metadataKey}=${metadataValue}`);
+        console.log(`📊 [getTrialProducts] Found ${products.length} trial products (availableForTryOn: true)`);
 
-        // Take only the limit
-        const limitedProducts = filteredProducts.slice(0, limit);
-        const validProducts = limitedProducts.filter(p => p && p.id && p.category);
+        const validProducts = products.filter(p => p && p.id && p.category);
         
         const serializedProducts = validProducts.map((product) => {
           const productWithMetadata = product as typeof product & { metadata?: any };
@@ -144,14 +113,129 @@ export async function getProductsByMetadata(
         
         return serializedProducts;
       },
-      [`products-metadata-${metadataKey}-${metadataValue}`],
+      ['trial-products'],
       {
         revalidate: 60,
-        tags: ['products', `metadata-${metadataKey}`],
+        tags: ['products', 'trial-products'],
       }
     )();
   } catch (error) {
-    console.error('Error fetching products by metadata:', error);
+    console.error('Error fetching trial products:', error);
+    return [];
+  }
+}
+
+/**
+ * Get trial products by category using availableForTryOn field (dedicated way)
+ */
+export async function getTrialProductsByCategory(
+  categorySlug: string,
+  limit: number = 100
+): Promise<SerializedProductWithCategory[]> {
+  try {
+    const cacheKey = `trial-products-category-${categorySlug}`;
+    
+    return await unstable_cache(
+      async () => {
+        const products = await db.product.findMany({
+          where: {
+            availableForTryOn: true,
+            category: {
+              slug: categorySlug,
+            },
+          },
+          include: {
+            category: true,
+            sizeStocks: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: limit,
+        });
+
+        console.log(`📊 [getTrialProductsByCategory] Category: ${categorySlug}, Found ${products.length} trial products`);
+
+        const validProducts = products.filter(p => p && p.id && p.category);
+        
+        const serializedProducts = validProducts.map((product) => {
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          return {
+            ...product,
+            price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+              ? product.price.toNumber()
+              : Number(product.price),
+            metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+          };
+        }) as unknown as SerializedProductWithCategory[];
+        
+        return serializedProducts;
+      },
+      [cacheKey],
+      {
+        revalidate: 60,
+        tags: ['products', 'trial-products', `category-${categorySlug}`],
+      }
+    )();
+  } catch (error) {
+    console.error('Error fetching trial products by category:', error);
+    return [];
+  }
+}
+
+/**
+ * Get all products by category (for premium/subscribed users)
+ */
+export async function getAllProductsByCategory(
+  categorySlug: string,
+  limit: number = 100
+): Promise<SerializedProductWithCategory[]> {
+  try {
+    const cacheKey = `all-products-category-${categorySlug}`;
+    
+    return await unstable_cache(
+      async () => {
+        const products = await db.product.findMany({
+          where: {
+            category: {
+              slug: categorySlug,
+            },
+          },
+          include: {
+            category: true,
+            sizeStocks: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: limit,
+        });
+
+        console.log(`📊 [getAllProductsByCategory] Category: ${categorySlug}, Found ${products.length} products`);
+
+        const validProducts = products.filter(p => p && p.id && p.category);
+        
+        const serializedProducts = validProducts.map((product) => {
+          const productWithMetadata = product as typeof product & { metadata?: any };
+          return {
+            ...product,
+            price: typeof product.price === 'object' && product.price !== null && 'toNumber' in product.price
+              ? product.price.toNumber()
+              : Number(product.price),
+            metadata: (productWithMetadata.metadata as Record<string, string>) || {},
+          };
+        }) as unknown as SerializedProductWithCategory[];
+        
+        return serializedProducts;
+      },
+      [cacheKey],
+      {
+        revalidate: 60,
+        tags: ['products', `category-${categorySlug}`],
+      }
+    )();
+  } catch (error) {
+    console.error('Error fetching all products by category:', error);
     return [];
   }
 }

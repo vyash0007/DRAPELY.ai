@@ -45,6 +45,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [userName, setUserName] = useState(user?.firstName || "");
     const [fashionCategory, setFashionCategory] = useState("");
+    const [selectedPlan, setSelectedPlan] = useState<"trial" | "premium">("trial");
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
@@ -81,7 +82,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     }
 
     const handleSubmit = async () => {
-        if (!uploadedFile || !userName || !fashionCategory) {
+        if (!uploadedFile || !userName || !fashionCategory || !selectedPlan) {
             return
         }
 
@@ -113,27 +114,37 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
             setUploadSuccess(true)
             const personImageUrl = uploadResult.url
 
-            // Step 2: Fetch trial products (is_trial: true)
+            // Step 2: Fetch trial products (availableForTryOn: true) filtered by selected category
             setIsUploading(false)
             setIsProcessing(true)
             setProcessError(null)
 
-            const trialProductsResponse = await fetch('/api/products/trial')
+            // Build URL with category and plan query parameters
+            const productsUrl = fashionCategory 
+                ? `/api/products/trial?category=${encodeURIComponent(fashionCategory)}&plan=${selectedPlan}`
+                : `/api/products/trial?plan=${selectedPlan}`
+            
+            console.log('📦 [TRY-ON PAGE] Fetching products for category:', fashionCategory || 'all', 'Plan:', selectedPlan)
+            
+            const productsResponse = await fetch(productsUrl)
 
-            if (!trialProductsResponse.ok) {
-                throw new Error('Failed to fetch trial products')
+            if (!productsResponse.ok) {
+                throw new Error('Failed to fetch products')
             }
 
-            const trialProductsData = await trialProductsResponse.json()
-            const garmentImages = trialProductsData.garment_images || {}
+            const productsData = await productsResponse.json()
+            const garmentImages = productsData.garment_images || {}
 
-            console.log('📦 [TRY-ON PAGE] Trial products data received:', trialProductsData)
+            console.log('📦 [TRY-ON PAGE] Products data received:', productsData)
             console.log('👕 [TRY-ON PAGE] Garment images:', garmentImages)
             console.log('👕 [TRY-ON PAGE] Garment images count:', Object.keys(garmentImages).length)
 
             // Check if garment_images is empty
             if (!garmentImages || Object.keys(garmentImages).length === 0) {
-                throw new Error('No trial products found. Please ensure there are products marked as trial products.')
+                const errorMsg = selectedPlan === 'trial' 
+                    ? 'No trial products found. Please ensure there are products marked as trial products.'
+                    : 'No products found in the selected category.'
+                throw new Error(errorMsg)
             }
 
             // Step 3: Process try-on with the uploaded image and trial products
@@ -581,7 +592,56 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </Select>
                                         </div>
 
-
+                                        {/* Plan Selection */}
+                                        <div className="space-y-2">
+                                            <Label className="text-base font-semibold text-gray-900">
+                                                Select Plan
+                                            </Label>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div
+                                                    onClick={() => setSelectedPlan("trial")}
+                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                        selectedPlan === "trial"
+                                                            ? "border-pink-500 bg-pink-50"
+                                                            : "border-gray-200 bg-white hover:border-pink-300"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <input
+                                                            type="radio"
+                                                            checked={selectedPlan === "trial"}
+                                                            onChange={() => setSelectedPlan("trial")}
+                                                            className="h-4 w-4 text-pink-500"
+                                                        />
+                                                        <span className="font-semibold text-gray-900">Trial</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-600">
+                                                        Try-on with trial products only
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    onClick={() => setSelectedPlan("premium")}
+                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                        selectedPlan === "premium"
+                                                            ? "border-pink-500 bg-pink-50"
+                                                            : "border-gray-200 bg-white hover:border-pink-300"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <input
+                                                            type="radio"
+                                                            checked={selectedPlan === "premium"}
+                                                            onChange={() => setSelectedPlan("premium")}
+                                                            className="h-4 w-4 text-pink-500"
+                                                        />
+                                                        <span className="font-semibold text-gray-900">Premium</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-600">
+                                                        Try-on with all products in category
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         {/* Upload Status Messages */}
                                         {uploadError && (
@@ -635,7 +695,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         {/* Submit Button */}
                                         <Button
                                             onClick={handleSubmit}
-                                            disabled={!uploadedImage || !userName || !fashionCategory || isUploading || isProcessing || !!processResult}
+                                            disabled={!uploadedImage || !userName || !fashionCategory || !selectedPlan || isUploading || isProcessing || !!processResult}
                                             className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-7 text-lg font-bold rounded-2xl  hover:shadow-pink-500/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
                                         >
                                             {isUploading ? (
