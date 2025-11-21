@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { getProductsByMetadata } from '@/actions/products';
+import { getTrialProducts } from '@/actions/products';
 
 export async function POST(request: NextRequest) {
   console.log('🚀 [TRY-ON API] POST request received at /api/try-on/process');
@@ -31,11 +31,11 @@ export async function POST(request: NextRequest) {
     // Use user_id from body if provided, otherwise use authenticated user
     const finalUserId = user_id || userId;
 
-    // If garment_images is not provided, fetch products with is_trial: true
+    // If garment_images is not provided, fetch products with availableForTryOn: true
     let finalGarmentImages = garment_images;
     
     if (!finalGarmentImages) {
-      const trialProducts = await getProductsByMetadata('is_trial', 'true', 100);
+      const trialProducts = await getTrialProducts(100);
       finalGarmentImages = {};
       
       for (const product of trialProducts) {
