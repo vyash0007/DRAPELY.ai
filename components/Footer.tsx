@@ -5,7 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
 
-const Footer = () => {
+type FooterVariant = 'default' | 'beige';
+
+interface FooterProps {
+    variant?: FooterVariant;
+}
+
+const Footer = ({ variant = 'default' }: FooterProps) => {
     const [email, setEmail] = useState('');
 
     const handleSubscribe = (e: React.FormEvent) => {
@@ -15,8 +21,34 @@ const Footer = () => {
         setEmail('');
     };
 
+    // Color schemes based on variant
+    const colors = {
+        default: {
+            bg: 'bg-[#FCF2F4]',
+            socialBg: 'bg-white hover:bg-gray-100',
+            newsletterBorder: 'border-[#f5a5a5]',
+            newsletterBg: 'bg-[#fce8e8]',
+            newsletterIcon: 'text-[#f5a5a5]',
+            buttonBg: 'bg-[#f5a5a5] hover:bg-[#f38d8d]',
+            bottomBorder: 'border-[#f5a5a5]',
+            bottomBg: 'bg-[#f5d7d7]',
+        },
+        beige: {
+            bg: 'bg-[#F5F0EB]',
+            socialBg: 'bg-white hover:bg-[#E5DDD4]',
+            newsletterBorder: 'border-[#87A582]',
+            newsletterBg: 'bg-[#E5DDD4]/50',
+            newsletterIcon: 'text-[#87A582]',
+            buttonBg: 'bg-[#87A582] hover:bg-[#7A9475]',
+            bottomBorder: 'border-[#87A582]',
+            bottomBg: 'bg-[#E5DDD4]',
+        },
+    };
+
+    const currentColors = colors[variant];
+
     return (
-        <footer className="bg-[#FCF2F4] text-gray-800">
+        <footer className={`${currentColors.bg} text-gray-800`}>
             {/* Main Footer Content */}
             <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
@@ -41,28 +73,28 @@ const Footer = () => {
                         <div className="flex gap-3">
                             <a
                                 href="#"
-                                className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-gray-100 transition-colors"
+                                className={`flex h-10 w-10 items-center justify-center rounded-full ${currentColors.socialBg} transition-colors`}
                                 aria-label="Facebook"
                             >
                                 <Facebook className="h-5 w-5 text-gray-700" />
                             </a>
                             <a
                                 href="#"
-                                className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-gray-100 transition-colors"
+                                className={`flex h-10 w-10 items-center justify-center rounded-full ${currentColors.socialBg} transition-colors`}
                                 aria-label="Twitter"
                             >
                                 <Twitter className="h-5 w-5 text-gray-700" />
                             </a>
                             <a
                                 href="#"
-                                className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-gray-100 transition-colors"
+                                className={`flex h-10 w-10 items-center justify-center rounded-full ${currentColors.socialBg} transition-colors`}
                                 aria-label="Instagram"
                             >
                                 <Instagram className="h-5 w-5 text-gray-700" />
                             </a>
                             <a
                                 href="#"
-                                className="flex h-10 w-10 items-center justify-center rounded-full bg-white hover:bg-gray-100 transition-colors"
+                                className={`flex h-10 w-10 items-center justify-center rounded-full ${currentColors.socialBg} transition-colors`}
                                 aria-label="LinkedIn"
                             >
                                 <Linkedin className="h-5 w-5 text-gray-700" />
@@ -133,9 +165,9 @@ const Footer = () => {
                     <div className="lg:col-span-4">
                         <div className="relative max-w-md mx-auto lg:max-w-none">
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg z-10">
-                                <Mail className="h-8 w-8 text-[#f5a5a5]" />
+                                <Mail className={`h-8 w-8 ${currentColors.newsletterIcon}`} />
                             </div>
-                            <div className="rounded-2xl border-2 border-[#f5a5a5] bg-[#fce8e8] p-10 pt-14">
+                            <div className={`rounded-2xl border-2 ${currentColors.newsletterBorder} ${currentColors.newsletterBg} p-10 pt-14`}>
                                 <h3 className="text-3xl font-bold text-gray-900 mb-4 text-center">
                                     Newsletter
                                 </h3>
@@ -149,12 +181,12 @@ const Footer = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="Email"
-                                        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f5a5a5]"
+                                        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#87A582]"
                                         required
                                     />
                                     <button
                                         type="submit"
-                                        className="w-full rounded-lg bg-[#f5a5a5] px-6 py-3 text-white font-semibold hover:bg-[#f38d8d] transition-colors flex items-center justify-center gap-2"
+                                        className={`w-full rounded-lg ${currentColors.buttonBg} px-6 py-3 text-white font-semibold transition-colors flex items-center justify-center gap-2`}
                                     >
                                         <Mail className="h-5 w-5" />
                                         Sign up
@@ -167,7 +199,7 @@ const Footer = () => {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-[#f5a5a5] bg-[#f5d7d7]">
+            <div className={`border-t ${currentColors.bottomBorder} ${currentColors.bottomBg}`}>
                 <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
                     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                         <p className="text-sm text-gray-700">

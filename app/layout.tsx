@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 import { Toaster } from 'sonner';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
-import Footer from '@/components/Footer';
+import FooterWrapper from '@/components/FooterWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
             <>
               <Navbar />
               <main className="min-h-screen bg-gray-50 pt-16">{children}</main>
-              <Footer />
+              <FooterWrapper />
             </>
           )}
           <Toaster position="top-center" richColors />

@@ -332,7 +332,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
             <div className="container mx-auto px-4 pt-12 pb-0 max-w-6xl relative z-10">
                 {/* Payment Status Banner */}
                 {paymentStatus === "success" && (
-                    <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl animate-fade-in">
+                    <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-md animate-fade-in">
                         <div className="flex items-center gap-3">
                             {user.hasPremium ? (
                                 <CheckCircle2 className="h-8 w-8 text-green-600 flex-shrink-0" />
@@ -355,7 +355,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                 )}
 
                 {paymentStatus === "cancelled" && (
-                    <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl animate-fade-in">
+                    <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-md animate-fade-in">
                         <div className="flex items-center gap-3">
                             <Info className="h-8 w-8 text-yellow-600 flex-shrink-0" />
                             <div>
@@ -386,8 +386,8 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                         </div>
 
                         {/* Enhanced Terms Card */}
-                        <Card className=" border-2 border-white/50 backdrop-blur-sm bg-white/90 overflow-hidden mb-10">
-                            <CardHeader className="bg-gradient-to-r from-pink-100 to-rose-100 border-b border-pink-200">
+                        <Card className=" border-2 border-[#E5DDD4] backdrop-blur-sm bg-white/90 overflow-hidden mb-10">
+                            <CardHeader className="bg-[#F5F0EB] border-b border-[#E5DDD4]">
                                 <CardTitle className="flex items-center gap-3 text-3xl">
 
                                     <span className="text-black font-light tracking-wide">
@@ -399,9 +399,9 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="pt-8 pb-8">
-                                <ScrollArea className="h-[450px] w-full rounded-xl border-2 border-gray-200 p-8 bg-gradient-to-br from-white to-gray-50">
+                                <ScrollArea className="h-[450px] w-full rounded-md border-2 border-[#E5DDD4] p-8 bg-gradient-to-br from-white to-[#F5F0EB]">
                                     <div className="space-y-8 text-sm text-gray-700 pr-4 font-light tracking-wide">
-                                        <section className="group hover:bg-pink-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#F5F0EB] p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 1. Acceptance of Terms
                                             </h3>
@@ -410,7 +410,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </p>
                                         </section>
 
-                                        <section className="group hover:bg-rose-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#E5DDD4]/50 p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 2. Photo Upload and Usage
                                             </h3>
@@ -433,7 +433,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </ul>
                                         </section>
 
-                                        <section className="group hover:bg-pink-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#F5F0EB] p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 3. Privacy and Data Protection
                                             </h3>
@@ -456,7 +456,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </ul>
                                         </section>
 
-                                        <section className="group hover:bg-rose-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#E5DDD4]/50 p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 4. AI Technology Limitations
                                             </h3>
@@ -476,7 +476,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </ul>
                                         </section>
 
-                                        <section className="group hover:bg-rose-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#E5DDD4]/50 p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 5. Prohibited Content
                                             </h3>
@@ -498,7 +498,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </ul>
                                         </section>
 
-                                        <section className="group hover:bg-pink-50/50 p-4 rounded-lg transition-all">
+                                        <section className="group hover:bg-[#F5F0EB] p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
                                                 6. User Responsibilities
                                             </h3>
@@ -518,7 +518,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </ul>
                                         </section>
 
-                                        <section className="p-4 bg-gray-100 rounded-lg">
+                                        <section className="p-4 bg-[#E5DDD4]/40 rounded-md">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-3">
                                                 7. Disclaimer of Warranties
                                             </h3>
@@ -533,7 +533,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </p>
                                         </section>
 
-                                        <section className="p-4 bg-gray-100 rounded-lg">
+                                        <section className="p-4 bg-[#E5DDD4]/40 rounded-md">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-3">
                                                 8. Right to Modify or Terminate
                                             </h3>
@@ -545,7 +545,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </p>
                                         </section>
 
-                                        <section className="p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg border border-pink-200">
+                                        <section className="p-4 bg-gradient-to-r from-[#F5F0EB] to-[#E5DDD4]/50 rounded-md border border-[#87A582]">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-3">
                                                 9. Contact Information
                                             </h3>
@@ -570,7 +570,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
                                 {/* Enhanced Checkbox and Buttons */}
                                 <div className="mt-8 space-y-5">
-                                    <div className="flex items-start space-x-4 p-5 bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl border-2 border-pink-200 hover:border-pink-300 transition-colors">
+                                    <div className="flex items-start space-x-4 p-5 bg-gradient-to-r from-[#F5F0EB] to-[#E5DDD4]/50 rounded-md border-2 border-[#87A582] hover:border-[#7A9475] transition-colors">
                                         <Checkbox
                                             id="terms"
                                             checked={termsAccepted}
@@ -591,7 +591,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         <Button
                                             onClick={handleAcceptTerms}
                                             disabled={!termsAccepted}
-                                            className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-7 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+                                            className="flex-1 bg-[#87A582] hover:bg-[#7A9475] text-white py-7 text-lg font-bold rounded-md shadow-2xl hover:shadow-[#87A582]/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
                                         >
                                             Accept and Continue
                                             <ArrowRight className="ml-2 h-6 w-6" />
@@ -599,7 +599,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         <Link href="/" className="flex-shrink-0">
                                             <Button
                                                 variant="outline"
-                                                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 py-7 px-10 text-lg font-semibold rounded-2xl transition-all"
+                                                className="border-2 border-[#87A582] text-[#87A582] hover:bg-[#F5F0EB] hover:border-[#7A9475] hover:text-black py-7 px-10 text-lg font-semibold rounded-md transition-all"
                                             >
                                                 Cancel
                                             </Button>
@@ -627,7 +627,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10 lg:items-stretch">
                             {/* Left Side - Photo Uploader */}
                             <Card className="border-2 border-white/50 bg-white/90 overflow-hidden flex flex-col">
-                                <CardHeader className="bg-gradient-to-r from-pink-100 to-rose-100 border-b border-pink-200">
+                                <CardHeader className="bg-[#F5F0EB] border-b border-[#E5DDD4]">
                                     <CardTitle className="flex items-center gap-3 text-2xl">
 
                                         <span className="text-black font-light tracking-wide">
@@ -648,13 +648,13 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                     onChange={handleImageUpload}
                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 rounded-3xl  opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                                                <div className="relative bg-gradient-to-br from-pink-100 to-rose-100 rounded-3xl p-16 border-4 border-dashed border-pink-300 hover:border-pink-400 transition-all cursor-pointer group-hover:scale-[1.02] duration-300">
+                                                <div className="absolute inset-0 bg-[#E5DDD4] rounded-md  opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                                                <div className="relative bg-[#F5F0EB] rounded-md p-16 border-4 border-dashed border-[#E5DDD4] hover:border-[#D5CCC4] transition-all cursor-pointer group-hover:scale-[1.02] duration-300">
                                                     <div className="text-center space-y-6">
                                                         <div className="flex justify-center">
                                                             <div className="relative">
-                                                                <div className="absolute inset-0 bg-pink-500 rounded-2xl opacity-30"></div>
-                                                                <div className="relative bg-gradient-to-r from-pink-500 to-rose-500 p-6 rounded-2xl">
+                                                                <div className="absolute inset-0 bg-[#7FA67F] rounded-md opacity-30"></div>
+                                                                <div className="relative bg-[#7FA67F] p-6 rounded-md">
                                                                     <Upload className="h-16 w-16 text-white" />
                                                                 </div>
                                                             </div>
@@ -675,7 +675,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </div>
                                         ) : (
                                             <div className="relative group">
-                                                <div className="relative rounded-2xl overflow-hidden border-4 border-pink-300">
+                                                <div className="relative rounded-md overflow-hidden border-4 border-pink-300">
                                                     <img
                                                         src={uploadedImage}
                                                         alt="Uploaded"
@@ -694,26 +694,26 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         )}
 
                                         {/* Photo Guidelines */}
-                                        <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border-2 border-pink-200 mt-4">
+                                        <div className="bg-[#F5F0EB] rounded-md p-6 border-2 border-[#E5DDD4] mt-4">
                                             <h4 className="font-bold text-gray-900 mb-4 text-lg flex items-center gap-2">
-                                                <Info className="h-5 w-5 text-pink-600" />
+                                                <Info className="h-5 w-5 text-gray-600" />
                                                 Photo Guidelines
                                             </h4>
                                             <ul className="space-y-3">
                                                 <li className="flex items-start gap-3">
-                                                    <CheckCircle2 className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle2 className="h-5 w-5 text-[#7FA67F] mt-0.5 flex-shrink-0" />
                                                     <span className="text-sm text-gray-700">Use a well-lit, clear photo with good resolution</span>
                                                 </li>
                                                 <li className="flex items-start gap-3">
-                                                    <CheckCircle2 className="h-5 w-5 text-rose-500 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle2 className="h-5 w-5 text-[#7FA67F] mt-0.5 flex-shrink-0" />
                                                     <span className="text-sm text-gray-700">Face forward with neutral expression</span>
                                                 </li>
                                                 <li className="flex items-start gap-3">
-                                                    <CheckCircle2 className="h-5 w-5 text-pink-500 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle2 className="h-5 w-5 text-[#7FA67F] mt-0.5 flex-shrink-0" />
                                                     <span className="text-sm text-gray-700">Plain background works best for accurate results</span>
                                                 </li>
                                                 <li className="flex items-start gap-3">
-                                                    <CheckCircle2 className="h-5 w-5 text-rose-500 mt-0.5 flex-shrink-0" />
+                                                    <CheckCircle2 className="h-5 w-5 text-[#7FA67F] mt-0.5 flex-shrink-0" />
                                                     <span className="text-sm text-gray-700">Full body or upper body shots recommended</span>
                                                 </li>
                                             </ul>
@@ -724,7 +724,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
                             {/* Right Side - Form */}
                             <Card className="border-2 border-white/50 bg-white/90 overflow-hidden flex flex-col">
-                                <CardHeader className="bg-gradient-to-r from-pink-100 to-rose-100 border-b border-pink-200">
+                                <CardHeader className="bg-[#F5F0EB] border-b border-[#E5DDD4]">
                                     <CardTitle className="flex items-center gap-3 text-2xl">
 
                                         <span className="text-black font-light tracking-wide">
@@ -748,7 +748,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 placeholder="Enter your name"
                                                 value={userName}
                                                 onChange={(e) => setUserName(e.target.value)}
-                                                className="h-12 text-base border-2 border-gray-200 focus:border-pink-400 rounded-xl"
+                                                className="h-12 text-base border-2 border-gray-200 focus:border-pink-400 rounded-md"
                                             />
                                         </div>
 
@@ -758,7 +758,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 Fashion Category
                                             </Label>
                                             <Select value={fashionCategory} onValueChange={setFashionCategory}>
-                                                <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-pink-400 rounded-xl">
+                                                <SelectTrigger className="h-12 text-base border-2 border-gray-200 focus:border-pink-400 rounded-md">
                                                     <SelectValue placeholder="Select your style preference" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -779,19 +779,13 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div
                                                     onClick={() => setSelectedPlan("trial")}
-                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                    className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
                                                         selectedPlan === "trial"
-                                                            ? "border-pink-500 bg-pink-50"
-                                                            : "border-gray-200 bg-white hover:border-pink-300"
+                                                            ? "border-[#7FA67F] bg-[#F5F0EB]"
+                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4]"
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <input
-                                                            type="radio"
-                                                            checked={selectedPlan === "trial"}
-                                                            onChange={() => setSelectedPlan("trial")}
-                                                            className="h-4 w-4 text-pink-500"
-                                                        />
                                                         <span className="font-semibold text-gray-900">Trial</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600">
@@ -806,27 +800,15 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                             setSelectedPlan("premium");
                                                         }
                                                     }}
-                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                                    className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
                                                         selectedPlan === "premium"
-                                                            ? "border-pink-500 bg-pink-50"
+                                                            ? "border-[#7FA67F] bg-[#F5F0EB]"
                                                             : user.hasPremium
                                                             ? "border-green-500 bg-green-50"
-                                                            : "border-gray-200 bg-white hover:border-pink-300"
+                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4]"
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <input
-                                                            type="radio"
-                                                            checked={selectedPlan === "premium"}
-                                                            onChange={() => {
-                                                                if (!user.hasPremium) {
-                                                                    setShowPaymentModal(true);
-                                                                } else {
-                                                                    setSelectedPlan("premium");
-                                                                }
-                                                            }}
-                                                            className="h-4 w-4 text-pink-500"
-                                                        />
                                                         <span className="font-semibold text-gray-900">Premium</span>
                                                         {user.hasPremium ? (
                                                             <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
@@ -834,7 +816,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                                 Active
                                                             </span>
                                                         ) : (
-                                                            <span className="text-xs bg-gradient-to-r from-pink-500 to-rose-500 text-white px-2 py-1 rounded-full">
+                                                            <span className="text-xs bg-[#121827] text-white px-2 py-1 rounded-full">
                                                                 $50
                                                             </span>
                                                         )}
@@ -848,14 +830,14 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
                                         {/* Upload Status Messages */}
                                         {uploadError && (
-                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">
+                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-md text-red-700 text-sm">
                                                 <p className="font-semibold mb-1">Upload Failed</p>
                                                 <p>{uploadError}</p>
                                             </div>
                                         )}
 
                                         {uploadSuccess && !processError && !processResult && (
-                                            <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl text-blue-800">
+                                            <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-md text-blue-800">
                                                 <div className="flex items-start gap-3">
                                                     <Loader2 className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0 animate-spin" />
                                                     <div className="flex-1">
@@ -872,14 +854,14 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         )}
 
                                         {processError && (
-                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">
+                                            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-md text-red-700 text-sm">
                                                 <p className="font-semibold mb-1">Processing Failed</p>
                                                 <p>{processError}</p>
                                             </div>
                                         )}
 
                                         {processResult && (
-                                            <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl text-green-800">
+                                            <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-md text-green-800">
                                                 <div className="flex items-start gap-3 mb-3">
                                                     <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
                                                     <div className="flex-1">
@@ -899,7 +881,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         <Button
                                             onClick={handleSubmit}
                                             disabled={!uploadedImage || !userName || !fashionCategory || !selectedPlan || isUploading || isProcessing || !!processResult}
-                                            className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-7 text-lg font-bold rounded-2xl  hover:shadow-pink-500/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+                                            className="w-full bg-[#87A582] hover:bg-[#7A9475] text-white py-7 text-lg font-bold rounded-md shadow-sm transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                         >
                                             {isUploading ? (
                                                 <>
@@ -920,46 +902,46 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         </Button>
 
                                         {/* How It Works - Horizontal Flowchart */}
-                                        <div className="mt-auto pt-6 border-t-2 border-pink-200">
+                                        <div className="mt-auto pt-6 border-t-2 border-gray-200">
                                             <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                                <Info className="h-5 w-5 text-pink-600" />
+                                                <Info className="h-5 w-5 text-gray-600" />
                                                 How It Works
                                             </h4>
                                             <div className="flex items-center justify-between gap-2">
                                                 {/* Step 1 */}
                                                 <div className="flex-1">
-                                                    <div className="bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-300 rounded-lg p-3 text-center">
-                                                        <p className="text-xs font-bold text-pink-700">Upload</p>
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
+                                                        <p className="text-xs font-bold text-gray-900">Upload</p>
                                                         <p className="text-xs text-gray-600">Photo</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-pink-400 flex-shrink-0" />
+                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 2 */}
                                                 <div className="flex-1">
-                                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-3 text-center">
-                                                        <p className="text-xs font-bold text-blue-700">Fill</p>
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
+                                                        <p className="text-xs font-bold text-gray-900">Fill</p>
                                                         <p className="text-xs text-gray-600">Details</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 3 */}
                                                 <div className="flex-1">
-                                                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-lg p-3 text-center">
-                                                        <p className="text-xs font-bold text-purple-700">AI</p>
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
+                                                        <p className="text-xs font-bold text-gray-900">AI</p>
                                                         <p className="text-xs text-gray-600">Process</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 4 */}
                                                 <div className="flex-1">
-                                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-3 text-center">
-                                                        <p className="text-xs font-bold text-green-700">Get</p>
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
+                                                        <p className="text-xs font-bold text-gray-900">Get</p>
                                                         <p className="text-xs text-gray-600">Results</p>
                                                     </div>
                                                 </div>
@@ -1004,7 +986,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
                     {/* Error Content */}
                     <div className="px-6 py-8 space-y-6" style={{ backgroundColor: '#FFFEFE' }}>
-                        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <div className="bg-gray-50 rounded-md p-6 border border-gray-200">
                             <p className="text-gray-700 text-base leading-relaxed mb-6">
                                 Hello,
                             </p>
@@ -1013,7 +995,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                             </p>
 
                             {/* Error Details Box */}
-                            <div className="bg-gradient-to-br from-pink-50 to-rose-50 border-l-4 border-pink-500 rounded-lg p-4 space-y-2">
+                            <div className="bg-gradient-to-br from-pink-50 to-rose-50 border-l-4 border-pink-500 rounded-md p-4 space-y-2">
                                 <div className="flex items-start gap-2">
                                     <span className="text-pink-600 font-semibold text-sm">Plan:</span>
                                     <span className="text-pink-700 text-sm capitalize">{selectedPlan}</span>
@@ -1035,7 +1017,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                     setUploadSuccess(false)
                                     setErrorDialogMessage("")
                                 }}
-                                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-6 px-12 rounded-xl shadow-lg hover:shadow-pink-500/50 transition-all duration-300 text-lg"
+                                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-6 px-12 rounded-md shadow-lg hover:shadow-pink-500/50 transition-all duration-300 text-lg"
                             >
                                 Try Again
                             </Button>

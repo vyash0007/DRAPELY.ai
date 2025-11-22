@@ -4,12 +4,9 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Check, Sparkles } from "lucide-react";
+import { Loader2, CreditCard, Check, X, Sparkles, Lock } from "lucide-react";
 
 interface PremiumPaymentModalProps {
   isOpen: boolean;
@@ -61,98 +58,100 @@ export default function PremiumPaymentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] border-2 border-pink-200">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-light tracking-wide text-black flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-pink-500" />
-            Upgrade to Premium
-          </DialogTitle>
-          <DialogDescription className="text-base text-gray-600">
-            Unlock unlimited try-on experiences with all products
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-hidden border-none p-0 bg-transparent rounded-md">
+        {/* Card Container with soft beige background and rounded corners */}
+        <div className="relative bg-[#F5F0EB] rounded-md p-6 sm:p-8 pt-10 sm:pt-12 pb-8 sm:pb-10 border-[3px] border-[#E5DDD4]/40 shadow-xl overflow-y-auto max-h-[90vh]">
 
-        <div className="space-y-6 py-4">
-          {/* Pricing */}
-          <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border-2 border-pink-200">
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-5xl font-bold text-black">$50</span>
-              </div>
-              <p className="text-gray-600">One-time payment</p>
-            </div>
+          {/* Plan Name */}
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-[26px] sm:text-[32px] font-normal text-gray-900 tracking-tight">
+              DRAPELY Premium
+            </h2>
           </div>
 
-          {/* Features */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-gray-900">Premium includes:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 bg-pink-500 rounded-full p-1">
-                  <Check className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-sm text-gray-700">
-                  Try-on with all products in any category
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 bg-pink-500 rounded-full p-1">
-                  <Check className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-sm text-gray-700">
-                  Access to latest fashion collections
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 bg-pink-500 rounded-full p-1">
-                  <Check className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-sm text-gray-700">
-                  Priority processing for virtual try-ons
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 bg-pink-500 rounded-full p-1">
-                  <Check className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-sm text-gray-700">
-                  Lifetime access - pay once, use forever
-                </span>
-              </li>
-            </ul>
+          {/* Pricing */}
+          <div className="text-center mb-8 sm:mb-10">
+            <div className="flex items-baseline justify-center gap-1">
+              <span className="text-[56px] sm:text-[72px] font-normal text-gray-900 leading-none">$50</span>
+            </div>
+            <p className="text-gray-500 text-base sm:text-lg mt-2">One-time payment</p>
+            <p className="text-gray-400 text-xs sm:text-sm mt-1">Lifetime access included</p>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-300/50 mb-6 sm:mb-8"></div>
+
+          {/* Features List */}
+          <div className="space-y-3.5 sm:space-y-5 mb-6 sm:mb-10">
+            {/* Feature with checkmark */}
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="mt-0.5 bg-[#7FA67F] rounded-full p-1 flex-shrink-0">
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white stroke-[3]" />
+              </div>
+              <span className="text-gray-700 text-[13px] sm:text-[15px] leading-relaxed">
+                Try-on with all products in any category
+              </span>
+            </div>
+
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="mt-0.5 bg-[#7FA67F] rounded-full p-1 flex-shrink-0">
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white stroke-[3]" />
+              </div>
+              <span className="text-gray-700 text-[13px] sm:text-[15px] leading-relaxed">
+                Access to latest fashion collections
+              </span>
+            </div>
+
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="mt-0.5 bg-[#7FA67F] rounded-full p-1 flex-shrink-0">
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white stroke-[3]" />
+              </div>
+              <span className="text-gray-700 text-[13px] sm:text-[15px] leading-relaxed">
+                Priority processing for virtual try-ons
+              </span>
+            </div>
+
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="mt-0.5 bg-[#7FA67F] rounded-full p-1 flex-shrink-0">
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white stroke-[3]" />
+              </div>
+              <span className="text-gray-700 text-[13px] sm:text-[15px] leading-relaxed">
+                Lifetime access - pay once, use forever
+              </span>
+            </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">
+            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-md text-red-700 text-sm mb-6">
               <p className="font-semibold mb-1">Payment Error</p>
               <p>{error}</p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
             <Button
               onClick={onClose}
               variant="outline"
               disabled={isProcessing}
-              className="flex-1 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 py-6 text-base font-semibold rounded-xl transition-all"
+              className="w-full sm:flex-1 bg-white border-none text-gray-700 hover:bg-gray-50 hover:text-[#121827] py-5 sm:py-6 text-sm sm:text-base font-medium rounded-md transition-all shadow-sm"
             >
               Cancel
             </Button>
             <Button
               onClick={handlePurchase}
               disabled={isProcessing}
-              className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-6 text-base font-bold rounded-xl shadow-lg hover:shadow-pink-500/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+              className="w-full sm:flex-1 bg-[#121827] hover:bg-[#1a2332] text-white py-5 sm:py-6 text-sm sm:text-base font-semibold rounded-md shadow-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-none"
             >
               {isProcessing ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   Processing...
                 </>
               ) : (
                 <>
-                  <CreditCard className="mr-2 h-5 w-5" />
+                  <CreditCard className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Purchase Premium
                 </>
               )}
@@ -160,9 +159,10 @@ export default function PremiumPaymentModal({
           </div>
 
           {/* Secure Payment Notice */}
-          <p className="text-xs text-center text-gray-500">
-            🔒 Secure payment powered by Stripe
-          </p>
+          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500 pt-4 sm:pt-6">
+            <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>Secure payment powered by Stripe</span>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

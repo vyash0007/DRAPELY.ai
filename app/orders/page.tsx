@@ -90,7 +90,7 @@ export default async function OrdersPage() {
                       Order Placed: {formatDate(order.createdAt)}
                     </div>
                   </div>
-                  <button className="bg-[#E2A16F] text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-colors">
+                  <button className="bg-[#8DA485] text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-colors hover:bg-[#7A9475]">
                     <MapPin className="w-5 h-5" />
                     TRACK ORDER
                   </button>
