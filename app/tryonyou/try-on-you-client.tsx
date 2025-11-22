@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +8,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, Shield, Camera, Upload, User, X, Info, CheckCircle2, Loader2 } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ArrowRight, Upload, X, Info, CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import PremiumPaymentModal from "@/components/premium-payment-modal";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type User = {
     id: string;
@@ -39,6 +42,17 @@ interface TryOnYouClientProps {
 }
 
 export default function TryOnYouClient({ user, categories }: TryOnYouClientProps) {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const hasRefreshed = useRef(false);
+
+    // Debug: Log user premium status
+    console.log('🔍 [TRY-ON] User Premium Status:', {
+        email: user.email,
+        hasPremium: user.hasPremium,
+        aiEnabled: user.aiEnabled,
+    });
+
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showTerms, setShowTerms] = useState(true);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -52,6 +66,114 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [processError, setProcessError] = useState<string | null>(null);
     const [processResult, setProcessResult] = useState<any>(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<"success" | "cancelled" | null>(null);
+    const [showErrorDialog, setShowErrorDialog] = useState(false);
+    const [errorDialogMessage, setErrorDialogMessage] = useState<string>("");
+
+    // Check for payment status in URL params
+    useEffect(() => {
+        const premium = searchParams?.get("premium");
+        if (premium === "success") {
+            setPaymentStatus("success");
+            setShowTerms(false);
+
+            // Auto-select premium plan if user has premium
+            if (user.hasPremium) {
+                setSelectedPlan("premium");
+                console.log('✅ [PAYMENT] User already has premium, no polling needed');
+                // Clear the URL parameter after 10 seconds
+                setTimeout(() => {
+                    setPaymentStatus(null);
+                }, 10000);
+                return; // Don't poll if already premium
+            }
+
+            // Activate premium immediately and then poll (fallback for webhook not working)
+            if (!hasRefreshed.current) {
+                hasRefreshed.current = true;
+
+                // First, try to activate premium manually (in case webhook didn't fire)
+                console.log('🔧 [PAYMENT] Attempting manual premium activation...');
+                fetch('/api/user/activate-premium', {
+                    method: 'POST',
+                }).then(async (response) => {
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ [PAYMENT] Manual activation response:', data);
+                        if (data.hasPremium) {
+                            console.log('✅ [PAYMENT] Premium activated successfully! Reloading page...');
+                            // Reload page to get fresh user data
+                            window.location.href = '/tryonyou?premium=activated';
+                            return;
+                        }
+                    }
+                }).catch((error) => {
+                    console.error('❌ [PAYMENT] Manual activation failed:', error);
+                });
+
+                // Also poll as backup (in case manual activation fails)
+                let attempts = 0;
+                const maxAttempts = 15;
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    console.log(`🔄 [PAYMENT] Checking premium status (attempt ${attempts}/${maxAttempts})`);
+
+                    try {
+                        // Check user status via API
+                        const response = await fetch('/api/user/status');
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('📊 [PAYMENT] User status:', data);
+
+                            // If premium is confirmed, reload the page to get fresh user data
+                            if (data.hasPremium) {
+                                console.log('✅ [PAYMENT] Premium status confirmed! Reloading page...');
+                                clearInterval(pollInterval);
+                                // Force full page reload to ensure user prop is updated
+                                window.location.href = '/tryonyou?premium=activated';
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('❌ [PAYMENT] Error checking status:', error);
+                    }
+
+                    // Stop polling if we've reached max attempts
+                    if (attempts >= maxAttempts) {
+                        console.log('⚠️ [PAYMENT] Max polling attempts reached. Refreshing page anyway...');
+                        clearInterval(pollInterval);
+                        router.refresh();
+                    }
+                }, 2000);
+
+                // Clean up interval on unmount
+                return () => clearInterval(pollInterval);
+            }
+
+            // Clear the URL parameter after 10 seconds
+            setTimeout(() => {
+                setPaymentStatus(null);
+            }, 10000);
+        } else if (premium === "cancelled") {
+            setPaymentStatus("cancelled");
+            // Clear the URL parameter after 5 seconds
+            setTimeout(() => {
+                setPaymentStatus(null);
+            }, 5000);
+        } else if (premium === "activated") {
+            // This is after the reload, just show success message
+            setPaymentStatus("success");
+            setShowTerms(false);
+            if (user.hasPremium) {
+                setSelectedPlan("premium");
+            }
+            // Clear the URL parameter after 10 seconds
+            setTimeout(() => {
+                setPaymentStatus(null);
+            }, 10000);
+        }
+    }, [searchParams, user.hasPremium, router]);
 
     const handleAcceptTerms = () => {
         if (termsAccepted) {
@@ -114,6 +236,19 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
             setUploadSuccess(true)
             const personImageUrl = uploadResult.url
 
+            // Enable AI for the user based on selected plan
+            // Trial plan: Enable AI only
+            // Premium plan: AI is enabled via webhook after payment
+            if (selectedPlan === 'trial') {
+                await fetch('/api/user/enable-ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ plan: selectedPlan }),
+                })
+            }
+
             // Step 2: Fetch trial products (availableForTryOn: true) filtered by selected category
             setIsUploading(false)
             setIsProcessing(true)
@@ -175,11 +310,17 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
         } catch (error) {
             console.error('Error:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Failed to process try-on. Please try again.'
+
             if (!uploadSuccess) {
-                setUploadError(error instanceof Error ? error.message : 'Failed to upload image. Please try again.')
+                setUploadError(errorMessage)
             } else {
-                setProcessError(error instanceof Error ? error.message : 'Failed to process try-on. Please try again.')
+                setProcessError(errorMessage)
             }
+
+            // Show error dialog for ALL errors (upload and processing)
+            setErrorDialogMessage(errorMessage)
+            setShowErrorDialog(true)
         } finally {
             setIsUploading(false)
             setIsProcessing(false)
@@ -189,6 +330,44 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     return (
         <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#F9FAFB' }}>
             <div className="container mx-auto px-4 pt-12 pb-0 max-w-6xl relative z-10">
+                {/* Payment Status Banner */}
+                {paymentStatus === "success" && (
+                    <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl animate-fade-in">
+                        <div className="flex items-center gap-3">
+                            {user.hasPremium ? (
+                                <CheckCircle2 className="h-8 w-8 text-green-600 flex-shrink-0" />
+                            ) : (
+                                <Loader2 className="h-8 w-8 text-green-600 flex-shrink-0 animate-spin" />
+                            )}
+                            <div>
+                                <h3 className="text-xl font-bold text-green-900">
+                                    {user.hasPremium ? "Premium Activated! 🎉" : "Activating Premium..."}
+                                </h3>
+                                <p className="text-green-700">
+                                    {user.hasPremium
+                                        ? "Welcome to Premium! You now have unlimited access to try-on all products in any category."
+                                        : "Please wait while we activate your premium membership. This should only take a few seconds..."
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {paymentStatus === "cancelled" && (
+                    <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl animate-fade-in">
+                        <div className="flex items-center gap-3">
+                            <Info className="h-8 w-8 text-yellow-600 flex-shrink-0" />
+                            <div>
+                                <h3 className="text-xl font-bold text-yellow-900">Payment Cancelled</h3>
+                                <p className="text-yellow-700">
+                                    Your payment was cancelled. You can try again anytime by selecting the Premium plan below.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {showTerms ? (
                     <div className="space-y-8">
                         {/* Enhanced Header with Animation */}
@@ -445,9 +624,9 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                         </div>
 
                         {/* Two Column Layout */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10 lg:items-stretch">
                             {/* Left Side - Photo Uploader */}
-                            <Card className=" border-2 border-white/50 bg-white/90 overflow-hidden">
+                            <Card className="border-2 border-white/50 bg-white/90 overflow-hidden flex flex-col">
                                 <CardHeader className="bg-gradient-to-r from-pink-100 to-rose-100 border-b border-pink-200">
                                     <CardTitle className="flex items-center gap-3 text-2xl">
 
@@ -459,8 +638,8 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         Upload a clear photo for the best virtual try-on experience
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-6">
-                                    <div>
+                                <CardContent className="p-6 flex-1 flex flex-col">
+                                    <div className="flex-1 flex flex-col">
                                         {!uploadedImage ? (
                                             <div className="relative group">
                                                 <input
@@ -544,7 +723,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                             </Card>
 
                             {/* Right Side - Form */}
-                            <Card className=" border-2 border-white/50  bg-white/90 overflow-hidden">
+                            <Card className="border-2 border-white/50 bg-white/90 overflow-hidden flex flex-col">
                                 <CardHeader className="bg-gradient-to-r from-pink-100 to-rose-100 border-b border-pink-200">
                                     <CardTitle className="flex items-center gap-3 text-2xl">
 
@@ -556,8 +735,8 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         Tell us about yourself to personalize your experience
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="p-6">
-                                    <div className="space-y-6">
+                                <CardContent className="p-6 flex-1 flex flex-col">
+                                    <div className="space-y-6 flex-1 flex flex-col">
                                         {/* Name Input */}
                                         <div className="space-y-2">
                                             <Label htmlFor="name" className="text-base font-semibold text-gray-900">
@@ -620,10 +799,18 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                     </p>
                                                 </div>
                                                 <div
-                                                    onClick={() => setSelectedPlan("premium")}
+                                                    onClick={() => {
+                                                        if (!user.hasPremium) {
+                                                            setShowPaymentModal(true);
+                                                        } else {
+                                                            setSelectedPlan("premium");
+                                                        }
+                                                    }}
                                                     className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
                                                         selectedPlan === "premium"
                                                             ? "border-pink-500 bg-pink-50"
+                                                            : user.hasPremium
+                                                            ? "border-green-500 bg-green-50"
                                                             : "border-gray-200 bg-white hover:border-pink-300"
                                                     }`}
                                                 >
@@ -631,10 +818,26 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                         <input
                                                             type="radio"
                                                             checked={selectedPlan === "premium"}
-                                                            onChange={() => setSelectedPlan("premium")}
+                                                            onChange={() => {
+                                                                if (!user.hasPremium) {
+                                                                    setShowPaymentModal(true);
+                                                                } else {
+                                                                    setSelectedPlan("premium");
+                                                                }
+                                                            }}
                                                             className="h-4 w-4 text-pink-500"
                                                         />
                                                         <span className="font-semibold text-gray-900">Premium</span>
+                                                        {user.hasPremium ? (
+                                                            <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                                                <CheckCircle2 className="h-3 w-3" />
+                                                                Active
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-xs bg-gradient-to-r from-pink-500 to-rose-500 text-white px-2 py-1 rounded-full">
+                                                                $50
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <p className="text-sm text-gray-600">
                                                         Try-on with all products in category
@@ -715,6 +918,58 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 </>
                                             )}
                                         </Button>
+
+                                        {/* How It Works - Horizontal Flowchart */}
+                                        <div className="mt-auto pt-6 border-t-2 border-pink-200">
+                                            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                                <Info className="h-5 w-5 text-pink-600" />
+                                                How It Works
+                                            </h4>
+                                            <div className="flex items-center justify-between gap-2">
+                                                {/* Step 1 */}
+                                                <div className="flex-1">
+                                                    <div className="bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-300 rounded-lg p-3 text-center">
+                                                        <p className="text-xs font-bold text-pink-700">Upload</p>
+                                                        <p className="text-xs text-gray-600">Photo</p>
+                                                    </div>
+                                                </div>
+
+                                                <ArrowRight className="h-4 w-4 text-pink-400 flex-shrink-0" />
+
+                                                {/* Step 2 */}
+                                                <div className="flex-1">
+                                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-3 text-center">
+                                                        <p className="text-xs font-bold text-blue-700">Fill</p>
+                                                        <p className="text-xs text-gray-600">Details</p>
+                                                    </div>
+                                                </div>
+
+                                                <ArrowRight className="h-4 w-4 text-blue-400 flex-shrink-0" />
+
+                                                {/* Step 3 */}
+                                                <div className="flex-1">
+                                                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 rounded-lg p-3 text-center">
+                                                        <p className="text-xs font-bold text-purple-700">AI</p>
+                                                        <p className="text-xs text-gray-600">Process</p>
+                                                    </div>
+                                                </div>
+
+                                                <ArrowRight className="h-4 w-4 text-purple-400 flex-shrink-0" />
+
+                                                {/* Step 4 */}
+                                                <div className="flex-1">
+                                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-lg p-3 text-center">
+                                                        <p className="text-xs font-bold text-green-700">Get</p>
+                                                        <p className="text-xs text-gray-600">Results</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Info note */}
+                                            <div className="mt-4 text-center">
+                                                <p className="text-xs text-gray-600">⏱️ Results in 4-5 minutes via email</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -722,6 +977,72 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                     </div>
                 )}
             </div>
+
+            {/* Premium Payment Modal */}
+            <PremiumPaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                userEmail={user.email}
+                userId={user.id}
+            />
+
+            {/* Error Dialog */}
+            <Dialog open={showErrorDialog} onOpenChange={() => {
+                // Prevent closing the dialog by clicking outside or pressing escape
+                // Only allow closing via the "Try Again" button
+            }}>
+                <DialogContent className="sm:max-w-[500px] border-none p-0 overflow-hidden [&>button]:hidden" style={{ backgroundColor: '#FFFEFE' }}>
+                    {/* Warning Header */}
+                    <div className="border-b border-pink-500/30 px-6 py-8 text-center" style={{ backgroundColor: '#FFFEFE' }}>
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-yellow-500/20 rounded-full p-4">
+                                <AlertTriangle className="h-16 w-16 text-yellow-500" />
+                            </div>
+                        </div>
+                        <h2 className="text-3xl font-bold text-gray-900">Processing Error</h2>
+                    </div>
+
+                    {/* Error Content */}
+                    <div className="px-6 py-8 space-y-6" style={{ backgroundColor: '#FFFEFE' }}>
+                        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                            <p className="text-gray-700 text-base leading-relaxed mb-6">
+                                Hello,
+                            </p>
+                            <p className="text-gray-700 text-base leading-relaxed mb-6">
+                                We encountered an error while processing your virtual try-on request. Please try again or contact support if the issue persists.
+                            </p>
+
+                            {/* Error Details Box */}
+                            <div className="bg-gradient-to-br from-pink-50 to-rose-50 border-l-4 border-pink-500 rounded-lg p-4 space-y-2">
+                                <div className="flex items-start gap-2">
+                                    <span className="text-pink-600 font-semibold text-sm">Plan:</span>
+                                    <span className="text-pink-700 text-sm capitalize">{selectedPlan}</span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <span className="text-pink-600 font-semibold text-sm">Error:</span>
+                                    <span className="text-pink-700 text-sm break-words flex-1">{errorDialogMessage || 'Unknown error occurred'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Try Again Button */}
+                        <div className="flex justify-center pt-2">
+                            <Button
+                                onClick={() => {
+                                    setShowErrorDialog(false)
+                                    setProcessError(null)
+                                    setUploadError(null)
+                                    setUploadSuccess(false)
+                                    setErrorDialogMessage("")
+                                }}
+                                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-6 px-12 rounded-xl shadow-lg hover:shadow-pink-500/50 transition-all duration-300 text-lg"
+                            >
+                                Try Again
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
