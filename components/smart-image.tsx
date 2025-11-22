@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getUserSpecificImageUrl, getBestImageUrl } from '@/actions/images';
+import { getUserSpecificImageUrl } from '@/actions/images';
 import { IoShirtOutline } from "react-icons/io5";
 import { IoShirtSharp } from "react-icons/io5";
 
@@ -47,106 +47,126 @@ export function SmartImage({
   onError,
   badgePosition = 'left',
 }: SmartImageProps) {
-  const [imageSrc, setImageSrc] = useState(src);
-  const [aiImageUrl, setAiImageUrl] = useState<string | null>(null);
-  const [showAiImage, setShowAiImage] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [showToggle, setShowToggle] = useState(false);
-
-  // Debug: Log initial props
-  useEffect(() => {
-    console.log('[SmartImage] Component mounted/updated:', {
-      productId,
-      userId,
-      hasPremium,
-      aiEnabled,
-      isTrialProduct,
-      originalSrc: src?.substring(0, 60) + '...',
-    });
-  }, [productId, userId, hasPremium, aiEnabled, isTrialProduct, src]);
-
   // Check if user should have access to AI images
   const shouldCheckAiImage = userId && (hasPremium || (aiEnabled && isTrialProduct));
 
-  // Fetch the best image URL on mount (original working logic)
+  // Always call hooks unconditionally (React rules)
+  // Initial state: always start with null for premium/AI users to prevent flash
+  // For regular users, we'll set src immediately in useEffect
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [aiImageUrl, setAiImageUrl] = useState<string | null>(null);
+  const [showAiImage, setShowAiImage] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [showToggle, setShowToggle] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imagesPreloaded, setImagesPreloaded] = useState(false);
+
+  // Debug: Log initial props (only for AI-enabled users)
   useEffect(() => {
+    if (shouldCheckAiImage) {
+      console.log('[SmartImage] Component mounted/updated:', {
+        productId,
+        userId,
+        hasPremium,
+        aiEnabled,
+        isTrialProduct,
+        originalSrc: src?.substring(0, 60) + '...',
+      });
+    }
+  }, [productId, userId, hasPremium, aiEnabled, isTrialProduct, src, shouldCheckAiImage]);
+
+  // Preload images in parallel for instant toggle
+  useEffect(() => {
+    if (!shouldCheckAiImage || !aiImageUrl || imagesPreloaded) return;
+
+    const preloadImages = async () => {
+      const imagePromises = [
+        new Promise((resolve, reject) => {
+          const img = new window.Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = aiImageUrl!;
+        }),
+        new Promise((resolve, reject) => {
+          const img = new window.Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = src;
+        }),
+      ];
+
+      try {
+        await Promise.all(imagePromises);
+        setImagesPreloaded(true);
+        console.log('[SmartImage] ✅ Both images preloaded for instant toggle');
+      } catch (error) {
+        console.warn('[SmartImage] ⚠️ Some images failed to preload:', error);
+        // Still mark as preloaded to avoid retrying
+        setImagesPreloaded(true);
+      }
+    };
+
+    preloadImages();
+  }, [shouldCheckAiImage, aiImageUrl, src, imagesPreloaded]);
+
+  // Initialize image source and fetch AI image URL on mount
+  // This runs immediately to check for AI image before rendering
+  useEffect(() => {
+    // For regular users, set src immediately and stop loading
+    if (!shouldCheckAiImage) {
+      setImageSrc(src);
+      setIsLoading(false);
+      return;
+    }
+
     let isMounted = true;
 
     const fetchBestImage = async () => {
-      console.log('[SmartImage] Starting image fetch:', {
+      console.log('[SmartImage] Starting AI image fetch:', {
         productId,
         userId,
         hasPremium,
         aiEnabled,
         isTrialProduct,
         imageIndex,
-        shouldCheckAiImage,
         originalSrc: src.substring(0, 50) + '...',
       });
 
-      if (!userId) {
-        console.log('[SmartImage] No userId, using original image');
-        return;
-      }
-
       try {
-        // Check if AI image exists first
-        if (shouldCheckAiImage) {
-          console.log('[SmartImage] Checking for AI image...');
-          const aiUrl = await getUserSpecificImageUrl(userId, productId, imageIndex);
-          
-          if (isMounted && aiUrl) {
+        // Check if AI image exists
+        console.log('[SmartImage] Checking for AI image...');
+        const aiUrl = await getUserSpecificImageUrl(userId!, productId, imageIndex);
+        
+        if (isMounted) {
+          if (aiUrl && aiUrl.startsWith('http')) {
             console.log('[SmartImage] ✅ AI image found:', {
               aiUrl: aiUrl,
               productId,
               userId,
             });
-            // AI image exists - set it up for toggle
-            console.log('[SmartImage] Setting AI image URL:', {
-              fullUrl: aiUrl,
-              isValid: aiUrl.startsWith('http'),
-              productId,
-            });
             
-            // Validate URL before setting
-            if (aiUrl && aiUrl.startsWith('http')) {
-              setAiImageUrl(aiUrl);
-              setShowToggle(true);
-              // Start with AI image
-              setImageSrc(aiUrl);
-              setShowAiImage(true);
-              console.log('[SmartImage] ✅ State updated - AI image URL set:', aiUrl);
-            } else {
-              console.error('[SmartImage] ❌ Invalid AI URL format:', aiUrl);
-              setImageSrc(src);
-              setShowToggle(false);
-            }
-            return;
+            // Set AI image as initial state (prevents flash of regular image)
+            setAiImageUrl(aiUrl);
+            setShowToggle(true);
+            setImageSrc(aiUrl);
+            setShowAiImage(true);
+            setIsLoading(false);
+            console.log('[SmartImage] ✅ State updated - AI image set as initial');
           } else {
             console.log('[SmartImage] ❌ AI image not found for:', {
               productId,
               userId,
               imageIndex,
             });
+            // No AI image found - use original
+            setImageSrc(src);
+            setShowToggle(false);
+            setShowAiImage(false);
+            setIsLoading(false);
           }
-        } else {
-          console.log('[SmartImage] User does not have access to AI images:', {
-            hasPremium,
-            aiEnabled,
-            isTrialProduct,
-          });
-        }
-        
-        // No AI image or user doesn't have access - use original
-        if (isMounted) {
-          console.log('[SmartImage] Using original image');
-          setImageSrc(src);
-          setShowToggle(false);
-          setShowAiImage(false);
         }
       } catch (error) {
-        console.error('[SmartImage] ❌ Error fetching image URLs:', {
+        console.error('[SmartImage] ❌ Error fetching AI image:', {
           error: error instanceof Error ? error.message : error,
           productId,
           userId,
@@ -154,6 +174,7 @@ export function SmartImage({
         if (isMounted) {
           setImageSrc(src);
           setShowToggle(false);
+          setIsLoading(false);
         }
       }
     };
@@ -163,7 +184,51 @@ export function SmartImage({
     return () => {
       isMounted = false;
     };
-  }, [src, userId, productId, hasPremium, aiEnabled, isTrialProduct, imageIndex, shouldCheckAiImage]);
+  }, [src, userId, productId, imageIndex, shouldCheckAiImage]);
+
+  // Log current state before rendering (only for AI-enabled users)
+  // This must be called BEFORE any early returns to maintain hook order
+  useEffect(() => {
+    if (shouldCheckAiImage) {
+      console.log('[SmartImage] Current render state:', {
+        imageSrc: imageSrc?.substring(0, 80) + '...',
+        showToggle,
+        showAiImage,
+        hasAiImageUrl: !!aiImageUrl,
+        productId,
+      });
+    }
+  }, [imageSrc, showToggle, showAiImage, aiImageUrl, productId, shouldCheckAiImage]);
+
+  // For regular users (no premium, no AI access), just render simple image
+  if (!shouldCheckAiImage) {
+    const imageProps = {
+      src,
+      alt,
+      className,
+      sizes,
+      quality,
+      priority,
+      loading,
+      onError,
+    };
+
+    return fill ? (
+      <Image {...imageProps} fill />
+    ) : (
+      <Image {...imageProps} width={width} height={height} />
+    );
+  }
+
+  // Show loading skeleton while checking for AI image (prevents flash)
+  if (isLoading || !imageSrc) {
+    return (
+      <div 
+        className={`bg-gray-200 animate-pulse ${fill ? 'absolute inset-0' : ''} ${className || ''}`}
+        style={fill ? undefined : { width, height }}
+      />
+    );
+  }
 
   // Toggle between original and AI image
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -202,19 +267,8 @@ export function SmartImage({
     }
   };
 
-  // Log current state before rendering
-  useEffect(() => {
-    console.log('[SmartImage] Current render state:', {
-      imageSrc: imageSrc?.substring(0, 80) + '...',
-      showToggle,
-      showAiImage,
-      hasAiImageUrl: !!aiImageUrl,
-      productId,
-    });
-  }, [imageSrc, showToggle, showAiImage, aiImageUrl, productId]);
-
   const imageProps = {
-    src: imageSrc,
+    src: imageSrc!,
     alt,
     className,
     sizes,
