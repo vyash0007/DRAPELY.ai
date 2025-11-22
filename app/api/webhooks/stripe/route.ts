@@ -37,6 +37,32 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
 
+        // Check if this is a premium purchase
+        if (session.metadata?.type === 'premium_purchase') {
+          const userId = session.metadata.userId;
+
+          if (!userId) {
+            throw new Error('No user ID in premium purchase metadata');
+          }
+
+          // Update user to have premium access AND enable AI
+          await db.user.update({
+            where: { id: userId },
+            data: {
+              hasPremium: true,
+              aiEnabled: true, // Enable AI when premium is purchased
+            },
+          });
+
+          console.log(`User ${userId} upgraded to premium successfully (Premium & AI enabled)`);
+
+          // Revalidate try-on page so premium status updates
+          revalidatePath('/tryonyou');
+          revalidatePath('/admin/customers');
+          break;
+        }
+
+        // Handle regular product orders
         if (!session.metadata?.orderId) {
           throw new Error('No order ID in session metadata');
         }

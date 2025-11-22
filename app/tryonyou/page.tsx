@@ -3,6 +3,10 @@ import { getCurrentUser } from '@/lib/auth';
 import { getCategories } from '@/actions/products';
 import TryOnYouClient from './try-on-you-client';
 
+// Disable caching for this page to ensure fresh user data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function TryOnYouPage() {
   const user = await getCurrentUser();
 
