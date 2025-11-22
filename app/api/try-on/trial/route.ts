@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 
-const EXTERNAL_API_URL = process.env.TRY_ON_API_URL || 'http://localhost:8000/api/v1/trial';
+// Base URL from env, API path configured in code
+const AI_API_BASE_URL = process.env.TRY_ON_API_URL || 'http://localhost:8000';
+const AI_API_SECRET_KEY = process.env.TRY_ON_API_SECRET_KEY || '';
+const EXTERNAL_API_URL = `${AI_API_BASE_URL}/api/v1/trial`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,12 +73,19 @@ export async function POST(request: NextRequest) {
     
     console.log('📤 [TRIAL API] Request body being sent:', JSON.stringify(requestBody, null, 2));
 
+    // Prepare headers with Bearer token if available
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (AI_API_SECRET_KEY) {
+      headers['Authorization'] = `Bearer ${AI_API_SECRET_KEY}`;
+    }
+
     // Make POST request to external API
     const externalResponse = await fetch(EXTERNAL_API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(requestBody),
     });
 
