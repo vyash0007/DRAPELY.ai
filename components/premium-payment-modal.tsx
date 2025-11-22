@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Check, X, Sparkles, Lock } from "lucide-react";
@@ -64,9 +65,9 @@ export default function PremiumPaymentModal({
 
           {/* Plan Name */}
           <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-[26px] sm:text-[32px] font-normal text-gray-900 tracking-tight">
+            <DialogTitle className="text-[26px] sm:text-[32px] font-normal text-gray-900 tracking-tight">
               DRAPELY Premium
-            </h2>
+            </DialogTitle>
           </div>
 
           {/* Pricing */}
