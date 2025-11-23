@@ -287,6 +287,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
             const requestBody = {
                 person_image: personImageUrl,
                 garment_images: garmentImages,
+                collection: fashionCategory || null, // Collection name (category slug)
             }
 
             console.log('📤 [TRY-ON PAGE] Sending request body to /api/try-on/trial:', JSON.stringify(requestBody, null, 2))
