@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     revalidateTag('categories', 'max');
     revalidateTag('products', 'max');
     revalidateTag('featured', 'max');
+    revalidateTag('trial-products', 'max'); // Clear trial products cache for try-on
 
     return NextResponse.json({
       revalidated: true,

@@ -48,7 +48,11 @@ export function SmartImage({
   badgePosition = 'left',
 }: SmartImageProps) {
   // Check if user should have access to AI images
-  const shouldCheckAiImage = userId && (hasPremium || (aiEnabled && isTrialProduct));
+  // Priority: Premium first, then AI trial (if not premium)
+  const shouldCheckAiImage = userId && (
+    hasPremium || // Premium users: check for all products
+    (!hasPremium && aiEnabled && isTrialProduct) // AI trial users: only for trial products
+  );
 
   // Always call hooks unconditionally (React rules)
   // Initial state: always start with null for premium/AI users to prevent flash
@@ -134,8 +138,13 @@ export function SmartImage({
 
       try {
         // Check if AI image exists
-        console.log('[SmartImage] Checking for AI image...');
-        const aiUrl = await getUserSpecificImageUrl(userId!, productId, imageIndex);
+        // Premium users: use productId_userId convention
+        // Trial users: use userId_productId convention
+        console.log('[SmartImage] Checking for AI image...', {
+          isPremium: hasPremium,
+          convention: hasPremium ? 'premium (productId_userId)' : 'trial (userId_productId)',
+        });
+        const aiUrl = await getUserSpecificImageUrl(userId!, productId, imageIndex, hasPremium);
         
         if (isMounted) {
           if (aiUrl && aiUrl.startsWith('http')) {

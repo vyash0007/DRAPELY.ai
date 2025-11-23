@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/auth';
 // Base URL from env, API path configured in code
 const AI_API_BASE_URL = process.env.TRY_ON_API_URL || 'http://localhost:8000';
 const AI_API_SECRET_KEY = process.env.TRY_ON_API_SECRET_KEY || '';
-const EXTERNAL_API_URL = `${AI_API_BASE_URL}/api/v1/trial`;
+const EXTERNAL_API_URL = `${AI_API_BASE_URL}/api/v1/tryon`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,11 +20,13 @@ export async function POST(request: NextRequest) {
 
     const userId = user.id;
     const userEmail = user.email;
+    const hasPremium = user.hasPremium || false;
+    const aiEnabled = user.aiEnabled || false;
     const body = await request.json();
     
     console.log('📥 [TRIAL API] Received request body:', JSON.stringify(body, null, 2));
     
-    const { person_image, garment_images } = body;
+    const { person_image, garment_images, collection } = body;
 
     // Validate user email
     if (!userEmail) {
@@ -57,21 +59,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Determine subscription type: "premium" if hasPremium, otherwise "trial" if aiEnabled
+    const subscription_type = hasPremium ? 'premium' : (aiEnabled ? 'trial' : 'trial');
+    
     // Prepare request body for external API
     const requestBody = {
       user_id: userId,
       email: userEmail,
       garment_images: garment_images,
       person_image: person_image,
+      subscription_type: subscription_type,
+      collection: collection || null, // Collection name from request body
     };
-
-    console.log('🚀 [TRIAL API] Making request to external API:', {
-      url: EXTERNAL_API_URL,
-      user_id: userId,
-      garment_count: Object.keys(garment_images).length,
-    });
-    
-    console.log('📤 [TRIAL API] Request body being sent:', JSON.stringify(requestBody, null, 2));
 
     // Prepare headers with Bearer token if available
     const headers: HeadersInit = {
@@ -81,6 +80,21 @@ export async function POST(request: NextRequest) {
     if (AI_API_SECRET_KEY) {
       headers['Authorization'] = `Bearer ${AI_API_SECRET_KEY}`;
     }
+
+    // Log the complete request details before making the API call
+    console.log('🚀 [TRIAL API] ========== BACKEND REQUEST ==========');
+    console.log('📍 [TRIAL API] URL:', EXTERNAL_API_URL);
+    console.log('🔧 [TRIAL API] Method: POST');
+    console.log('🔑 [TRIAL API] Headers:', {
+      'Content-Type': headers['Content-Type'],
+      'Authorization': AI_API_SECRET_KEY ? 'Bearer ***' : 'Not set',
+    });
+    console.log('👤 [TRIAL API] User ID:', userId);
+    console.log('💳 [TRIAL API] Subscription Type:', subscription_type);
+    console.log('📁 [TRIAL API] Collection:', collection || 'Not provided');
+    console.log('👕 [TRIAL API] Garment Count:', Object.keys(garment_images).length);
+    console.log('📤 [TRIAL API] Request Body:', JSON.stringify(requestBody, null, 2));
+    console.log('🚀 [TRIAL API] =====================================');
 
     // Make POST request to external API
     const externalResponse = await fetch(EXTERNAL_API_URL, {

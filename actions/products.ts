@@ -115,7 +115,7 @@ export async function getTrialProducts(limit: number = 100): Promise<SerializedP
       },
       ['trial-products'],
       {
-        revalidate: 60,
+        revalidate: 10, // Reduced to 10 seconds for fresher try-on data
         tags: ['products', 'trial-products'],
       }
     )();
@@ -173,7 +173,7 @@ export async function getTrialProductsByCategory(
       },
       [cacheKey],
       {
-        revalidate: 60,
+        revalidate: 10, // Reduced to 10 seconds for fresher try-on data
         tags: ['products', 'trial-products', `category-${categorySlug}`],
       }
     )();
