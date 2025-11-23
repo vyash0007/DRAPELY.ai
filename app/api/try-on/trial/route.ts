@@ -6,6 +6,13 @@ const AI_API_BASE_URL = process.env.TRY_ON_API_URL || 'http://localhost:8000';
 const AI_API_SECRET_KEY = process.env.TRY_ON_API_SECRET_KEY || '';
 const EXTERNAL_API_URL = `${AI_API_BASE_URL}/api/v1/tryon`;
 
+// Log configuration on startup
+console.log('🔧 [TRIAL API] Configuration:', {
+  apiUrl: AI_API_BASE_URL,
+  hasSecretKey: !!AI_API_SECRET_KEY,
+  fullEndpoint: EXTERNAL_API_URL
+});
+
 export async function POST(request: NextRequest) {
   try {
     // Get current user
@@ -97,24 +104,42 @@ export async function POST(request: NextRequest) {
     console.log('🚀 [TRIAL API] =====================================');
 
     // Make POST request to external API
-    const externalResponse = await fetch(EXTERNAL_API_URL, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(requestBody),
-    });
+    let externalResponse;
+    try {
+      externalResponse = await fetch(EXTERNAL_API_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      });
+    } catch (fetchError) {
+      console.error('❌ [TRIAL API] Network error connecting to external API:', fetchError);
+      return NextResponse.json(
+        {
+          error: 'Unable to connect to the AI service. Please ensure the TRY_ON_API_URL is configured correctly and the service is running.',
+          details: fetchError instanceof Error ? fetchError.message : 'Network error'
+        },
+        { status: 503 }
+      );
+    }
 
     if (!externalResponse.ok) {
-      const errorText = await externalResponse.text();
+      let errorText;
+      try {
+        errorText = await externalResponse.text();
+      } catch (parseError) {
+        errorText = 'Unable to parse error response';
+      }
+
       console.error('❌ [TRIAL API] External API error:', {
         status: externalResponse.status,
         statusText: externalResponse.statusText,
         error: errorText,
       });
-      
+
       return NextResponse.json(
-        { 
-          error: `External API error: ${externalResponse.statusText}`,
-          details: errorText 
+        {
+          error: `AI service error: ${externalResponse.statusText || 'Unknown error'}`,
+          details: errorText
         },
         { status: externalResponse.status }
       );

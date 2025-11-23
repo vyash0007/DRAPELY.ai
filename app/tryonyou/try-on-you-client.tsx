@@ -8,8 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ArrowRight, Upload, X, Info, CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ArrowRight, Upload, X, Info, CheckCircle2, Loader2, AlertTriangle, Lock } from "lucide-react";
 import Link from "next/link";
 import PremiumPaymentModal from "@/components/premium-payment-modal";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -23,6 +23,7 @@ type User = {
     imageUrl: string | null;
     aiEnabled: boolean;
     hasPremium: boolean;
+    trialUsed: boolean;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -70,6 +71,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     const [paymentStatus, setPaymentStatus] = useState<"success" | "cancelled" | null>(null);
     const [showErrorDialog, setShowErrorDialog] = useState(false);
     const [errorDialogMessage, setErrorDialogMessage] = useState<string>("");
+    const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
     // Check for payment status in URL params
     useEffect(() => {
@@ -282,7 +284,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                 throw new Error(errorMsg)
             }
 
-            // Step 3: Process try-on with the uploaded image and trial products
+            // Step 3: Process try-on with the uploaded image and products
             // Make POST request to external API via our API route
             const requestBody = {
                 person_image: personImageUrl,
@@ -290,19 +292,49 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                 collection: fashionCategory || null, // Collection name (category slug)
             }
 
-            console.log('📤 [TRY-ON PAGE] Sending request body to /api/try-on/trial:', JSON.stringify(requestBody, null, 2))
+            // Use /api/try-on/trial for both trial and premium (backend handles subscription type)
+            const apiEndpoint = '/api/try-on/trial';
 
-            const processResponse = await fetch('/api/try-on/trial', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
+            console.log('📤 [TRY-ON PAGE] Sending request:', {
+                endpoint: apiEndpoint,
+                plan: selectedPlan,
+                category: fashionCategory,
+                garmentCount: Object.keys(garmentImages).length,
             })
 
+            let processResponse;
+            try {
+                processResponse = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody),
+                })
+            } catch (fetchError) {
+                // Network error - backend is unreachable
+                console.error('❌ [TRY-ON PAGE] Network error:', fetchError)
+                throw new Error('Unable to connect to the try-on service. Please check your internet connection and try again.')
+            }
+
             if (!processResponse.ok) {
-                const errorData = await processResponse.json()
-                throw new Error(errorData.error || 'Failed to process try-on')
+                let errorData;
+                try {
+                    errorData = await processResponse.json()
+                } catch (parseError) {
+                    // If we can't parse the error response, use the status text
+                    console.error('❌ [TRY-ON PAGE] Error parsing response:', parseError)
+                    throw new Error(`Server error (${processResponse.status}): ${processResponse.statusText || 'Unknown error'}`)
+                }
+
+                // Log detailed error information
+                console.error('❌ [TRY-ON PAGE] API error:', {
+                    status: processResponse.status,
+                    error: errorData.error,
+                    details: errorData.details,
+                })
+
+                throw new Error(errorData.error || errorData.details || 'Failed to process try-on')
             }
 
             const processResult = await processResponse.json()
@@ -779,18 +811,35 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             </Label>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div
-                                                    onClick={() => setSelectedPlan("trial")}
-                                                    className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
-                                                        selectedPlan === "trial"
-                                                            ? "border-[#7FA67F] bg-[#F5F0EB]"
-                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4]"
+                                                    onClick={() => {
+                                                        if (user.trialUsed) {
+                                                            setShowUpgradeDialog(true);
+                                                        } else {
+                                                            setSelectedPlan("trial");
+                                                        }
+                                                    }}
+                                                    className={`p-4 rounded-md border-2 transition-all relative ${
+                                                        user.trialUsed
+                                                            ? "border-gray-300 bg-gray-50 cursor-not-allowed opacity-60"
+                                                            : selectedPlan === "trial"
+                                                            ? "border-[#7FA67F] bg-[#F5F0EB] cursor-pointer"
+                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4] cursor-pointer"
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <span className="font-semibold text-gray-900">Trial</span>
+                                                        {user.trialUsed && (
+                                                            <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                                                <Lock className="h-3 w-3" />
+                                                                Used
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <p className="text-sm text-gray-600">
-                                                        Try-on with trial products only
+                                                        {user.trialUsed
+                                                            ? "Trial already used - Upgrade to Premium"
+                                                            : "Try-on with trial products only"
+                                                        }
                                                     </p>
                                                 </div>
                                                 <div
@@ -975,6 +1024,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                 // Only allow closing via the "Try Again" button
             }}>
                 <DialogContent className="sm:max-w-[500px] border-none p-0 overflow-hidden [&>button]:hidden" style={{ backgroundColor: '#FFFEFE' }}>
+                    <DialogTitle className="sr-only">Processing Error</DialogTitle>
                     {/* Warning Header */}
                     <div className="border-b border-pink-500/30 px-6 py-8 text-center" style={{ backgroundColor: '#FFFEFE' }}>
                         <div className="flex justify-center mb-4">
@@ -1021,6 +1071,82 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                 className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-6 px-12 rounded-md shadow-lg hover:shadow-pink-500/50 transition-all duration-300 text-lg"
                             >
                                 Try Again
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Upgrade to Premium Dialog */}
+            <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+                <DialogContent className="sm:max-w-[500px] border-none p-0 overflow-hidden" style={{ backgroundColor: '#FFFEFE' }}>
+                    <DialogTitle className="sr-only">Trial Already Used</DialogTitle>
+                    {/* Header */}
+                    <div className="border-b border-[#E5DDD4] px-6 py-8 text-center" style={{ backgroundColor: '#F5F0EB' }}>
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-gradient-to-br from-[#87A582] to-[#7A9475] rounded-full p-4">
+                                <Lock className="h-16 w-16 text-white" />
+                            </div>
+                        </div>
+                        <h2 className="text-3xl font-bold text-gray-900">Trial Already Used</h2>
+                    </div>
+
+                    {/* Content */}
+                    <div className="px-6 py-8 space-y-6" style={{ backgroundColor: '#FFFEFE' }}>
+                        <div className="bg-gradient-to-br from-[#F5F0EB] to-[#E5DDD4]/50 rounded-md p-6 border-2 border-[#E5DDD4]">
+                            <p className="text-gray-700 text-base leading-relaxed mb-4">
+                                You've already used your one-time trial. To continue enjoying virtual try-on with unlimited products across all categories, upgrade to Premium!
+                            </p>
+
+                            <div className="bg-white rounded-md p-4 border border-[#87A582] mt-4">
+                                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                    <CheckCircle2 className="h-5 w-5 text-[#87A582]" />
+                                    Premium Benefits:
+                                </h3>
+                                <ul className="space-y-2 ml-7">
+                                    <li className="flex items-start gap-2 text-sm text-gray-700">
+                                        <span className="text-[#87A582] font-bold">•</span>
+                                        <span>Unlimited virtual try-ons</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-gray-700">
+                                        <span className="text-[#87A582] font-bold">•</span>
+                                        <span>Access to all products in any category</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-gray-700">
+                                        <span className="text-[#87A582] font-bold">•</span>
+                                        <span>Priority processing</span>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-sm text-gray-700">
+                                        <span className="text-[#87A582] font-bold">•</span>
+                                        <span>Exclusive early access to new features</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="mt-4 text-center">
+                                <p className="text-2xl font-bold text-gray-900">Only $50</p>
+                                <p className="text-sm text-gray-600">One-time payment, lifetime access</p>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-4">
+                            <Button
+                                onClick={() => {
+                                    setShowUpgradeDialog(false);
+                                    setShowPaymentModal(true);
+                                }}
+                                className="flex-1 bg-gradient-to-r from-[#87A582] to-[#7A9475] hover:from-[#7A9475] hover:to-[#6D8768] text-white py-6 text-lg font-bold rounded-md shadow-lg hover:shadow-[#87A582]/50 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+                            >
+                                Upgrade to Premium
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                            <Button
+                                onClick={() => setShowUpgradeDialog(false)}
+                                variant="outline"
+                                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-100 py-6 px-8 text-lg font-semibold rounded-md transition-all"
+                            >
+                                Maybe Later
                             </Button>
                         </div>
                     </div>

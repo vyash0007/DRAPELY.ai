@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
         where: { id: user.id },
         data: {
           aiEnabled: true,
+          trialUsed: true,
         },
       });
 
-      console.log(`AI enabled for user ${user.id} (Trial plan)`);
+      console.log(`AI enabled for user ${user.id} (Trial plan) - Trial marked as used`);
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

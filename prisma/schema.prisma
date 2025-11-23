@@ -16,6 +16,7 @@ model User {
   imageUrl      String?
   aiEnabled     Boolean        @default(false)
   hasPremium    Boolean        @default(false)
+  trialUsed     Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   carts         Cart?
