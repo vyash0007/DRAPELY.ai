@@ -60,7 +60,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [userName, setUserName] = useState(user?.firstName || "");
     const [fashionCategory, setFashionCategory] = useState("");
-    const [selectedPlan, setSelectedPlan] = useState<"trial" | "premium">("trial");
+    const [selectedPlan, setSelectedPlan] = useState<"trial" | "premium">(user.hasPremium ? "premium" : "trial");
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
@@ -809,73 +809,82 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                             <Label className="text-base font-semibold text-gray-900">
                                                 Select Plan
                                             </Label>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            {user.hasPremium ? (
+                                                // Premium users - show only premium option
                                                 <div
-                                                    onClick={() => {
-                                                        if (user.trialUsed) {
-                                                            setShowUpgradeDialog(true);
-                                                        } else {
-                                                            setSelectedPlan("trial");
-                                                        }
-                                                    }}
-                                                    className={`p-4 rounded-md border-2 transition-all relative ${
-                                                        user.trialUsed
-                                                            ? "border-gray-300 bg-gray-50 cursor-not-allowed opacity-60"
-                                                            : selectedPlan === "trial"
-                                                            ? "border-[#7FA67F] bg-[#F5F0EB] cursor-pointer"
-                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4] cursor-pointer"
-                                                    }`}
-                                                >
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <span className="font-semibold text-gray-900">Trial</span>
-                                                        {user.trialUsed && (
-                                                            <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
-                                                                <Lock className="h-3 w-3" />
-                                                                Used
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-sm text-gray-600">
-                                                        {user.trialUsed
-                                                            ? "Trial already used - Upgrade to Premium"
-                                                            : "Try-on with trial products only"
-                                                        }
-                                                    </p>
-                                                </div>
-                                                <div
-                                                    onClick={() => {
-                                                        if (!user.hasPremium) {
-                                                            setShowPaymentModal(true);
-                                                        } else {
-                                                            setSelectedPlan("premium");
-                                                        }
-                                                    }}
+                                                    onClick={() => setSelectedPlan("premium")}
                                                     className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
                                                         selectedPlan === "premium"
                                                             ? "border-[#7FA67F] bg-[#F5F0EB]"
-                                                            : user.hasPremium
-                                                            ? "border-green-500 bg-green-50"
-                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4]"
+                                                            : "border-green-500 bg-green-50"
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <span className="font-semibold text-gray-900">Premium</span>
-                                                        {user.hasPremium ? (
-                                                            <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
-                                                                <CheckCircle2 className="h-3 w-3" />
-                                                                Active
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-xs bg-[#121827] text-white px-2 py-1 rounded-full">
-                                                                $50
-                                                            </span>
-                                                        )}
+                                                        <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                                            <CheckCircle2 className="h-3 w-3" />
+                                                            Active
+                                                        </span>
                                                     </div>
                                                     <p className="text-sm text-gray-600">
                                                         Try-on with all products in category
                                                     </p>
                                                 </div>
-                                            </div>
+                                            ) : (
+                                                // Non-premium users - show both trial and premium
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div
+                                                        onClick={() => {
+                                                            if (user.trialUsed) {
+                                                                setShowUpgradeDialog(true);
+                                                            } else {
+                                                                setSelectedPlan("trial");
+                                                            }
+                                                        }}
+                                                        className={`p-4 rounded-md border-2 transition-all relative ${
+                                                            user.trialUsed
+                                                                ? "border-gray-300 bg-gray-50 cursor-not-allowed opacity-60"
+                                                                : selectedPlan === "trial"
+                                                                ? "border-[#7FA67F] bg-[#F5F0EB] cursor-pointer"
+                                                                : "border-gray-200 bg-white hover:border-[#E5DDD4] cursor-pointer"
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className="font-semibold text-gray-900">Trial</span>
+                                                            {user.trialUsed && (
+                                                                <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                                                    <Lock className="h-3 w-3" />
+                                                                    Used
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-sm text-gray-600">
+                                                            {user.trialUsed
+                                                                ? "Trial already used - Upgrade to Premium"
+                                                                : "Try-on with trial products only"
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        onClick={() => setShowPaymentModal(true)}
+                                                        className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
+                                                            selectedPlan === "premium"
+                                                                ? "border-[#7FA67F] bg-[#F5F0EB]"
+                                                                : "border-gray-200 bg-white hover:border-[#E5DDD4]"
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className="font-semibold text-gray-900">Premium</span>
+                                                            <span className="text-xs bg-[#121827] text-white px-2 py-1 rounded-full">
+                                                                $50
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-gray-600">
+                                                            Try-on with all products in category
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Upload Status Messages */}
