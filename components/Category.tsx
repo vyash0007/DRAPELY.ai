@@ -17,7 +17,7 @@ const Category = () => {
           {/* Large Featured Category - Women's Fashion */}
           <Link
             href="/products?category=womens-fashion"
-            className="group relative overflow-hidden rounded-lg bg-[#f5e6d3] hover:shadow-xl transition-all duration-300 min-h-[500px]"
+            className="group relative overflow-hidden rounded-lg bg-[#f5e6d3] hover:shadow-xl transition-all duration-300 min-h-[400px] sm:min-h-[500px]"
           >
             <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
               {/* Image at top right */}
@@ -35,7 +35,7 @@ const Category = () => {
 
               {/* Content on left bottom */}
               <div className="z-10 max-w-sm relative">
-                <h2 className="text-4xl md:text-5xl font-serif italic text-gray-900 mb-4">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif italic text-gray-900 mb-4">
                   Women's fashion
                 </h2>
                 <p className="text-gray-600 mb-6 leading-relaxed text-sm md:text-base">
@@ -57,7 +57,7 @@ const Category = () => {
             >
               <div className="absolute inset-0 flex items-center justify-between p-6 md:p-8">
                 <div className="z-10 flex-1 pr-4">
-                  <h3 className="text-2xl md:text-3xl font-serif text-gray-900 mb-2">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-serif text-gray-900 mb-2">
                     Men's fashion
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">Clean lines, timeless fits, and everyday wear made simple. Choose pieces that work seamlessly from day to night.</p>
@@ -65,7 +65,7 @@ const Category = () => {
                     Shop Now
                   </span>
                 </div>
-                <div className="relative w-44 md:w-56 h-full min-h-[400px] ">
+                <div className="relative w-32 sm:w-44 md:w-56 h-full min-h-[250px] sm:min-h-[400px]">
                   <Image
                     src="/menM2.png"
                     alt="Men's Fashion"
@@ -86,7 +86,7 @@ const Category = () => {
             >
               <div className="absolute inset-0 flex items-center justify-between p-6 md:p-8">
                 <div className="z-10 flex-1 pr-4">
-                  <h3 className="text-4xl md:text-3xl font-serif  text-gray-900 mb-2">
+                  <h3 className="text-xl sm:text-3xl font-serif text-gray-900 mb-2">
                     Kids
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">Discover stylish and comfortable fashion for your little ones.</p>
@@ -94,7 +94,7 @@ const Category = () => {
                     Shop Now
                   </span>
                 </div>
-                <div className="relative w-44 md:w-56 h-full min-h-[360px]">
+                <div className="relative w-32 sm:w-44 md:w-56 h-full min-h-[250px] sm:min-h-[360px]">
                   <Image
                     src="/kidM2.png"
                     alt="Kids"

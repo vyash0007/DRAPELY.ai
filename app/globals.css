@@ -24,6 +24,48 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  font-weight: 300; /* Tailwind's font-light */
-  letter-spacing: 0.025em; /* Tailwind's tracking-wide */
+  font-weight: 300;
+  /* Tailwind's font-light */
+  letter-spacing: 0.025em;
+  /* Tailwind's tracking-wide */
+}
+
+/* Custom Styles */
+.cl-footerActionLink {
+  color: #87A582 !important;
+}
+
+.cl-footerActionLink:hover {
+  color: #7A9475 !important;
+}
+
+/* Hide Clerk Branding - Aggressive Override */
+.cl-footer a[href*="clerk.com"],
+.cl-footer a[href*="clerk.dev"],
+.cl-internal-b3fd6y,
+.cl-internal-10255rl,
+div[class*="cl-internal-securedByClerk"] {
+  display: none !important;
+}
+
+/* Ensure footer action is visible */
+.cl-footerAction {
+  display: flex !important;
+}
+
+/* Animation utilities */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
 }

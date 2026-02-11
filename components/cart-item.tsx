@@ -55,10 +55,9 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
   const currentPrice = Number(item.product.price);
 
   return (
-    <div className="bg-white rounded-lg p-6 flex gap-6">
-      {/* Product Image */}
-      <Link href={`/products/${item.product.slug}`}>
-        <div className="relative h-48 w-40 overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
+    <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
+      <Link href={`/products/${item.product.slug}`} className="mx-auto sm:mx-0 w-full sm:w-auto flex-shrink-0">
+        <div className="relative aspect-square sm:h-48 sm:w-40 overflow-hidden rounded-2xl bg-gray-100 shadow-inner group">
           <SmartImage
             src={imageUrl}
             alt={item.product.title}
@@ -69,8 +68,9 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
             isTrialProduct={isTrialProduct}
             imageIndex={0}
             fill
-            className="object-cover"
-            sizes="160px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, 160px"
+            badgePosition="right"
           />
         </div>
       </Link>
@@ -79,7 +79,7 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
       <div className="flex-1 flex flex-col justify-between">
         <div>
           <Link href={`/products/${item.product.slug}`}>
-            <h3 className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors mb-2">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors mb-2">
               {item.product.title}
             </h3>
           </Link>
@@ -110,51 +110,52 @@ export function CartItem({ item, userId, hasPremium = false, aiEnabled = false }
 
           {/* Price */}
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold text-gray-900">
+            <span className="text-xl sm:text-2xl font-bold text-gray-900">
               {formatPrice(currentPrice)}
             </span>
-            <span className="text-lg text-gray-400 line-through">
+            <span className="text-base sm:text-lg text-gray-400 line-through">
               {formatPrice(originalPrice)}
             </span>
           </div>
         </div>
 
-        {/* Quantity Controls and Actions */}
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg border-2 border-gray-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mt-6 gap-4">
+          <div className="flex items-center justify-center sm:justify-start gap-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm p-1">
             <button
               onClick={() => handleUpdateQuantity(item.quantity - 1)}
               disabled={isUpdating || item.quantity <= 1}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg active:scale-95"
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg active:scale-90"
             >
-              <Minus className="h-4 w-4 text-gray-700" />
+              <Minus className="h-4 w-4" />
             </button>
-            <span className="w-12 text-center font-bold text-gray-900">{item.quantity}</span>
+            <span className="w-10 text-center font-bold text-gray-900 text-lg">{item.quantity}</span>
             <button
               onClick={() => handleUpdateQuantity(item.quantity + 1)}
               disabled={isUpdating || item.quantity >= item.product.stock}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg active:scale-95"
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg active:scale-90"
             >
-              <Plus className="h-4 w-4 text-gray-700" />
+              <Plus className="h-4 w-4" />
             </button>
           </div>
 
           {/* Action Icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center sm:justify-end gap-3">
             <button
               onClick={handleRemove}
               disabled={isUpdating}
-              className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-red-200 bg-red-50 hover:bg-red-100 hover:border-red-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md active:scale-95"
+              className="flex-1 sm:flex-none h-12 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl border-2 border-red-50 bg-red-50/50 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95 px-4 sm:px-0"
               aria-label="Remove item"
             >
-              <Trash2 className="h-5 w-5 text-red-600" />
+              <Trash2 className="h-5 w-5" />
+              <span className="sm:hidden ml-2 font-semibold">Remove</span>
             </button>
-            <Link href={`/products/${item.product.slug}`}>
+            <Link href={`/products/${item.product.slug}`} className="flex-1 sm:flex-none">
               <button
-                className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
+                className="w-full sm:w-12 h-12 flex items-center justify-center rounded-xl border-2 border-gray-100 bg-gray-50/50 text-gray-600 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-300 shadow-sm active:scale-95 px-4 sm:px-0"
                 aria-label="Edit item"
               >
-                <Edit className="h-5 w-5 text-gray-700" />
+                <Edit className="h-5 w-5" />
+                <span className="sm:hidden ml-2 font-semibold">Edit</span>
               </button>
             </Link>
           </div>

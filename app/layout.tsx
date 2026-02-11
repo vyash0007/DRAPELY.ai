@@ -24,7 +24,29 @@ export default async function RootLayout({
   const isAdminRoute = pathname.includes('/admin');
 
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        layout: {
+          socialButtonsPlacement: "bottom",
+          socialButtonsVariant: "blockButton",
+          unsafe_disableDevelopmentModeWarnings: true,
+        },
+        elements: {
+          formButtonPrimary:
+            "bg-[#87A582] hover:bg-[#7A9475] text-sm normal-case shadow-lg h-12 transition-all duration-300 rounded-xl",
+          card: "shadow-2xl bg-white border border-gray-100/50 rounded-3xl",
+          headerTitle: "text-3xl font-light text-gray-900 tracking-tight",
+          headerSubtitle: "text-gray-500 text-base font-light mt-2",
+          socialButtonsBlockButton: "border-gray-100 hover:bg-gray-50 h-12 transition-all duration-300 rounded-xl shadow-sm",
+          socialButtonsBlockButtonText: "text-gray-600 font-medium",
+          formFieldInput: "h-12 border-gray-100 bg-gray-50/50 focus:bg-white focus:border-[#87A582] transition-all duration-300 rounded-xl px-4",
+          formFieldLabel: "text-gray-700 font-medium mb-1.5",
+          internal_securedByClerk: "!hidden",
+          branding: "!hidden", // Explicit branding target
+          userButtonPopoverFooter: "!hidden",
+        }
+      }}
+    >
       <html lang="en">
         <head>
           <link rel="icon" href="/logo2.2k.png" type="image/png" />

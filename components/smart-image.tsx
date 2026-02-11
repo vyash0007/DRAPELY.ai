@@ -145,7 +145,7 @@ export function SmartImage({
           convention: hasPremium ? 'premium (productId_userId)' : 'trial (userId_productId)',
         });
         const aiUrl = await getUserSpecificImageUrl(userId!, productId, imageIndex, hasPremium);
-        
+
         if (isMounted) {
           if (aiUrl && aiUrl.startsWith('http')) {
             console.log('[SmartImage] ✅ AI image found:', {
@@ -153,7 +153,7 @@ export function SmartImage({
               productId,
               userId,
             });
-            
+
             // Set AI image as initial state (prevents flash of regular image)
             setAiImageUrl(aiUrl);
             setShowToggle(true);
@@ -232,7 +232,7 @@ export function SmartImage({
   // Show loading skeleton while checking for AI image (prevents flash)
   if (isLoading || !imageSrc) {
     return (
-      <div 
+      <div
         className={`bg-gray-200 animate-pulse ${fill ? 'absolute inset-0' : ''} ${className || ''}`}
         style={fill ? undefined : { width, height }}
       />
@@ -243,7 +243,7 @@ export function SmartImage({
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (showAiImage && aiImageUrl) {
       // Switch to original
       console.log('[SmartImage] 🔄 Toggling to original image');
@@ -264,7 +264,7 @@ export function SmartImage({
       error: e,
       isAiImage: imageSrc !== src,
     });
-    
+
     // If user-specific image fails, fall back to original
     if (imageSrc !== src && !hasError) {
       console.error('[SmartImage] Falling back to original image');
@@ -309,20 +309,23 @@ export function SmartImage({
   return (
     <>
       {imageElement}
-      
+
       {/* Toggle Badge - positioned based on badgePosition prop */}
       <button
         onClick={handleToggle}
-        className={`absolute top-3 z-10 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
-          badgePosition === 'left' ? 'left-3' : 'right-3'
-        }`}
+        className={`absolute top-2 z-10 w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 ${badgePosition === 'left' ? 'left-2' : 'right-2'
+          }`}
         aria-label={showAiImage ? 'Show original image' : 'Show AI image'}
         title={showAiImage ? 'Click to view original' : 'Click to view AI try-on'}
-        >
+      >
         <span className="text-purple-700">
-          {showAiImage ? <IoShirtSharp className='w-5 h-5'/> : <IoShirtOutline className='w-5 h-5' />}
+          {showAiImage ? (
+            <IoShirtSharp className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+          ) : (
+            <IoShirtOutline className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+          )}
         </span>
-        </button>
+      </button>
     </>
   );
 }

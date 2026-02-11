@@ -12,7 +12,7 @@ const modelImages = [
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763284237/image_31_phmsgx.jpg',
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763306341/image_32_vhfkvu.jpg',
   'https://res.cloudinary.com/dnkrqpuqk/image/upload/v1763306341/image_33_ktt11g.jpg',
-   // Model 4 - Elegant style
+  // Model 4 - Elegant style
 ]
 
 const Hero = () => {
@@ -58,8 +58,8 @@ const Hero = () => {
                 // Futuristic
               </p>
 
-              <h1 className="text-6xl lg:text-7xl font-md italic leading-tight">
-                <span className="font-serif text-navy-900 block">Where AI</span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-md italic leading-tight">
+                <span className="font-serif text-navy-900 block pt-4 sm:pt-0">Where AI</span>
                 <span className="font-serif text-navy-900 block">Meets Style.</span>
               </h1>
 
@@ -102,9 +102,8 @@ const Hero = () => {
                   {modelImages.map((image, index) => (
                     <div
                       key={index}
-                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                        index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                      }`}
+                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                        }`}
                       style={{
                         backgroundImage: `url(${image})`,
                         backgroundSize: 'cover',
@@ -118,7 +117,7 @@ const Hero = () => {
                 <div className="absolute top-0 left-0 h-full flex items-center">
                   <div className="bg-teal-400/90 px-4 py-8 h-2/3 flex items-center justify-center">
                     <p className="text-white text-lg font-medium tracking-widest vertical-text transform -rotate-180"
-                       style={{ writingMode: 'vertical-rl' }}>
+                      style={{ writingMode: 'vertical-rl' }}>
                       Luxury
                     </p>
                   </div>
@@ -135,7 +134,7 @@ const Hero = () => {
                 <div className="absolute top-0 right-0 h-full flex items-end">
                   <div className="bg-pink-400/20 px-3 py-8 h-1/2 flex items-center justify-center">
                     <p className="text-gray-600 font-medium tracking-wider vertical-text transform rotate-0"
-                       style={{ writingMode: 'vertical-rl' }}>
+                      style={{ writingMode: 'vertical-rl' }}>
                       Elegant
                     </p>
                   </div>

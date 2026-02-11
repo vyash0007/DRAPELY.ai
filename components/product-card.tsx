@@ -11,6 +11,8 @@ import { WishlistButton } from '@/components/wishlist-button';
 import { SmartImage } from '@/components/smart-image';
 import { toast } from 'sonner';
 
+
+
 // Match the serialized product type from ProductGrid
 interface SerializedProductWithCategory {
   id: string;
@@ -126,9 +128,9 @@ export function ProductCard({ product, userId, hasPremium = false, aiEnabled = f
             loading="lazy"
           />
 
-          {/* Add to Cart Button - Shows on hover */}
+          {/* Add to Cart Button - Shows on hover for desktop, persistent for mobile */}
           {product.stock > 0 && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-3.5 px-4 translate-y-full group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-3 px-4 md:py-3.5 md:translate-y-full md:group-hover:translate-y-0 transition-all duration-300 shadow-lg">
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
@@ -160,12 +162,12 @@ export function ProductCard({ product, userId, hasPremium = false, aiEnabled = f
       {/* Product Info */}
       <div className="space-y-1">
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-light text-lg text-gray-900 line-clamp-1 hover:text-gray-600 transition-colors">
+          <h3 className="font-light text-base sm:text-lg text-gray-900 line-clamp-1 hover:text-gray-600 transition-colors">
             {product.title}
           </h3>
         </Link>
 
-        <p className="text-sm text-gray-500">{product.category.name}</p>
+        <p className="text-xs sm:text-sm text-gray-500">{product.category.name}</p>
 
         {/* Price */}
         <div className="flex items-center gap-2">

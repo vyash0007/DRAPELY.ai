@@ -257,12 +257,12 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
             setProcessError(null)
 
             // Build URL with category and plan query parameters
-            const productsUrl = fashionCategory 
+            const productsUrl = fashionCategory
                 ? `/api/products/trial?category=${encodeURIComponent(fashionCategory)}&plan=${selectedPlan}`
                 : `/api/products/trial?plan=${selectedPlan}`
-            
+
             console.log('📦 [TRY-ON PAGE] Fetching products for category:', fashionCategory || 'all', 'Plan:', selectedPlan)
-            
+
             const productsResponse = await fetch(productsUrl)
 
             if (!productsResponse.ok) {
@@ -278,7 +278,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
             // Check if garment_images is empty
             if (!garmentImages || Object.keys(garmentImages).length === 0) {
-                const errorMsg = selectedPlan === 'trial' 
+                const errorMsg = selectedPlan === 'trial'
                     ? 'No trial products found. Please ensure there are products marked as trial products.'
                     : 'No products found in the selected category.'
                 throw new Error(errorMsg)
@@ -407,10 +407,10 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                         <div className="text-center space-y-6 animate-fade-in">
 
                             <div className="space-y-3">
-                                <h1 className="text-5xl md:text-6xl font-light tracking-wide text-black">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide text-black">
                                     Virtual Try-On Experience
                                 </h1>
-                                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
                                     Step into the future of fashion with AI-powered virtual fitting
                                 </p>
                             </div>
@@ -420,8 +420,8 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
 
                         {/* Enhanced Terms Card */}
                         <Card className=" border-2 border-[#E5DDD4] backdrop-blur-sm bg-white/90 overflow-hidden mb-10">
-                            <CardHeader className="bg-[#F5F0EB] border-b border-[#E5DDD4]">
-                                <CardTitle className="flex items-center gap-3 text-3xl">
+                            <CardHeader className="bg-[#F5F0EB] border-b border-[#E5DDD4] p-4 sm:p-6">
+                                <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl md:text-3xl">
 
                                     <span className="text-black font-light tracking-wide">
                                         Terms and Conditions
@@ -431,8 +431,8 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                     Please review our terms carefully before using the AI-powered virtual try-on feature
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="pt-8 pb-8">
-                                <ScrollArea className="h-[450px] w-full rounded-md border-2 border-[#E5DDD4] p-8 bg-gradient-to-br from-white to-[#F5F0EB]">
+                            <CardContent className="pt-6 sm:pt-8 pb-6 sm:pb-8 p-4 sm:p-6">
+                                <ScrollArea className="h-[350px] sm:h-[450px] w-full rounded-md border-2 border-[#E5DDD4] p-4 sm:p-8 bg-gradient-to-br from-white to-[#F5F0EB]">
                                     <div className="space-y-8 text-sm text-gray-700 pr-4 font-light tracking-wide">
                                         <section className="group hover:bg-[#F5F0EB] p-4 rounded-md transition-all">
                                             <h3 className="text-lg font-light tracking-wide text-gray-900 mb-4">
@@ -620,19 +620,19 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                         </label>
                                     </div>
 
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-col sm:flex-row gap-4">
                                         <Button
                                             onClick={handleAcceptTerms}
                                             disabled={!termsAccepted}
-                                            className="flex-1 bg-[#87A582] hover:bg-[#7A9475] text-white py-7 text-lg font-bold rounded-md shadow-2xl hover:shadow-[#87A582]/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
+                                            className="flex-1 bg-[#87A582] hover:bg-[#7A9475] text-white py-4 sm:py-7 text-base sm:text-lg font-bold rounded-md shadow-2xl hover:shadow-[#87A582]/50 transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
                                         >
                                             Accept and Continue
-                                            <ArrowRight className="ml-2 h-6 w-6" />
+                                            <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
                                         </Button>
                                         <Link href="/" className="flex-shrink-0">
                                             <Button
                                                 variant="outline"
-                                                className="border-2 border-[#87A582] text-[#87A582] hover:bg-[#F5F0EB] hover:border-[#7A9475] hover:text-black py-7 px-10 text-lg font-semibold rounded-md transition-all"
+                                                className="w-full sm:w-auto border-2 border-[#87A582] text-[#87A582] hover:bg-[#F5F0EB] hover:border-[#7A9475] hover:text-black py-4 sm:py-7 px-6 sm:px-10 text-base sm:text-lg font-semibold rounded-md transition-all"
                                             >
                                                 Cancel
                                             </Button>
@@ -647,10 +647,10 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                         {/* Enhanced Studio Header */}
                         <div className="text-center space-y-3">
                             <div className="space-y-2">
-                                <h1 className="text-5xl md:text-6xl font-light tracking-wide text-black">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-wide text-black px-4">
                                     Virtual Try-On Studio
                                 </h1>
-                                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                                <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
                                     Transform your shopping experience with AI-powered visualization. See how you look in our latest collections instantly!
                                 </p>
                             </div>
@@ -813,11 +813,10 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 // Premium users - show only premium option
                                                 <div
                                                     onClick={() => setSelectedPlan("premium")}
-                                                    className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
-                                                        selectedPlan === "premium"
-                                                            ? "border-[#7FA67F] bg-[#F5F0EB]"
-                                                            : "border-green-500 bg-green-50"
-                                                    }`}
+                                                    className={`p-4 rounded-md border-2 cursor-pointer transition-all ${selectedPlan === "premium"
+                                                        ? "border-[#7FA67F] bg-[#F5F0EB]"
+                                                        : "border-green-500 bg-green-50"
+                                                        }`}
                                                 >
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <span className="font-semibold text-gray-900">Premium</span>
@@ -832,7 +831,7 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 </div>
                                             ) : (
                                                 // Non-premium users - show both trial and premium
-                                                <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div
                                                         onClick={() => {
                                                             if (user.trialUsed) {
@@ -841,13 +840,12 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                                 setSelectedPlan("trial");
                                                             }
                                                         }}
-                                                        className={`p-4 rounded-md border-2 transition-all relative ${
-                                                            user.trialUsed
-                                                                ? "border-gray-300 bg-gray-50 cursor-not-allowed opacity-60"
-                                                                : selectedPlan === "trial"
+                                                        className={`p-4 rounded-md border-2 transition-all relative ${user.trialUsed
+                                                            ? "border-gray-300 bg-gray-50 cursor-not-allowed opacity-60"
+                                                            : selectedPlan === "trial"
                                                                 ? "border-[#7FA67F] bg-[#F5F0EB] cursor-pointer"
                                                                 : "border-gray-200 bg-white hover:border-[#E5DDD4] cursor-pointer"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         <div className="flex items-center gap-2 mb-2">
                                                             <span className="font-semibold text-gray-900">Trial</span>
@@ -867,11 +865,10 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                     </div>
                                                     <div
                                                         onClick={() => setShowPaymentModal(true)}
-                                                        className={`p-4 rounded-md border-2 cursor-pointer transition-all ${
-                                                            selectedPlan === "premium"
-                                                                ? "border-[#7FA67F] bg-[#F5F0EB]"
-                                                                : "border-gray-200 bg-white hover:border-[#E5DDD4]"
-                                                        }`}
+                                                        className={`p-4 rounded-md border-2 cursor-pointer transition-all ${selectedPlan === "premium"
+                                                            ? "border-[#7FA67F] bg-[#F5F0EB]"
+                                                            : "border-gray-200 bg-white hover:border-[#E5DDD4]"
+                                                            }`}
                                                     >
                                                         <div className="flex items-center gap-2 mb-2">
                                                             <span className="font-semibold text-gray-900">Premium</span>
@@ -966,42 +963,42 @@ export default function TryOnYouClient({ user, categories }: TryOnYouClientProps
                                                 <Info className="h-5 w-5 text-gray-600" />
                                                 How It Works
                                             </h4>
-                                            <div className="flex items-center justify-between gap-2">
+                                            <div className="flex items-center justify-between gap-1 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
                                                 {/* Step 1 */}
-                                                <div className="flex-1">
-                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
-                                                        <p className="text-xs font-bold text-gray-900">Upload</p>
-                                                        <p className="text-xs text-gray-600">Photo</p>
+                                                <div className="min-w-[70px] flex-1">
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-1 sm:p-3 text-center">
+                                                        <p className="text-[10px] sm:text-xs font-bold text-gray-900">Upload</p>
+                                                        <p className="text-[10px] sm:text-xs text-gray-600">Photo</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 2 */}
-                                                <div className="flex-1">
-                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
-                                                        <p className="text-xs font-bold text-gray-900">Fill</p>
-                                                        <p className="text-xs text-gray-600">Details</p>
+                                                <div className="min-w-[70px] flex-1">
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-1 sm:p-3 text-center">
+                                                        <p className="text-[10px] sm:text-xs font-bold text-gray-900">Fill</p>
+                                                        <p className="text-[10px] sm:text-xs text-gray-600">Details</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 3 */}
-                                                <div className="flex-1">
-                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
-                                                        <p className="text-xs font-bold text-gray-900">AI</p>
-                                                        <p className="text-xs text-gray-600">Process</p>
+                                                <div className="min-w-[70px] flex-1">
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-1 sm:p-3 text-center">
+                                                        <p className="text-[10px] sm:text-xs font-bold text-gray-900">AI</p>
+                                                        <p className="text-[10px] sm:text-xs text-gray-600">Process</p>
                                                     </div>
                                                 </div>
 
-                                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
 
                                                 {/* Step 4 */}
-                                                <div className="flex-1">
-                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-3 text-center">
-                                                        <p className="text-xs font-bold text-gray-900">Get</p>
-                                                        <p className="text-xs text-gray-600">Results</p>
+                                                <div className="min-w-[70px] flex-1">
+                                                    <div className="bg-[#F5F0EB] border-2 border-[#E5DDD4] rounded-md p-1 sm:p-3 text-center">
+                                                        <p className="text-[10px] sm:text-xs font-bold text-gray-900">Get</p>
+                                                        <p className="text-[10px] sm:text-xs text-gray-600">Results</p>
                                                     </div>
                                                 </div>
                                             </div>

@@ -102,63 +102,66 @@ const Footer = ({ variant = 'default' }: FooterProps) => {
                         </div>
                     </div>
 
-                    {/* Company Links */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Company</h3>
-                        <ul className="space-y-4">
-                            <li>
-                                <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    About Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/leadership" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Leadership
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/careers" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Careers
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/news" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Article & News
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/legal" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Legal Notice
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    {/* Links Section - Side by Side on Mobile */}
+                    <div className="lg:col-span-4 grid grid-cols-2 gap-8 lg:grid-cols-2 lg:gap-12">
+                        {/* Company Links */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Company</h3>
+                            <ul className="space-y-4">
+                                <li>
+                                    <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        About Us
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/leadership" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Leadership
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/careers" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Careers
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/news" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Article & News
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/legal" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Legal Notice
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
 
-                    {/* Support Links */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Support</h3>
-                        <ul className="space-y-4">
-                            <li>
-                                <Link href="/help" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Help Center
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/support" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Ticket Support
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/faq" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    FAQ
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">
-                                    Contact us
-                                </Link>
-                            </li>
-                        </ul>
+                        {/* Support Links */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6">Support</h3>
+                            <ul className="space-y-4">
+                                <li>
+                                    <Link href="/help" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Help Center
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/support" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Ticket Support
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/faq" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        FAQ
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">
+                                        Contact us
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     {/* Newsletter Section */}

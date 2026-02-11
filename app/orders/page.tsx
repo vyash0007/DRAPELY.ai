@@ -64,9 +64,9 @@ export default async function OrdersPage() {
     <div className="bg-gray-50 min-h-screen">
       <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-10">
         {/* Page Header */}
-        <div className="mb-12">
-          <h1 className="text-5xl font-light text-gray-900 mb-3">My Orders</h1>
-          <p className="text-gray-500">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-5xl font-light text-gray-900 mb-2 sm:mb-3">My Orders</h1>
+          <p className="text-sm sm:text-base text-gray-500">
             View and edit all your pending, delivered, and returned orders here.
           </p>
         </div>
@@ -80,18 +80,18 @@ export default async function OrdersPage() {
             return (
               <div key={order.id} className="bg-white rounded-lg shadow-sm p-8">
                 {/* Order Header */}
-                <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
-                  <div className="flex items-center gap-8">
-                    <div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-gray-200 gap-4 sm:gap-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8">
+                    <div className="text-sm sm:text-base">
                       <span className="text-gray-600">Order </span>
-                      <span className="text-blue-500 font-semibold">#{order.orderNumber}</span>
+                      <span className="text-blue-500 font-semibold text-xs sm:text-base break-all">#{order.orderNumber}</span>
                     </div>
-                    <div className="text-gray-500">
+                    <div className="text-xs sm:text-sm text-gray-500">
                       Order Placed: {formatDate(order.createdAt)}
                     </div>
                   </div>
-                  <button className="bg-[#8DA485] text-white px-8 py-3 rounded-xl font-semibold flex items-center gap-2 transition-colors hover:bg-[#7A9475]">
-                    <MapPin className="w-5 h-5" />
+                  <button className="w-full sm:w-auto bg-[#8DA485] text-white px-4 sm:px-8 py-2 sm:py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-[#7A9475] text-sm sm:text-base">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                     TRACK ORDER
                   </button>
                 </div>
@@ -102,10 +102,10 @@ export default async function OrdersPage() {
                     const imageUrl = item.product.images[0] || '/placeholder.png';
 
                     return (
-                      <div key={item.id} className="flex items-center gap-6">
+                      <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-b border-gray-50 pb-6 last:border-0 last:pb-0">
                         {/* Product Image */}
-                        <Link href={`/products/${item.product.slug}`}>
-                          <div className="relative w-28 h-32 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                        <Link href={`/products/${item.product.slug}`} className="mx-auto sm:mx-0">
+                          <div className="relative w-24 h-28 sm:w-28 sm:h-32 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                             <SmartImage
                               src={imageUrl}
                               alt={item.product.title}
@@ -117,24 +117,25 @@ export default async function OrdersPage() {
                               imageIndex={0}
                               fill
                               className="object-cover"
-                              sizes="112px"
+                              sizes="(max-width: 640px) 96px, 112px"
                               quality={85}
                               loading="lazy"
+                              badgePosition="right"
                             />
                           </div>
                         </Link>
 
                         {/* Product Details */}
-                        <div className="flex-1">
+                        <div className="flex-1 text-center sm:text-left">
                           <Link href={`/products/${item.product.slug}`}>
-                            <h3 className="text-xl font-bold text-gray-900 hover:text-gray-700 mb-1">
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 mb-1">
                               {item.product.title}
                             </h3>
                           </Link>
-                          <p className="text-sm text-gray-500 mb-3">
+                          <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">
                             By: {order.customerName || 'Guest'}
                           </p>
-                          <div className="flex items-center gap-6 text-sm">
+                          <div className="flex items-center justify-center sm:justify-start gap-4 sm:gap-6 text-xs sm:text-sm">
                             {item.size && (
                               <div>
                                 <span className="text-gray-600">Size: </span>
@@ -145,24 +146,24 @@ export default async function OrdersPage() {
                               <span className="text-gray-600">Qty: </span>
                               <span className="font-semibold text-gray-900">{item.quantity}</span>
                             </div>
-                            <div className="font-bold text-xl text-gray-900">
+                            <div className="font-bold text-lg sm:text-xl text-gray-900">
                               {formatPrice(Number(item.price))}
                             </div>
                           </div>
                         </div>
 
                         {/* Status and Delivery */}
-                        <div className="flex flex-col items-end gap-4 min-w-[280px]">
-                          <div className="text-right">
-                            <div className="text-sm text-gray-600 mb-1">Status</div>
-                            <div className={`text-xl font-semibold ${statusInfo.color}`}>
+                        <div className="flex flex-col items-center sm:items-end gap-2 sm:gap-4 min-w-0 sm:min-w-[200px] border-t sm:border-t-0 pt-4 sm:pt-0">
+                          <div className="text-center sm:text-right">
+                            <div className="text-xs text-gray-600 mb-0.5 sm:mb-1">Status</div>
+                            <div className={`text-lg sm:text-xl font-semibold ${statusInfo.color}`}>
                               {statusInfo.text}
                             </div>
                           </div>
                           {order.status !== 'DELIVERED' && (
-                            <div className="text-right">
-                              <div className="text-sm text-gray-600 mb-1">Delivery Expected by</div>
-                              <div className="text-lg font-bold text-gray-900">
+                            <div className="text-center sm:text-right">
+                              <div className="text-xs text-gray-600 mb-0.5 sm:mb-1">Delivery Expected by</div>
+                              <div className="text-base sm:text-lg font-bold text-gray-900">
                                 {deliveryDate}
                               </div>
                             </div>
@@ -174,13 +175,13 @@ export default async function OrdersPage() {
                 </div>
 
                 {/* Order Footer */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-gray-200 gap-4">
                   <CancelOrderButton orderId={order.id} orderNumber={order.orderNumber} isDelivered={order.status === 'DELIVERED'} />
-                  <div className="flex items-center gap-8">
-                    <div className="text-gray-500">
+                  <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-8">
+                    <div className="text-xs sm:text-gray-500 text-left sm:text-right">
                       Paid using credit card ending with ****
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-xl sm:text-2xl font-bold text-gray-900">
                       {formatPrice(Number(order.total))}
                     </div>
                   </div>

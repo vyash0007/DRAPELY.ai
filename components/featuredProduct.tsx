@@ -18,11 +18,11 @@ const FeaturedProduct = ({ products, userId, hasPremium = false, aiEnabled = fal
             <div className="mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-5xl font-light tracking-wide text-gray-900 mb-4">
+                    <h2 className="text-3xl md:text-5xl font-light tracking-wide text-gray-900 mb-4">
                         Our Featured
                     </h2>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-                       Explore what's trending! updated to keep you ahead of the fashion curve.
+                        Explore what's trending! updated to keep you ahead of the fashion curve.
                     </p>
                     <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
                         From must-have outfits to kids' fashion, our featured lineup highlights the products our community can't get enough of. Curated for every style and story.

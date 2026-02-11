@@ -58,22 +58,22 @@ export default async function CartPage() {
 
   return (
     <div className="bg-[#faf8f5] min-h-screen">
-      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Page Title */}
-        <h1 className="mb-8 text-5xl font-serif font-light text-gray-900">Cart</h1>
+        <h1 className="mb-6 sm:mb-8 text-3xl sm:text-5xl font-serif font-light text-gray-900">Cart</h1>
 
         {/* Progress Steps */}
-        <div className="mb-12 flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-bold text-gray-900">1. Cart</span>
+        <div className="mb-8 sm:mb-12 flex flex-wrap items-center gap-2 sm:gap-4 text-sm sm:text-base">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="font-bold text-gray-900">1. Cart</span>
           </div>
-          <div className="h-px w-16 bg-gray-300"></div>
-          <div className="flex items-center gap-3">
-            <span className="text-xl text-gray-400">2. Checkout</span>
+          <div className="h-px w-8 sm:w-16 bg-gray-300"></div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-gray-400">2. Checkout</span>
           </div>
-          <div className="h-px w-16 bg-gray-300"></div>
-          <div className="flex items-center gap-3">
-            <span className="text-xl text-gray-400">3. Payment</span>
+          <div className="h-px w-8 sm:w-16 bg-gray-300"></div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-gray-400">3. Payment</span>
           </div>
         </div>
 
@@ -81,8 +81,8 @@ export default async function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-6">
             {cart.items.map((item) => (
-              <CartItem 
-                key={item.id} 
+              <CartItem
+                key={item.id}
                 item={item}
                 userId={user.id}
                 hasPremium={user.hasPremium || false}
@@ -93,7 +93,7 @@ export default async function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg p-8 sticky top-24">
+            <div className="bg-white rounded-lg p-6 sm:p-8 sticky top-24">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">Order Summary</h2>
 
               <div className="space-y-4 mb-6">
