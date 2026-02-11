@@ -70,8 +70,8 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-light tracking-wide text-gray-900">Dashboard Overview</h1>
-        <p className="mt-2 text-gray-600">Welcome back, here's what's happening with your store</p>
+        <h1 className="text-2xl md:text-4xl font-light tracking-wide text-gray-900">Dashboard Overview</h1>
+        <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-600">Welcome back, here's what's happening with your store</p>
       </div>
 
       {/* Stats Grid */}

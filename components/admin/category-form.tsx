@@ -131,9 +131,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
       </div>
 
       {/* Submit Buttons */}
-      <div className="flex gap-4">
-        <Button 
-          type="submit" 
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Button
+          type="submit"
           disabled={loading}
           className="bg-[#f5a5a5] hover:bg-[#f5a5a5]/90 text-gray-900 font-semibold"
         >

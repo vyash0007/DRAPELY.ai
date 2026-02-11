@@ -50,7 +50,7 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
   return (
     <>
       <div className="overflow-x-auto rounded-xl bg-white shadow-sm border border-gray-100">
-        <table className="w-full divide-y divide-gray-200 table-fixed">
+        <table className="min-w-[1000px] w-full divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-[#fce8e8] to-[#f5d7d7]">
             <tr>
               <th className="w-[35%] px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
@@ -130,8 +130,8 @@ export function ProductTable({ products, pagination }: ProductTableProps) {
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">
                     <Link href={`/admin/products/${product.id}/edit`}>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
                         className="hover:bg-[#f5d7d7]/50 hover:text-gray-900"
                       >

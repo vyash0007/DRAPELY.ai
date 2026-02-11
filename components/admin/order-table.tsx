@@ -48,7 +48,7 @@ export function OrderTable({ orders, pagination }: OrderTableProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100">
+      <div className="overflow-x-auto rounded-xl bg-white shadow-sm border border-gray-100">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gradient-to-r from-[#fce8e8] to-[#f5d7d7]">
             <tr>
@@ -111,8 +111,8 @@ export function OrderTable({ orders, pagination }: OrderTableProps) {
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <Link href={`/admin/orders/${order.id}`}>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       className="hover:bg-[#f5d7d7]/50 hover:text-gray-900"
                     >

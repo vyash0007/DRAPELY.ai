@@ -27,8 +27,8 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-light tracking-wide text-gray-900">Orders</h1>
-        <p className="mt-2 text-gray-600">Manage customer orders</p>
+        <h1 className="text-2xl md:text-4xl font-light tracking-wide text-gray-900">Orders</h1>
+        <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-600">Manage customer orders</p>
       </div>
 
       {/* Filters */}

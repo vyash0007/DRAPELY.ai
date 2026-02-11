@@ -65,7 +65,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Generate temp ID for new products, use existing ID for updates
   const [productId] = useState(() => product?.id || generateTempId());
 
@@ -427,7 +427,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             ) : (
               <div className="space-y-3 mt-4">
                 {Object.entries(formData.metadata).map(([key, value], index) => (
-                  <div key={index} className="grid grid-cols-2 gap-3 items-end">
+                  <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                     <div>
                       <Label htmlFor={`meta-key-${index}`} className="text-xs text-gray-600">
                         Key
@@ -486,7 +486,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       </div>
 
       {/* Submit Buttons */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <Button type="submit" disabled={loading}>
           {loading ? (
             <>

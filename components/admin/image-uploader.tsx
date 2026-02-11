@@ -72,7 +72,7 @@ export function ImageUploader({ images, onChange, categorySlug, productId }: Ima
   return (
     <div className="mt-2 space-y-4">
       {/* Upload Button */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <label
           htmlFor="image-upload"
           className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"

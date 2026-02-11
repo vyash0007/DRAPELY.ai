@@ -27,13 +27,14 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-light tracking-wide text-gray-900">Products</h1>
-          <p className="mt-2 text-gray-600">Manage your product inventory</p>
+          <h1 className="text-2xl md:text-4xl font-light tracking-wide text-gray-900">Products</h1>
+          <p className="mt-1 md:mt-2 text-sm md:text-base text-gray-600">Manage your product inventory</p>
         </div>
-        <Link href="/admin/products/new">
-          <Button className="bg-[#f5a5a5] hover:bg-[#f5a5a5]/90 text-gray-900 font-semibold shadow-sm hover:shadow-md transition-all">
+        <Link href="/admin/products/new" className="w-full md:w-auto">
+          <Button className="w-full md:w-auto bg-[#f5a5a5] hover:bg-[#f5a5a5]/90 text-gray-900 font-semibold shadow-sm hover:shadow-md transition-all">
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>

@@ -34,7 +34,11 @@ const navigation = [
   },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  className?: string;
+}
+
+export function AdminSidebar({ className }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -42,7 +46,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <div className="flex w-64 flex-col bg-gradient-to-b from-[#f5d7d7] via-[#fce8e8] to-[#f5d7d7] shadow-lg">
+    <div className={cn("flex w-64 flex-col bg-gradient-to-b from-[#f5d7d7] via-[#fce8e8] to-[#f5d7d7] shadow-lg", className)}>
       {/* Logo */}
       <div className="flex h-20 items-center justify-center border-b border-[#f5a5a5]/30 bg-white/50 backdrop-blur-sm">
         <h1 className="text-2xl font-serif font-light  text-gray-900 tracking-wide">DRAPELY.ai</h1>
